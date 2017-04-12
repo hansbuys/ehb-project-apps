@@ -96,10 +96,13 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Builder.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\WindowsLogger.cs" />
+    <Compile Include="Services\WindowsLoggerFactoryAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -152,6 +155,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Ehb.Dijlezonen.Kassa.Infrastructure\Ehb.Dijlezonen.Kassa.Infrastructure.csproj">
+      <Project>{6B730A0B-E55D-48F0-8C08-D898F3DBA420}</Project>
+      <Name>Ehb.Dijlezonen.Kassa.Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.App\Ehb.Dijlezonen.Kassa.App.Shared.csproj">
       <Project>{D31DEA7E-239E-43BA-8215-FA9A83BEE5B4}</Project>
       <Name>Ehb.Dijlezonen.Kassa.App.Shared</Name>

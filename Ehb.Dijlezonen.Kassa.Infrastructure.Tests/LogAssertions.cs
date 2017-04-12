@@ -1,6 +1,6 @@
-﻿using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
+﻿using Common.Logging.Simple;
+using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using FluentAssertions;
-using log4net.Core;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
 {
@@ -10,7 +10,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
         {
         }
 
-        public AndWhichConstraint<TestLoggingAssertions, LoggingEvent> HaveLoggedMessage(string message)
+        public AndWhichConstraint<TestLoggingAssertions, CapturingLoggerEvent> HaveLoggedMessage(string message)
         {
             var loggingEvent = Subject.Events.Should().Contain(e => e.RenderedMessage == message).Which;
 

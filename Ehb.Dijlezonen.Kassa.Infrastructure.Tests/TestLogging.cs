@@ -1,37 +1,27 @@
 ﻿using System.Collections.Generic;
-using log4net.Core;
-using log4net.Layout;
-using log4net.Repository.Hierarchy;
+using Common.Logging;
+using Common.Logging.Simple;
 using Xunit.Abstractions;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
 {
     internal class TestLogging : Logging
     {
-        private readonly List<string> logOutput = new List<string>();
+        private CapturingLoggerFactoryAdapter loggerFactory;
 
-        public TestLogging(ITestOutputHelper output, ILayout layout)
+        public TestLogging(ITestOutputHelper output)
         {
             Output = output;
-            Layout = layout;
         }
-
-        public List<LoggingEvent> Events { get; } = new List<LoggingEvent>();
-
+        
         private ITestOutputHelper Output { get; }
+        public IEnumerable<CapturingLoggerEvent> Events => loggerFactory.LoggerEvents;
 
-        private ILayout Layout { get; }
-
-        protected override Hierarchy InitalizeHierarchy()
+        protected override ILoggerFactoryAdapter InitializeLoggerFactory()
         {
-            var hierarchy = new Hierarchy();
-            var appender = new TestAppender(Output, Events, Layout, logOutput);
-            hierarchy.Root.AddAppender(appender);
+            loggerFactory = new TestLoggerFactoryAdapter(Output);
 
-            hierarchy.Root.Level = Level.All;
-            hierarchy.Configured = true;
-
-            return hierarchy;
+            return loggerFactory;
         }
     }
 }

@@ -88,6 +88,9 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Builder.cs" />
+    <Compile Include="Services\iOSLogger.cs" />
+    <Compile Include="Services\iOSLoggerFactoryAdapter.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <None Include="Entitlements.plist" />
@@ -116,8 +119,23 @@
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.5.0\lib\netstandard1.1\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging, Version=3.4.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.3.4.0-Beta2\lib\netstandard1.3\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.4.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.Core.3.4.0-Beta2\lib\netstandard1.0\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xamarin.Forms.2.3.4.224\lib\Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
       <Private>True</Private>
@@ -137,6 +155,10 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Ehb.Dijlezonen.Kassa.Infrastructure\Ehb.Dijlezonen.Kassa.Infrastructure.csproj">
+      <Project>{6B730A0B-E55D-48F0-8C08-D898F3DBA420}</Project>
+      <Name>Ehb.Dijlezonen.Kassa.Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.App\Ehb.Dijlezonen.Kassa.App.Shared.csproj">
       <Project>{D31DEA7E-239E-43BA-8215-FA9A83BEE5B4}</Project>
       <Name>Ehb.Dijlezonen.Kassa.App.Shared</Name>

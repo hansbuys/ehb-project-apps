@@ -1,9 +1,7 @@
 ﻿using System;
+using Common.Logging;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using FluentAssertions;
-using log4net;
-using log4net.Core;
-using log4net.Layout;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -17,7 +15,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
 
         public LoggingTests(ITestOutputHelper output) : base(output)
         {
-            logging = new TestLogging(output, new PatternLayout("Logging: %message"));
+            logging = new TestLogging(output);
             logger = logging.GetLoggerFor<LoggingTests>();
         }
 
@@ -29,7 +27,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
             logger.Debug(message);
 
             var loggingEvent = logging.Should().HaveLoggedMessage(message).Which;
-            loggingEvent.Level.Should().Be(Level.Debug);
+            loggingEvent.Level.Should().Be(LogLevel.Debug);
         }
 
         [Theory]

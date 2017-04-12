@@ -19,7 +19,7 @@ namespace Ehb.Dijlezonen.Kassa.App.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
-            LoadApplication(new Shared.App());
+            LoadApplication(new Shared.App(new Builder()));
 
             return base.FinishedLaunching(app, options);
         }
