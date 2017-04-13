@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Ehb.Dijlezonen.Kassa.App.UWP
+﻿namespace Ehb.Dijlezonen.Kassa.App.UWP
 {
     public sealed partial class MainPage
     {
