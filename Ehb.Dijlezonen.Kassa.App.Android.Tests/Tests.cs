@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Ehb.Dijlezonen.Kassa.App.Android.Tests
 {
-    public class TestsSample
+    public class Tests
     {
         [Fact]
         public void ShouldAlwaysPass()
