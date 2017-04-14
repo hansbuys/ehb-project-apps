@@ -1,4 +1,6 @@
-﻿namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
+﻿using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
+
+namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
 {
     internal static class AssertionsProvider
     {

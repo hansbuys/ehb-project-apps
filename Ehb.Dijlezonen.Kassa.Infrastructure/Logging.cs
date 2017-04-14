@@ -15,7 +15,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure
 
         protected virtual ILoggerFactoryAdapter InitializeLoggerFactory()
         {
-            throw new NotImplementedException();
+            throw new Exception("Either implement this method in a derivate class or pass in the logger factory through the constructor.");
         }
 
         public ILog GetLoggerFor<T>()

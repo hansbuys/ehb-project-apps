@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Features.ResolveAnything;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared
 {
@@ -20,11 +21,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
 
         internal IContainer StartContainer()
         {
-            var containerBuilder = new ContainerBuilder();
+            var builder = new ContainerBuilder();
+            builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
 
-            RegisterDependencies(containerBuilder);
+            RegisterDependencies(builder);
 
-            return containerBuilder.Build();
+            return builder.Build();
         }
 
         private void RegisterDependencies(ContainerBuilder builder)

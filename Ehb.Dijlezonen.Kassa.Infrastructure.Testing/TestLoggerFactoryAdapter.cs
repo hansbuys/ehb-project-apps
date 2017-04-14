@@ -1,7 +1,7 @@
 ﻿using Common.Logging.Simple;
 using Xunit.Abstractions;
 
-namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
+namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 {
     internal class TestLoggerFactoryAdapter : CapturingLoggerFactoryAdapter
     {
