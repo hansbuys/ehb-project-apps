@@ -6,7 +6,7 @@
         {
             InitializeComponent();
 
-            LoadApplication(new Shared.App(new Builder()));
+            LoadApplication(new Shared.App(new Bootstrapper()));
         }
     }
 }

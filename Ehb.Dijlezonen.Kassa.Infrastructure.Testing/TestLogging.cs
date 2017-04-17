@@ -3,25 +3,24 @@ using Common.Logging;
 using Common.Logging.Simple;
 using Xunit.Abstractions;
 
-namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
+namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 {
-    internal class TestLogging : Logging
+    public class TestLogging : Logging
     {
-        private CapturingLoggerFactoryAdapter loggerFactory;
+        private readonly TestLoggerFactoryAdapter loggerFactoryAdapter;
 
         public TestLogging(ITestOutputHelper output)
         {
             Output = output;
+            loggerFactoryAdapter = new TestLoggerFactoryAdapter(Output);
         }
         
         private ITestOutputHelper Output { get; }
-        public IEnumerable<CapturingLoggerEvent> Events => loggerFactory.LoggerEvents;
+        public IEnumerable<CapturingLoggerEvent> Events => loggerFactoryAdapter.LoggerEvents;
 
         protected override ILoggerFactoryAdapter InitializeLoggerFactory()
         {
-            loggerFactory = new TestLoggerFactoryAdapter(Output);
-
-            return loggerFactory;
+            return loggerFactoryAdapter;
         }
     }
 }

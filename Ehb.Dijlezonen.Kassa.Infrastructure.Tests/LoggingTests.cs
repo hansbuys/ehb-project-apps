@@ -10,13 +10,12 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
 {
     public class LoggingTests : TestBase
     {
-        private readonly ILog logger;
-        private readonly TestLogging logging;
+        private readonly Lazy<ILog> logger;
+        private ILog Logger => logger.Value;
 
         public LoggingTests(ITestOutputHelper output) : base(output)
         {
-            logging = new TestLogging(output);
-            logger = logging.GetLoggerFor<LoggingTests>();
+            logger = new Lazy<ILog>(() => Logging.GetLoggerFor<LoggingTests>());
         }
 
         [Fact]
@@ -24,9 +23,9 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
         {
             const string message = "this is a test message";
 
-            logger.Debug(message);
+            Logger.Debug(message);
 
-            var loggingEvent = logging.Should().HaveLoggedMessage(message).Which;
+            var loggingEvent = Logging.Should().HaveLoggedMessage(message).Which;
             loggingEvent.Level.Should().Be(LogLevel.Debug);
         }
 
@@ -35,9 +34,9 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
         [InlineData("test", "something else")]
         public void HaveLoggedAssertionCanFail(string message, string expectedMessage)
         {
-            logger.Debug(message);
+            Logger.Debug(message);
 
-            Action assert = () => logging.Should().HaveLoggedMessage(expectedMessage);
+            Action assert = () => Logging.Should().HaveLoggedMessage(expectedMessage);
 
             if (message == expectedMessage)
                 assert();
