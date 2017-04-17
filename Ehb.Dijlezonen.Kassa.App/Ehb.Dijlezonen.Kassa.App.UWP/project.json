@@ -3,7 +3,7 @@
     "Autofac": "4.5.0",
     "Common.Logging": "3.4.0-Beta2",
     "Common.Logging.Core": "3.4.0-Beta2",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.2",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3",
     "Xamarin.Forms": "2.3.4.231"
   },
   "frameworks": {
