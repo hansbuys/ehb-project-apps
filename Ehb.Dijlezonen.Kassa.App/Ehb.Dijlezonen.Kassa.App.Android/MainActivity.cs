@@ -15,7 +15,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Droid
             base.OnCreate(bundle);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
-            LoadApplication(new Shared.App(new Builder()));
+            LoadApplication(new Shared.App(new Bootstrapper()));
         }
     }
 }
