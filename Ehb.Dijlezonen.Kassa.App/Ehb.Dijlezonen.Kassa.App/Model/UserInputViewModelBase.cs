@@ -7,28 +7,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
     public class UserInputViewModelBase : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        protected UserInputViewModelBase()
+        private void NotifyPropertyChanged(string propertyName)
         {
-        }
-
-        private event PropertyChangedEventHandler PropertyChanged;
-        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
-        {
-            add
-            {
-                PropertyChanged += value;
-            }
-
-            remove
-            {
-                PropertyChanged -= value;
-            }
-        }
-
-        private void NotifyPropertyChanged(string info)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         
         protected bool Set<T>(ref T field, T value, Action post = null, [CallerMemberName] string propertyName = null)

@@ -15,21 +15,23 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
         public AndWhichConstraint<NavigatorAssertions, TViewModel> HaveNavigatedTo<TViewModel>()
             where TViewModel : class
         {
-            var viewModel = Subject.NavigationStack.Last().Should().BeOfType<TViewModel>().Which;
+            var vm = Subject.NavigationStack.Last();
+            vm.Should().BeOfType<TViewModel>();
 
-            CheckedThat($"we have navigated to view model '{viewModel.GetType().Name}'");
+            CheckedThat($"we have navigated to view model '{typeof(TViewModel).Name}'");
 
-            return AndWhich(viewModel);
+            return AndWhich((TViewModel)vm);
         }
 
         internal AndWhichConstraint<NavigatorAssertions, TViewModel> HaveNavigatedToModal<TViewModel>()
             where TViewModel : class
         {
-            var viewModel = Subject.ModalStack.Last().Should().BeOfType<TViewModel>().Which;
+            var vm = Subject.ModalStack.Last();
+            vm.Should().BeOfType<TViewModel>();
+            
+            CheckedThat($"we have modally navigated to view model '{typeof(TViewModel).Name}'");
 
-            CheckedThat($"we have modally navigated to view model '{viewModel.GetType().Name}'");
-
-            return AndWhich(viewModel);
+            return AndWhich((TViewModel)vm);
         }
 
         internal AndConstraint<NavigatorAssertions> NotHaveModal<TViewModel>()

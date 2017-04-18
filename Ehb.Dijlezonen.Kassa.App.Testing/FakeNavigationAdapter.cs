@@ -1,8 +1,8 @@
 ﻿using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
 using System.Linq;
+using Xamarin.Forms;
 using Ehb.Dijlezonen.Kassa.App.Shared;
 using Autofac;
 
@@ -27,7 +27,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         Task INavigationAdapter.CloseModal()
         {
-            object viewModel = ModalStack.LastOrDefault();
+            var viewModel = ModalStack.LastOrDefault();
             if (viewModel != null)
                 ModalStack.Remove(viewModel);
             return Task.FromResult(0);

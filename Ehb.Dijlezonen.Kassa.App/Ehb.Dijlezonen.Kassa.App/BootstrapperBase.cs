@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Autofac;
-using Autofac.Features.ResolveAnything;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Xamarin.Forms;
 using System.Collections.Generic;
@@ -44,8 +43,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             var logging = container.Resolve<Logging>();
             log = logging.GetLoggerFor<BootstrapperBase>();
 
-            var navigationService = container.Resolve<ViewFactory>();
-            RegisterViews(navigationService);
+            var viewFactory = container.Resolve<ViewFactory>();
+            RegisterViews(viewFactory);
 
             return container;
         }

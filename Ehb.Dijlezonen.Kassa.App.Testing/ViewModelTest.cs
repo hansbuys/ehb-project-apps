@@ -8,7 +8,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
     public abstract class ViewModelTest<T> : IoCBasedTest<T>
     {
         private TestBootstrapper bootstrapper;
-        protected FakeNavigationAdapter Navigator { get; } = new FakeNavigationAdapter();
+        protected FakeNavigationAdapter Navigator { get; private set; }
         protected FakeAccountStore AccountStore { get; } = new FakeAccountStore();
 
         protected ViewModelTest(ITestOutputHelper output) : base(output)
@@ -41,11 +41,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         protected override IContainer InitializeContainer()
         {
-            return bootstrapper.Initialize(builder =>
+            var container = bootstrapper.Initialize(builder =>
             {
-                builder.RegisterInstance(Navigator).As<INavigationAdapter>();
+                builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
                 builder.RegisterInstance(AccountStore).As<IAccountStore>();
             });
+
+            Navigator = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
+
+            return container;
         }
     }
 }
