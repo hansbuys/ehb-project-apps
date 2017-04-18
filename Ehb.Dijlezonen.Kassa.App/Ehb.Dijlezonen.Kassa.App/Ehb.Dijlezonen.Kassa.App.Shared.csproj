@@ -55,9 +55,11 @@
     <Compile Include="SecondStage.xaml.cs">
       <DependentUpon>SecondStage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\AccountStoreAdapter.cs" />
     <Compile Include="Services\IAccountStore.cs" />
-    <Compile Include="Services\NavigationService.cs" />
-    <Compile Include="Services\XamarinAccountStore.cs" />
+    <Compile Include="Services\INavigator.cs" />
+    <Compile Include="Services\NavigationAdapter.cs" />
+    <Compile Include="Services\ViewFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainPage.xaml">

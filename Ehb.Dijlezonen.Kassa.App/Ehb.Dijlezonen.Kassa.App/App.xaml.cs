@@ -9,14 +9,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
 {
     public partial class App
     {
-        public App(BootstrapperBase bootstrapper)
+        public App(BootstrapperBase bootstrapper, AccountStore accountStore)
         {
             InitializeComponent();
 
             MainPage = new NavigationPage(new MainPage());
 
-            var accountStore = new XamarinAccountStore(AccountStore.Create());
-            var container = bootstrapper.Initialize(MainPage.Navigation, accountStore);
+            var accountStoreAdapter = new AccountStoreAdapter(accountStore);
+            var navigationAdapter = new NavigationAdapter(MainPage.Navigation);
+            var container = bootstrapper.Initialize(navigationAdapter, accountStoreAdapter);
 
             var logging = container.Resolve<Logging>();
             var logger = logging.GetLoggerFor<App>();

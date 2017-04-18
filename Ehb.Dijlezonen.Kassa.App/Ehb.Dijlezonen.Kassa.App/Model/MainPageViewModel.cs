@@ -7,10 +7,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
     public class MainPageViewModel
     {
-        private readonly NavigationService navigation;
+        private readonly INavigationAdapter navigation;
         private readonly IAccountStore auth;
 
-        public MainPageViewModel(NavigationService navigation, IAccountStore auth)
+        public MainPageViewModel(INavigationAdapter navigation, IAccountStore auth)
         {
             this.navigation = navigation;
             this.auth = auth;

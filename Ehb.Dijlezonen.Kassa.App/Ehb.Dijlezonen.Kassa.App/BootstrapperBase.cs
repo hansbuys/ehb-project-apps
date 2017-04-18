@@ -28,23 +28,23 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
         /// <param name="builder">The IoC container builder, use this to register your dependencies.</param>
         protected virtual void RegisterComponents(ContainerBuilder builder)
         {
-            builder.RegisterType<NavigationService>().As<NavigationService>().SingleInstance();
+            builder.RegisterType<ViewFactory>().SingleInstance();
         }
 
-        public IContainer Initialize(INavigation navigation, IAccountStore accountStore)
+        public IContainer Initialize(INavigationAdapter navigator, IAccountStore accountStore)
         {
             IContainer container = IoC.InitializeContainer(builder =>
             {
                 RegisterDependencies(builder);
 
-                builder.RegisterInstance(navigation);
+                builder.RegisterInstance(navigator);
                 builder.RegisterInstance(accountStore);
             });
             
             var logging = container.Resolve<Logging>();
             log = logging.GetLoggerFor<BootstrapperBase>();
 
-            var navigationService = container.Resolve<NavigationService>();
+            var navigationService = container.Resolve<ViewFactory>();
             RegisterViews(navigationService);
 
             return container;
@@ -56,23 +56,23 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             RegisterComponents(builder);
         }
 
-        private void RegisterViews(NavigationService navigation)
+        private void RegisterViews(ViewFactory viewFactory)
         {
             var sharedAssembly = typeof(BootstrapperBase).GetTypeInfo().Assembly;
-            RegisterViews(navigation, sharedAssembly);
+            RegisterViews(viewFactory, sharedAssembly);
 
             var assembly = GetType().GetTypeInfo().Assembly;
-            RegisterViews(navigation, assembly);
+            RegisterViews(viewFactory, assembly);
         }
 
-        private void RegisterViews(NavigationService navigation, Assembly assembly)
+        private void RegisterViews(ViewFactory viewFactory, Assembly assembly)
         {
             var views = assembly.DefinedTypes.Where(t => t.IsPage());
 
-            RegisterViewModels(navigation, assembly, views);
+            RegisterViewModels(viewFactory, assembly, views);
         }
 
-        private void RegisterViewModels(NavigationService navigation, Assembly assembly, IEnumerable<TypeInfo> views)
+        private void RegisterViewModels(ViewFactory viewFactory, Assembly assembly, IEnumerable<TypeInfo> views)
         {
             foreach (var view in views)
             {
@@ -83,7 +83,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
                     log.Warn($"No viewmodel found for type {view.Name}");
 
                 log.Info($"Registering viewmodel {viewModel.Name} for view {view.Name}");
-                navigation.Register(view.AsType(), viewModel.AsType());
+                viewFactory.Register(view.AsType(), viewModel.AsType());
             }
         }
     }

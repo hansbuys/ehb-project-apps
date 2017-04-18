@@ -7,9 +7,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
     public class LoginViewModel : UserInputViewModelBase
     {
         private readonly IAccountStore auth;
-        private readonly NavigationService navigation;
+        private readonly INavigationAdapter navigation;
 
-        public LoginViewModel(IAccountStore auth, NavigationService navigation)
+        public LoginViewModel(IAccountStore auth, INavigationAdapter navigation)
         {
             this.auth = auth;
             this.navigation = navigation;
@@ -51,7 +51,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         {
             if (await auth.Login(User, Password).ConfigureAwait(false))
             {
-                await navigation.GoToMain().ConfigureAwait(false);
+                await navigation.CloseModal().ConfigureAwait(false);
             }
         }
     }

@@ -4,7 +4,7 @@ using Xamarin.Auth;
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
     //TODO: implement this properly please
-    public class XamarinAccountStore : IAccountStore
+    public class AccountStoreAdapter : IAccountStore
     {
         private readonly AccountStore accountStore;
         private bool isLoggedIn;
@@ -12,7 +12,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         private const string user = "test";
         private const string password = "test";
 
-        public XamarinAccountStore(AccountStore accountStore)
+        public AccountStoreAdapter(AccountStore accountStore)
         {
             this.accountStore = accountStore;
         }
@@ -24,7 +24,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         Task<bool> IAccountStore.Login(string user, string password)
         {
-            if (user == XamarinAccountStore.user && password == XamarinAccountStore.password)
+            if (user == AccountStoreAdapter.user && password == AccountStoreAdapter.password)
             isLoggedIn = true;
 
             return Task.FromResult(isLoggedIn);

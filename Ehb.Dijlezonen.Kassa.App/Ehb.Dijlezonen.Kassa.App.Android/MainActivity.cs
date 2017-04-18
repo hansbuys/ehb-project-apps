@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Xamarin.Auth;
 
 namespace Ehb.Dijlezonen.Kassa.App.Droid
 {
@@ -15,7 +16,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Droid
             base.OnCreate(bundle);
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
-            LoadApplication(new Shared.App(new Bootstrapper()));
+            LoadApplication(new Shared.App(new Bootstrapper(), AccountStore.Create(this)));
         }
     }
 }

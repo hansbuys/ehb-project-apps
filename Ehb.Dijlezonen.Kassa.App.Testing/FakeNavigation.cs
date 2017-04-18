@@ -1,80 +1,36 @@
-﻿using System;
+﻿using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
-using Xamarin.Forms;
+using System.Linq;
+using Ehb.Dijlezonen.Kassa.App.Shared;
+using Autofac;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
-    public class FakeNavigation : INavigation
+    public class FakeNavigator : INavigationAdapter
     {
-        public List<Page> ModalStack { get; } = new List<Page>();
-        public List<Page> NavigationStack { get; } = new List<Page>();
-
-        IReadOnlyList<Page> INavigation.ModalStack => ModalStack;
-
-        IReadOnlyList<Page> INavigation.NavigationStack => NavigationStack;
-
-        void INavigation.InsertPageBefore(Page page, Page before)
+        public List<object> ModalStack { get; } = new List<object>();
+        public List<object> NavigationStack { get; } = new List<object>();
+        
+        Task INavigationAdapter.NavigateTo<TViewModel>()
         {
-            throw new NotImplementedException();
-        }
-
-        Task<Page> INavigation.PopAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Page> INavigation.PopAsync(bool animated)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Page> INavigation.PopModalAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Page> INavigation.PopModalAsync(bool animated)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task INavigation.PopToRootAsync()
-        {
-            ModalStack.Clear();
-            NavigationStack.Clear();
-
+            NavigationStack.Add(IoC.Container.Resolve<TViewModel>());
             return Task.FromResult(0);
         }
 
-        Task INavigation.PopToRootAsync(bool animated)
+        Task INavigationAdapter.NavigateToModal<TViewModel>()
         {
-            throw new NotImplementedException();
+            ModalStack.Add(IoC.Container.Resolve<TViewModel>());
+            return Task.FromResult(0);
         }
 
-        Task INavigation.PushAsync(Page page)
+        Task INavigationAdapter.CloseModal()
         {
-            return Task.Run(() => NavigationStack.Add(page));
-        }
-
-        Task INavigation.PushAsync(Page page, bool animated)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task INavigation.PushModalAsync(Page page)
-        {
-            return Task.Run(() => ModalStack.Add(page));
-        }
-
-        Task INavigation.PushModalAsync(Page page, bool animated)
-        {
-            throw new NotImplementedException();
-        }
-
-        void INavigation.RemovePage(Page page)
-        {
-            throw new NotImplementedException();
+            object viewModel = ModalStack.LastOrDefault();
+            if (viewModel != null)
+                ModalStack.Remove(viewModel);
+            return Task.FromResult(0);
         }
     }
 }

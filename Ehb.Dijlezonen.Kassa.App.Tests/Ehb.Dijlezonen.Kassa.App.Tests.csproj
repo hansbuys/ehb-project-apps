@@ -98,10 +98,10 @@
     <Compile Include="Assertions\AccountStoreAssertions.cs" />
     <Compile Include="Assertions\AssertionProvider.cs" />
     <Compile Include="Assertions\CommandAssertions.cs" />
+    <Compile Include="Assertions\NavigationAssertions.cs" />
     <Compile Include="Assertions\PageAssertions.cs" />
     <Compile Include="Login\LoginViewModelTests.cs" />
     <Compile Include="MainPage\MainPageViewModelTests.cs" />
-    <Compile Include="Assertions\NavigationServiceAssertions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

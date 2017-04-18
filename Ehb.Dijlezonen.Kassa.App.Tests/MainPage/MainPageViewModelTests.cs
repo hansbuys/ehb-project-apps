@@ -1,6 +1,4 @@
-﻿using System;
-using Ehb.Dijlezonen.Kassa.App.Shared;
-using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+﻿using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,7 +17,24 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests
         {
             GetSut();
 
-            Navigation.Should().HaveNavigatedToModal<Login, LoginViewModel>();
+            Navigator.Should().HaveNavigatedToModal<LoginViewModel>();
+        }
+
+        [Fact]
+        public void ShouldReturnToMainPageAfterLogin()
+        {
+            var user = "test";
+            var pass = "test";
+            WhenUserIsKnown(user, pass);
+                
+            GetSut();
+            
+            var loginVm = Navigator.Should().HaveNavigatedToModal<LoginViewModel>().Which;
+            loginVm.User = user;
+            loginVm.Password = pass;
+            loginVm.LoginCommand.Click();
+
+            Navigator.Should().NotHaveModal<LoginViewModel>();
         }
 
         [Fact]
@@ -29,7 +44,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests
 
             GetSut().NavigateToSecondStageCommand.Click();
 
-            Navigation.Should().HaveNavigatedTo<SecondStage, SecondStageViewModel>();
+            Navigator.Should().HaveNavigatedTo<SecondStageViewModel>();
         }
     }
 }
