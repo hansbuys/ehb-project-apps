@@ -6,9 +6,9 @@ using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 {
-    internal class NavigatorAssertions : Assertions<FakeNavigator, NavigatorAssertions>
+    internal class NavigatorAssertions : Assertions<FakeNavigationAdapter, NavigatorAssertions>
     {
-        public NavigatorAssertions(FakeNavigator subject) : base(subject)
+        public NavigatorAssertions(FakeNavigationAdapter subject) : base(subject)
         {
         }
 

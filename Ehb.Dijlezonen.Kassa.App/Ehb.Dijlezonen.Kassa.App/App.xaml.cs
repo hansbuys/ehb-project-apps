@@ -14,10 +14,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             InitializeComponent();
 
             MainPage = new NavigationPage(new MainPage());
-
-            var accountStoreAdapter = new AccountStoreAdapter(accountStore);
-            var navigationAdapter = new NavigationAdapter(MainPage.Navigation);
-            var container = bootstrapper.Initialize(navigationAdapter, accountStoreAdapter);
+            
+            var container = bootstrapper.Initialize(c =>
+            {
+                c.RegisterInstance(accountStore);
+                c.RegisterInstance(MainPage.Navigation).As<INavigation>();
+                c.RegisterType<NavigationAdapter>().As<INavigationAdapter>();
+                c.RegisterType<AccountStoreAdapter>().As<IAccountStore>();
+            });
 
             var logging = container.Resolve<Logging>();
             var logger = logging.GetLoggerFor<App>();

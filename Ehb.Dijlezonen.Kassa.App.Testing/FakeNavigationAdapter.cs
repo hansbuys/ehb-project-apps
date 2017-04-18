@@ -8,7 +8,7 @@ using Autofac;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
-    public class FakeNavigator : INavigationAdapter
+    public class FakeNavigationAdapter : INavigationAdapter
     {
         public List<object> ModalStack { get; } = new List<object>();
         public List<object> NavigationStack { get; } = new List<object>();

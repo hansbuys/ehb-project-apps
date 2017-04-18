@@ -5,7 +5,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 {
     internal static class AssertionProvider
     {
-        internal static NavigatorAssertions Should(this FakeNavigator navigation)
+        internal static NavigatorAssertions Should(this FakeNavigationAdapter navigation)
         {
             return new NavigatorAssertions(navigation);
         }
