@@ -1,50 +1,47 @@
-﻿using System;
-using System.Collections;
+﻿using Ehb.Dijlezonen.Kassa.Infrastructure;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Autofac;
+using Common.Logging;
 using Xamarin.Forms;
+using Autofac;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
-    public class NavigationService : INavigationService
+    public class ViewFactory
     {
-        private readonly INavigation navigation;
-
         /// <summary>
         /// Key value pair of types to indicate the relation between ViewModel and View.
         /// Key = ViewModel
         /// Value = View
         /// </summary>
         private readonly IDictionary<Type, Type> map;
+        private readonly ILog log;
 
-        public NavigationService(INavigation navigation)
+        public ViewFactory(Logging logging)
         {
-            this.navigation = navigation;
-
+            this.log = logging.GetLoggerFor<ViewFactory>();
             map = new Dictionary<Type, Type>();
         }
 
         public void Register(Type view, Type viewModel)
         {
             map.Add(viewModel, view);
+            log.Info($"Registered '{viewModel.Name}' for '{view.Name}'");
         }
 
-        Task INavigationService.NavigateTo<T>()
+        public Page ResolveViewFor<TViewModel>()
         {
-            var viewType = map[typeof(T)];
+            var viewType = map[typeof(TViewModel)];
 
             var container = IoC.Container;
 
             var view = container.Resolve(viewType) as Page;
-            var vm = container.Resolve<T>();
-
-            if (view == null)
-                throw new Exception($"Unable to resolve {typeof(T).Name} to a View of type Page");
+            var vm = container.Resolve<TViewModel>();
 
             view.BindingContext = vm;
 
-            return navigation.PushAsync(view);
+            log.Info($"Resolved view '{view.GetType().Name}' for viewmodel '{vm.GetType().Name}'");
+            return view;
         }
     }
 }

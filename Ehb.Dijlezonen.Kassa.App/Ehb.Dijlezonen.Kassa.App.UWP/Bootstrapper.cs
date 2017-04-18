@@ -11,9 +11,5 @@ namespace Ehb.Dijlezonen.Kassa.App.UWP
         {
             builder.RegisterInstance(new Logging(new WindowsLoggerFactoryAdapter()));
         }
-
-        protected override void RegisterComponents(ContainerBuilder builder)
-        {
-        }
     }
 }

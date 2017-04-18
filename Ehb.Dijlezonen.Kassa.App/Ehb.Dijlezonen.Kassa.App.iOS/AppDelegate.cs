@@ -1,5 +1,6 @@
 ﻿using Foundation;
 using UIKit;
+using Xamarin.Auth;
 
 namespace Ehb.Dijlezonen.Kassa.App.iOS
 {
@@ -19,7 +20,7 @@ namespace Ehb.Dijlezonen.Kassa.App.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
-            LoadApplication(new Shared.App(new Bootstrapper()));
+            LoadApplication(new Shared.App(new Bootstrapper(), AccountStore.Create()));
 
             return base.FinishedLaunching(app, options);
         }

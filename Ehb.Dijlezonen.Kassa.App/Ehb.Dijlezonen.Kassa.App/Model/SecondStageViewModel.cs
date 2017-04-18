@@ -2,6 +2,6 @@
 {
     public class SecondStageViewModel
     {
-        public string Title => "This is the second stage";
+        public string Title => "Dit is zogezegd een beveiligde pagina";
     }
 }

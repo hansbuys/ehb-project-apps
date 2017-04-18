@@ -16,7 +16,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
             container = new Lazy<IContainer>(InitializeContainer);
         }
 
-        private IContainer InitializeContainer()
+        protected virtual IContainer InitializeContainer()
         {
             var c = new ContainerBuilder();
 
@@ -41,7 +41,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
         /// Use this method to create an instance of your system under test through dependency injection.
         /// </summary>
         /// <returns></returns>
-        protected T GetSut()
+        protected virtual T GetSut()
         {
             return container.Value.Resolve<T>();
         }

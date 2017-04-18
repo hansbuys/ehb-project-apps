@@ -11,9 +11,5 @@ namespace Ehb.Dijlezonen.Kassa.App.Droid
         {
             builder.RegisterInstance(new Logging(new AndroidLoggerFactoryAdapter()));
         }
-
-        protected override void RegisterComponents(ContainerBuilder builder)
-        {
-        }
     }
 }

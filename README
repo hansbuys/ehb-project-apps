@@ -7,11 +7,11 @@ De alternatieve mogelijkheden zijn veelal met JavaScript en dat werkt toch niet 
 (mannen, als dit teveel info is, cut this hé)
 
 # Minimum vereisten
-- Windows 10 ? niet 100% zeker, waarschijnlijk voor UWP.
-- Visual Studio 2015 - Update 1 (liefst Update 3 of beter)
+- Windows 10
+- Visual Studio 2017
 - Android SDK (platform tot en met Android 7)
 - Java 8 JDK
-- Extra: Resharper (als het kan)
+- .NET Core 1.0
 
 # Test strategie
 Alles wordt indien mogelijk test-first geschreven. Hierbij voorzien we aparte test libraries om de testen gescheiden te houden van de productie code.

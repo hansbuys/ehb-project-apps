@@ -17,7 +17,7 @@ namespace Ehb.Dijlezonen.Kassa.App.UWP.Services
             if (exception != null)
                 format += exception.ToString();
 
-            Console.WriteLine(format);
+            System.Diagnostics.Debug.WriteLine(format);
         }
     }
 }
