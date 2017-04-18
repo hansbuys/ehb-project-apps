@@ -11,26 +11,21 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     {
         private readonly INavigation navigation;
 
-        private ILog Log => log.Value;
-        private readonly Lazy<ILog> log = new Lazy<ILog>(() => {
-            var logging = IoC.Container.Resolve<Logging>();
+        private ILog log;
+        private ViewFactory viewFactory;
 
-            return logging.GetLoggerFor<NavigationAdapter>();
-        });
-        private ViewFactory ViewFactory => viewFactory.Value;
-        private readonly Lazy<ViewFactory> viewFactory = new Lazy<ViewFactory>(() => 
-            IoC.Container.Resolve<ViewFactory>());
-
-        public NavigationAdapter(INavigation navigation)
+        public NavigationAdapter(INavigation navigation, Logging logging, ViewFactory viewFactory)
         {
             this.navigation = navigation;
+            log = logging.GetLoggerFor<NavigationAdapter>();
+            this.viewFactory = viewFactory;
         }
 
         public Task NavigateTo<TViewModel>()
         {
-            Page view = ViewFactory.ResolveViewFor<TViewModel>();
+            Page view = viewFactory.ResolveViewFor<TViewModel>();
 
-            Log.Info($"Navigating to {view.GetType().Name}");
+            log.Info($"Navigating to {view.GetType().Name}");
 
             return navigation.PushAsync(view);
         }
@@ -42,9 +37,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public Task NavigateToModal<TViewModel>()
         {
-            Page view = ViewFactory.ResolveViewFor<TViewModel>();
+            Page view = viewFactory.ResolveViewFor<TViewModel>();
 
-            Log.Info($"Navigating modally to {view.GetType().Name}");
+            log.Info($"Navigating modally to {view.GetType().Name}");
 
             return navigation.PushModalAsync(view);
         }

@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Autofac;
-using Autofac.Features.ResolveAnything;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Xamarin.Forms;
 using System.Collections.Generic;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Common.Logging;
+using System;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared
 {
@@ -31,21 +31,20 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             builder.RegisterType<ViewFactory>().SingleInstance();
         }
 
-        public IContainer Initialize(INavigationAdapter navigator, IAccountStore accountStore)
+        public IContainer Initialize(Action<ContainerBuilder> addDependencies = null)
         {
             IContainer container = IoC.InitializeContainer(builder =>
             {
                 RegisterDependencies(builder);
 
-                builder.RegisterInstance(navigator);
-                builder.RegisterInstance(accountStore);
+                addDependencies?.Invoke(builder);
             });
             
             var logging = container.Resolve<Logging>();
             log = logging.GetLoggerFor<BootstrapperBase>();
 
-            var navigationService = container.Resolve<ViewFactory>();
-            RegisterViews(navigationService);
+            var viewFactory = container.Resolve<ViewFactory>();
+            RegisterViews(viewFactory);
 
             return container;
         }

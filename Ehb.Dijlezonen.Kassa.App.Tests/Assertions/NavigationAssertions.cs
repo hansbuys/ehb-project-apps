@@ -6,30 +6,32 @@ using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 {
-    internal class NavigatorAssertions : Assertions<FakeNavigator, NavigatorAssertions>
+    internal class NavigatorAssertions : Assertions<FakeNavigationAdapter, NavigatorAssertions>
     {
-        public NavigatorAssertions(FakeNavigator subject) : base(subject)
+        public NavigatorAssertions(FakeNavigationAdapter subject) : base(subject)
         {
         }
 
         public AndWhichConstraint<NavigatorAssertions, TViewModel> HaveNavigatedTo<TViewModel>()
             where TViewModel : class
         {
-            var viewModel = Subject.NavigationStack.Last().Should().BeOfType<TViewModel>().Which;
+            var vm = Subject.NavigationStack.Last();
+            vm.Should().BeOfType<TViewModel>();
 
-            CheckedThat($"we have navigated to view model '{viewModel.GetType().Name}'");
+            CheckedThat($"we have navigated to view model '{typeof(TViewModel).Name}'");
 
-            return AndWhich(viewModel);
+            return AndWhich((TViewModel)vm);
         }
 
         internal AndWhichConstraint<NavigatorAssertions, TViewModel> HaveNavigatedToModal<TViewModel>()
             where TViewModel : class
         {
-            var viewModel = Subject.ModalStack.Last().Should().BeOfType<TViewModel>().Which;
+            var vm = Subject.ModalStack.Last();
+            vm.Should().BeOfType<TViewModel>();
+            
+            CheckedThat($"we have modally navigated to view model '{typeof(TViewModel).Name}'");
 
-            CheckedThat($"we have modally navigated to view model '{viewModel.GetType().Name}'");
-
-            return AndWhich(viewModel);
+            return AndWhich((TViewModel)vm);
         }
 
         internal AndConstraint<NavigatorAssertions> NotHaveModal<TViewModel>()

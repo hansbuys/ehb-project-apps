@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using Xunit.Abstractions;
 
@@ -7,7 +8,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
     public abstract class ViewModelTest<T> : IoCBasedTest<T>
     {
         private TestBootstrapper bootstrapper;
-        protected FakeNavigator Navigator { get; } = new FakeNavigator();
+        protected FakeNavigationAdapter Navigator { get; private set; }
         protected FakeAccountStore AccountStore { get; } = new FakeAccountStore();
 
         protected ViewModelTest(ITestOutputHelper output) : base(output)
@@ -40,7 +41,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         protected override IContainer InitializeContainer()
         {
-            return bootstrapper.Initialize(Navigator, AccountStore);
+            var container = bootstrapper.Initialize(builder =>
+            {
+                builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
+                builder.RegisterInstance(AccountStore).As<IAccountStore>();
+            });
+
+            Navigator = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
+
+            return container;
         }
     }
 }
