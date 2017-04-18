@@ -95,21 +95,24 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Assertions\AccountStoreAssertions.cs" />
     <Compile Include="Assertions\AssertionProvider.cs" />
-    <Compile Include="Assertions\NavigationPageAssertions.cs" />
+    <Compile Include="Assertions\CommandAssertions.cs" />
     <Compile Include="Assertions\PageAssertions.cs" />
-    <Compile Include="BootstrapperTests.cs" />
-    <Compile Include="Fakes\FakeNavigationService.cs" />
-    <Compile Include="MainPageViewModelTestsBase.cs" />
-    <Compile Include="MainPageViewModelTests.cs" />
+    <Compile Include="Login\LoginViewModelTests.cs" />
+    <Compile Include="MainPage\MainPageViewModelTests.cs" />
     <Compile Include="Assertions\NavigationServiceAssertions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.App.Testing\Ehb.Dijlezonen.Kassa.App.Testing.csproj">
+      <Project>{589550D7-99C3-4AAC-8F32-71F90A09392F}</Project>
+      <Name>Ehb.Dijlezonen.Kassa.App.Testing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.App\Ehb.Dijlezonen.Kassa.App\Ehb.Dijlezonen.Kassa.App.Shared.csproj">
       <Project>{D31DEA7E-239E-43BA-8215-FA9A83BEE5B4}</Project>
       <Name>Ehb.Dijlezonen.Kassa.App.Shared</Name>

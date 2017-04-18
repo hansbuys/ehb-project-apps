@@ -11,9 +11,5 @@ namespace Ehb.Dijlezonen.Kassa.App.iOS
         {
             builder.RegisterInstance(new Logging(new iOSLoggerFactoryAdapter()));
         }
-
-        protected override void RegisterComponents(ContainerBuilder builder)
-        {
-        }
     }
 }

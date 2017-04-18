@@ -1,32 +1,41 @@
-﻿using Ehb.Dijlezonen.Kassa.App.Tests.Fakes;
+﻿using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using FluentAssertions;
+using System.Linq;
+using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 {
-    internal class NavigationServiceAssertions : Assertions<FakeNavigationService, NavigationServiceAssertions>
+    internal class NavigationAssertions : Assertions<FakeNavigation, NavigationAssertions>
     {
-        public NavigationServiceAssertions(FakeNavigationService subject) : base(subject)
+        public NavigationAssertions(FakeNavigation subject) : base(subject)
         {
         }
 
-        public AndWhichConstraint<NavigationServiceAssertions, FakeNavigationEvent> HaveNavigatedTo<T>()
+        public AndWhichConstraint<NavigationAssertions, TViewModel> HaveNavigatedTo<TView, TViewModel>()
+            where TView : Page
+            where TViewModel : class
         {
-            var navigationEvent =
-                Subject.NavigationEvents.Should().ContainSingle(e => e.DestinationType == typeof(T)).Which;
+            INavigation navigation = Subject;
 
-            CheckedThat($"we have navigated to view model '{typeof(T).Name}'");
+            var viewModel = navigation.NavigationStack.Last().Should().BeOfType<TView>().Which;
 
-            return AndWhich(navigationEvent);
+            CheckedThat($"we have navigated to view model '{viewModel.GetType().Name}'");
+
+            return AndWhich((TViewModel)viewModel.BindingContext);
         }
 
-        public AndConstraint<NavigationServiceAssertions> HaveRegistered<TView, TViewModel>()
+        internal AndWhichConstraint<NavigationAssertions, TViewModel> HaveNavigatedToModal<TView, TViewModel>()
+            where TView : Page
+            where TViewModel : class
         {
-            Subject.Registrations.Should().ContainSingle(e => e.Key == typeof(TViewModel) && e.Value == typeof(TView));
+            INavigation navigation = Subject;
 
-            CheckedThat($"view '{typeof(TView).Name}' has been registered with view model '{typeof(TViewModel).Name}'");
+            var viewModel = navigation.ModalStack.Last().Should().BeOfType<TView>().Which;
 
-            return And();
+            CheckedThat($"we have modally navigated to view model '{viewModel.GetType().Name}'");
+
+            return AndWhich((TViewModel)viewModel.BindingContext);
         }
     }
 }

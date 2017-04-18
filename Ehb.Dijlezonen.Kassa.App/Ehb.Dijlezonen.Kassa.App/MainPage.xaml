@@ -4,10 +4,10 @@
              x:Class="Ehb.Dijlezonen.Kassa.App.Shared.MainPage">
 
     <StackLayout>
-        <Label Text="Welcome to Xamarin Forms!" 
+        <Label Text="{Binding Title}" 
            VerticalOptions="Center" 
            HorizontalOptions="Center" />
-        <Button Text="Click me to navigate to the second stage" Command="{Binding NavigateToSecondStageCommand}"></Button>
+        <Button Text="{Binding NavigateToSecondStageCommandText}" Command="{Binding NavigateToSecondStageCommand}"></Button>
     </StackLayout>
 
 </ContentPage>

@@ -12,7 +12,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 
         public AndWhichConstraint<PageAssertions, NavigationPage> BeANavigationPage()
         {
-            var navigationPage = Subject.Should().BeOfType<NavigationPage>().Which;
+            var navigationPage = Subject.Should().BeANavigationPage().Which;
 
             CheckedThat($"{Subject.GetType().Name} is a navigation page");
 

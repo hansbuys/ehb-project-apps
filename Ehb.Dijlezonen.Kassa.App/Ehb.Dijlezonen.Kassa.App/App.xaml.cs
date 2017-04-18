@@ -2,6 +2,7 @@
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
+using Xamarin.Auth;
 using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared
@@ -13,21 +14,17 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             InitializeComponent();
 
             MainPage = new NavigationPage(new MainPage());
-            
-            var container = bootstrapper.StartContainer(MainPage.Navigation);
-            
+
+            var accountStore = new XamarinAccountStore(AccountStore.Create());
+            var container = bootstrapper.Initialize(MainPage.Navigation, accountStore);
+
             var logging = container.Resolve<Logging>();
             var logger = logging.GetLoggerFor<App>();
 
             logger.Debug("Loaded IoC container, starting app...");
 
-            var navigation = container.Resolve<INavigationService>();
-            bootstrapper.RegisterViews(navigation);
-
             var viewModel = container.Resolve<MainPageViewModel>();
             MainPage.BindingContext = viewModel;
-
-            logger.Debug("Done.");
         }
 
         protected override void OnStart()

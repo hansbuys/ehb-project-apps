@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
 using Xamarin.Forms;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
+using Common.Logging;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
-    public class NavigationService : INavigationService
+    public class NavigationService
     {
         private readonly INavigation navigation;
+        private readonly ILog log;
 
         /// <summary>
         /// Key value pair of types to indicate the relation between ViewModel and View.
@@ -18,8 +21,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         /// </summary>
         private readonly IDictionary<Type, Type> map;
 
-        public NavigationService(INavigation navigation)
+        public NavigationService(Logging logging, INavigation navigation)
         {
+            this.log = logging.GetLoggerFor<NavigationService>();
             this.navigation = navigation;
 
             map = new Dictionary<Type, Type>();
@@ -28,23 +32,45 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         public void Register(Type view, Type viewModel)
         {
             map.Add(viewModel, view);
+            log.Info($"Registered '{viewModel.Name}' for '{view.Name}'");
         }
 
-        Task INavigationService.NavigateTo<T>()
+        public Task NavigateTo<TViewModel>()
         {
-            var viewType = map[typeof(T)];
+            Page view = ResolveViewFor<TViewModel>();
+
+            log.Info($"Navigating to {view.GetType().Name}");
+
+            return navigation.PushAsync(view);
+        }
+
+        public Task GoToMain()
+        {
+            return navigation.PopToRootAsync();
+        }
+
+        public Task NavigateToModal<TViewModel>()
+        {
+            Page view = ResolveViewFor<TViewModel>();
+
+            log.Info($"Navigating modally to {view.GetType().Name}");
+
+            return navigation.PushModalAsync(view);
+        }
+
+        private Page ResolveViewFor<TViewModel>()
+        {
+            var viewType = map[typeof(TViewModel)];
 
             var container = IoC.Container;
 
             var view = container.Resolve(viewType) as Page;
-            var vm = container.Resolve<T>();
-
-            if (view == null)
-                throw new Exception($"Unable to resolve {typeof(T).Name} to a View of type Page");
+            var vm = container.Resolve<TViewModel>();
 
             view.BindingContext = vm;
 
-            return navigation.PushAsync(view);
+            log.Info($"Resolved view '{view.GetType().Name}' for viewmodel '{vm.GetType().Name}'");
+            return view;
         }
     }
 }
