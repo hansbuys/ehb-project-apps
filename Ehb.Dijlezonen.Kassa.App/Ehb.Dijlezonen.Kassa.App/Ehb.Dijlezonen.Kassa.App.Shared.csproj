@@ -50,7 +50,7 @@
     <Compile Include="Model\LoginViewModel.cs" />
     <Compile Include="Model\MainPageViewModel.cs" />
     <Compile Include="Model\SecondStageViewModel.cs" />
-    <Compile Include="Model\ViewModelBase.cs" />
+    <Compile Include="Model\UserInputViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecondStage.xaml.cs">
       <DependentUpon>SecondStage.xaml</DependentUpon>
