@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
+using Ehb.Dijlezonen.Kassa.App.Shared.View;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Xamarin.Auth;
 using Xamarin.Forms;
