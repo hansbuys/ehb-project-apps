@@ -1,4 +1,4 @@
-﻿namespace Ehb.Dijlezonen.Kassa.App.Shared
+﻿namespace Ehb.Dijlezonen.Kassa.App.Shared.View
 {
     public partial class MainPage
     {
