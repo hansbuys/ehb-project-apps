@@ -4,7 +4,7 @@ using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Ehb.Dijlezonen.Kassa.App.Tests
+namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
 {
     public class LoginViewModelTests : ViewModelTest<LoginViewModel>
     {
@@ -12,27 +12,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests
         {
         }
 
-        [Fact]
-        public void LoginIsDisabledWithoutUserAndPassword()
+        protected void Login(LoginViewModel vm, string user, string password)
         {
-            var vm = GetSut();
+            vm.User = user;
+            vm.Password = password;
 
-            vm.User = string.Empty;
-            vm.Password = string.Empty;
-
-            vm.LoginCommand.Should().NotBeExecutable();
+            vm.LoginCommand.Click();
         }
 
-        [Fact]
-        public void LoginIsEnabledWithUserAndPassword()
-        {
-            var vm = GetSut();
-
-            vm.User = "anything";
-            vm.Password = "anything";
-
-            vm.LoginCommand.Should().BeExecutable();
-        }
+        protected override bool IsModalWindow => true;
 
         [Fact]
         public void CanLoginWithKnownUserAndPassword()
@@ -40,7 +28,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests
             const string user = "knownUser";
             const string pass = "knownPassword4KnownUser";
 
-            WhenUserIsKnown(user, pass);
+            AccountStore.WhenUserIsKnown(user, pass);
             Login(GetSut(), user, pass);
 
             AccountStore.Should().BeLoggedIn();
@@ -52,18 +40,32 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests
             const string user = "knownUser";
             const string pass = "knownPassword4KnownUser";
 
-            WhenUserIsKnown(user, pass);
+            AccountStore.WhenUserIsKnown(user, pass);
             Login(GetSut(), "unknownUser", "wrongPassword");
 
             AccountStore.Should().NotBeLoggedIn();
         }
 
-        protected void Login(LoginViewModel vm, string user, string password)
+        [Fact]
+        public void LoginIsDisabledWithoutUserAndPassword()
         {
-            vm.User = user;
-            vm.Password = password;
+            var vm = GetSut();
 
-            vm.LoginCommand.Click();
+            vm.User = string.Empty;
+            vm.Password = string.Empty;
+
+            vm.LoginCommand.Should().BeDisabled();
+        }
+
+        [Fact]
+        public void LoginIsEnabledWithUserAndPassword()
+        {
+            var vm = GetSut();
+
+            vm.User = "anything";
+            vm.Password = "anything";
+
+            vm.LoginCommand.Should().BeEnabled();
         }
     }
 }

@@ -1,26 +1,36 @@
-﻿using Ehb.Dijlezonen.Kassa.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Common.Logging;
-using Xamarin.Forms;
 using Autofac;
+using Common.Logging;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
+using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
     public class ViewFactory
     {
         /// <summary>
-        /// Key value pair of types to indicate the relation between ViewModel and View.
-        /// Key = ViewModel
-        /// Value = View
+        ///     Key value pair of types to indicate the relation between ViewModel and View.
+        ///     Key = ViewModel
+        ///     Value = View
         /// </summary>
         private readonly IDictionary<Type, Type> map;
         private readonly ILog log;
 
         public ViewFactory(Logging logging)
         {
-            this.log = logging.GetLoggerFor<ViewFactory>();
+            log = logging.GetLoggerFor<ViewFactory>();
             map = new Dictionary<Type, Type>();
+        }
+
+        protected IContainer Container { get; private set; }
+
+        public void SetResolver(IContainer container)
+        {
+            if (Container != null)
+                throw new Exception("Resolver has already been set!");
+
+            Container = container;
         }
 
         public void Register(Type view, Type viewModel)
@@ -33,10 +43,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         {
             var viewType = map[typeof(TViewModel)];
 
-            var container = IoC.Container;
-
-            var view = container.Resolve(viewType) as Page;
-            var vm = container.Resolve<TViewModel>();
+            var view = Container.Resolve(viewType) as Page;
+            var vm = Container.Resolve<TViewModel>();
 
             view.BindingContext = vm;
 

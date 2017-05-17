@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 {
-    public abstract class IoCBasedTest<T> : TestBase
+    public abstract class IoCBasedTest<T> : TestBase, IDisposable
     {
         private readonly Lazy<IContainer> container;
         private readonly ITestOutputHelper output;
@@ -44,6 +44,21 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
         protected virtual T GetSut()
         {
             return container.Value.Resolve<T>();
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && container.IsValueCreated)
+            {
+                container.Value.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

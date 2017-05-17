@@ -1,39 +1,44 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
-using System.Collections.Generic;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
     public class FakeAccountStore : IAccountStore
     {
+        public bool IsLoggedIn { get; set; }
+        public ConcurrentDictionary<string, string> KnownUsers { get; } = new ConcurrentDictionary<string, string>();
+
         Task<bool> IAccountStore.IsLoggedIn()
         {
-            return Task.FromResult(Options.IsLoggedIn);
+            return Task.FromResult(IsLoggedIn);
         }
 
         Task<bool> IAccountStore.Login(string user, string password)
         {
-            Dictionary<string, string> knownUsers = Options.KnownUsers;
-
-            bool isKnownUser = knownUsers.ContainsKey(user) && knownUsers[user] == password;
+            var isKnownUser = KnownUsers.ContainsKey(user) && KnownUsers[user] == password;
 
             if (isKnownUser)
-                Options.IsLoggedIn = true;
+                IsLoggedIn = true;
 
             return Task.FromResult(isKnownUser);
         }
 
-        internal void Initialize(TestOptions options)
+        Task IAccountStore.Logout()
         {
-            Options = options;
+            IsLoggedIn = false;
+            return Task.FromResult(0);
         }
 
-        internal TestOptions Options { get; private set; } = new TestOptions();
-        internal class TestOptions
+        public void WhenUserIsLoggedIn()
         {
-            public bool IsLoggedIn { get; set; }
-            public Dictionary<string, string> KnownUsers { get; } = new Dictionary<string, string>();
+            IsLoggedIn = true;
+        }
+
+        public void WhenUserIsKnown(string user, string pass)
+        {
+            KnownUsers.AddOrUpdate(user, s => pass, (s, s1) => throw new Exception("User is already known"));
         }
     }
 }

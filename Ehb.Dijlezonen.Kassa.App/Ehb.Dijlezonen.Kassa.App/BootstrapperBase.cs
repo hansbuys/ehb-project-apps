@@ -44,6 +44,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             log = logging.GetLoggerFor<BootstrapperBase>();
 
             var viewFactory = container.Resolve<ViewFactory>();
+            viewFactory.SetResolver(container);
             RegisterViews(viewFactory);
 
             return container;

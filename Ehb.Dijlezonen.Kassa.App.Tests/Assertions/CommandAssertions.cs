@@ -10,7 +10,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
         {
         }
 
-        internal AndConstraint<CommandAssertions> NotBeExecutable()
+        internal AndConstraint<CommandAssertions> BeDisabled()
         {
             Subject.CanExecute(null).Should().BeFalse();
 
@@ -19,7 +19,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
             return And();
         }
 
-        internal AndConstraint<CommandAssertions> BeExecutable()
+        internal AndConstraint<CommandAssertions> BeEnabled()
         {
             Subject.CanExecute(null).Should().BeTrue();
 

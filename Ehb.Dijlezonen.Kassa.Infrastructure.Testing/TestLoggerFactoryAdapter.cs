@@ -16,7 +16,9 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
         {
             base.AddEvent(loggerEvent);
 
-            output.WriteLine($"Logging: {loggerEvent.RenderedMessage}");
+            output.WriteLine($"Logger: {loggerEvent.Source.Name}");
+            output.WriteLine($"Message: {loggerEvent.RenderedMessage}");
+            output.WriteLine("");
         }
     }
 }

@@ -1,35 +1,57 @@
-﻿using Ehb.Dijlezonen.Kassa.App.Shared.Services;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using System.Threading.Tasks;
 using System.Linq;
-using Xamarin.Forms;
 using Ehb.Dijlezonen.Kassa.App.Shared;
 using Autofac;
+using Common.Logging;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
     public class FakeNavigationAdapter : INavigationAdapter
     {
-        public List<object> ModalStack { get; } = new List<object>();
-        public List<object> NavigationStack { get; } = new List<object>();
-        
+        public ConcurrentDictionary<Type, object> ModalStack { get; } = new ConcurrentDictionary<Type, object>();
+        public ConcurrentDictionary<Type, object> NavigationStack { get; } = new ConcurrentDictionary<Type, object>();
+
+        private readonly ILog log;
+
+        public FakeNavigationAdapter(Logging logging)
+        {
+            this.log = logging.GetLoggerFor<FakeNavigationAdapter>();
+        }
+
+        internal void SetResolver(IContainer container)
+        {
+            Container = container;
+        }
+
+        public IContainer Container { get; private set; }
+
         Task INavigationAdapter.NavigateTo<TViewModel>()
         {
-            NavigationStack.Add(IoC.Container.Resolve<TViewModel>());
+            log.Debug($"Navigating to {typeof(TViewModel).Name}");
+
+            NavigationStack.AddOrUpdate(typeof(TViewModel), t => Container.Resolve<TViewModel>(),
+                (t, k) => throw new Exception("You already have this view on the stack"));
             return Task.FromResult(0);
         }
 
         Task INavigationAdapter.NavigateToModal<TViewModel>()
         {
-            ModalStack.Add(IoC.Container.Resolve<TViewModel>());
+            log.Debug($"Navigating modally to {typeof(TViewModel).Name}"); 
+
+            ModalStack.AddOrUpdate(typeof(TViewModel), t => Container.Resolve<TViewModel>(), 
+                (t, k) => throw new Exception("You already have this view on the modal stack"));
             return Task.FromResult(0);
         }
 
         Task INavigationAdapter.CloseModal()
         {
-            var viewModel = ModalStack.LastOrDefault();
-            if (viewModel != null)
-                ModalStack.Remove(viewModel);
+            ModalStack.TryRemove(ModalStack.Last().Key, out object vm);
+
+            log.Debug($"Closing modal view {vm.GetType().Name}");
             return Task.FromResult(0);
         }
     }
