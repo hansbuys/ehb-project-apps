@@ -39,11 +39,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             var vm = base.GetSut();
 
             if (IsModalWindow)
-                Navigator.ModalStack.AddOrUpdate(typeof(T), t => vm,
-                    (t, v) => throw new Exception("Already added to modal stack"));
+                Navigator.ModalStack.Push(vm);
             else
-                Navigator.NavigationStack.AddOrUpdate(typeof(T), t => vm,
-                    (t, v) => throw new Exception("Already added to stack"));
+                Navigator.NavigationStack.Push(vm);
 
             return vm;
         }

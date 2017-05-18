@@ -12,8 +12,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
     public class FakeNavigationAdapter : INavigationAdapter
     {
-        public ConcurrentDictionary<Type, object> ModalStack { get; } = new ConcurrentDictionary<Type, object>();
-        public ConcurrentDictionary<Type, object> NavigationStack { get; } = new ConcurrentDictionary<Type, object>();
+        public ConcurrentStack<object> ModalStack { get; } = new ConcurrentStack<object>();
+        public ConcurrentStack<object> NavigationStack { get; } = new ConcurrentStack<object>();
 
         private readonly ILog log;
 
@@ -33,23 +33,22 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         {
             log.Debug($"Navigating to {typeof(TViewModel).Name}");
 
-            NavigationStack.AddOrUpdate(typeof(TViewModel), t => Container.Resolve<TViewModel>(),
-                (t, k) => throw new Exception("You already have this view on the stack"));
+            NavigationStack.Push(Container.Resolve<TViewModel>());
             return Task.FromResult(0);
         }
 
         Task INavigationAdapter.NavigateToModal<TViewModel>()
         {
-            log.Debug($"Navigating modally to {typeof(TViewModel).Name}"); 
+            log.Debug($"Navigating modally to {typeof(TViewModel).Name}");
 
-            ModalStack.AddOrUpdate(typeof(TViewModel), t => Container.Resolve<TViewModel>(), 
-                (t, k) => throw new Exception("You already have this view on the modal stack"));
+            ModalStack.Push(Container.Resolve<TViewModel>());
+
             return Task.FromResult(0);
         }
 
         Task INavigationAdapter.CloseModal()
         {
-            ModalStack.TryRemove(ModalStack.Last().Key, out object vm);
+            ModalStack.TryPop(out object vm);
 
             log.Debug($"Closing modal view {vm.GetType().Name}");
             return Task.FromResult(0);

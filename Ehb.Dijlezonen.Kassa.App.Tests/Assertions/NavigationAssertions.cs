@@ -14,7 +14,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
         public AndWhichConstraint<NavigatorAssertions, TViewModel> HaveNavigatedTo<TViewModel>()
             where TViewModel : class
         {
-            var vm = Subject.NavigationStack.Last().Value;
+            var vm = Subject.NavigationStack.First();
             vm.Should().BeOfType<TViewModel>($"We expected the current viewmodel to be of type {typeof(TViewModel).Name}");
 
             CheckedThat($"we have navigated to view model '{typeof(TViewModel).Name}'");
@@ -25,7 +25,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
         internal AndWhichConstraint<NavigatorAssertions, TViewModel> HaveNavigatedModallyTo<TViewModel>()
             where TViewModel : class
         {
-            var vm = Subject.ModalStack.Last().Value;
+            var vm = Subject.ModalStack.First();
             vm.Should().BeOfType<TViewModel>();
             
             CheckedThat($"we have modally navigated to view model '{typeof(TViewModel).Name}'");
@@ -35,7 +35,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 
         internal AndConstraint<NavigatorAssertions> NotHaveModal<TViewModel>()
         {
-            Subject.ModalStack.Should().NotContainKey(typeof(TViewModel), $"we expected to not have a modal view open for {typeof(TViewModel).Name}");
+            Subject.ModalStack.Should().NotContain(x => x.GetType() == typeof(TViewModel), $"we expected to not have a modal view open for {typeof(TViewModel).Name}");
 
             CheckedThat($"we don't have a modal view open for {typeof(TViewModel).Name}");
 
