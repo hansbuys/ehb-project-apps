@@ -57,10 +57,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         public async Task Login()
         {
             log.Debug("Attempting logging in");
+
             if (await auth.Login(User, Password).ConfigureAwait(false))
             {
                 log.Debug("Logged in success");
                 await navigation.CloseModal().ConfigureAwait(false);
+            }
+            else
+            {
+                log.Debug("Login failed!");
             }
         }
     }

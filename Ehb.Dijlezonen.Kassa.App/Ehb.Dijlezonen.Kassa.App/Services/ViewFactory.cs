@@ -36,7 +36,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         public void Register(Type view, Type viewModel)
         {
             map.Add(viewModel, view);
-            log.Info($"Registered '{viewModel.Name}' for '{view.Name}'");
         }
 
         public Page ResolveViewFor<TViewModel>()
