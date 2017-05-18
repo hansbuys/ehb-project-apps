@@ -48,7 +48,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         Task INavigationAdapter.CloseModal()
         {
-            ModalStack.TryPop(out object vm);
+            object vm;
+            ModalStack.TryPop(out vm);
 
             log.Debug($"Closing modal view {vm.GetType().Name}");
             return Task.FromResult(0);
