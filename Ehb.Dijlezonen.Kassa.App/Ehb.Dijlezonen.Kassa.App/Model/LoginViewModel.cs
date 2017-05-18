@@ -33,14 +33,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 
         public string User
         {
-            get => user;
-            set => Set(ref user, value, CredentialsChanged);
+            get { return user; }
+            set { Set(ref user, value, CredentialsChanged); }
         }
 
         public string Password
         {
-            get => password;
-            set => Set(ref password, value, CredentialsChanged);
+            get { return password; }
+            set { Set(ref password, value, CredentialsChanged); }
         }
 
 
