@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using Xunit.Abstractions;
@@ -7,37 +8,17 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
     public abstract class ViewModelTest<T> : IoCBasedTest<T>
     {
-        private TestBootstrapper bootstrapper;
-        protected FakeNavigationAdapter Navigator { get; private set; }
-        protected FakeAccountStore AccountStore { get; } = new FakeAccountStore();
+        private readonly TestBootstrapper bootstrapper;
 
         protected ViewModelTest(ITestOutputHelper output) : base(output)
         {
             bootstrapper = new TestBootstrapper(Logging);
         }
 
-        protected void WhenUserIsKnown(string user, string pass)
-        {
-            Options.AccountStoreOptions.KnownUsers.Add(user, pass);
-        }
+        protected FakeNavigationAdapter Navigator { get; private set; }
+        protected FakeAccountStore AccountStore { get; } = new FakeAccountStore();
 
-        protected TestOptions Options = new TestOptions();
-        protected class TestOptions
-        {
-            internal FakeAccountStore.TestOptions AccountStoreOptions { get; } = new FakeAccountStore.TestOptions();
-        }
-
-        protected void WhenLoggedIn()
-        {
-            Options.AccountStoreOptions.IsLoggedIn = true;
-        }
-
-        protected override T GetSut()
-        {
-            AccountStore.Initialize(Options.AccountStoreOptions);
-
-            return base.GetSut();
-        }
+        protected virtual bool IsModalWindow => false;
 
         protected override IContainer InitializeContainer()
         {
@@ -48,8 +29,23 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             });
 
             Navigator = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
+            Navigator?.SetResolver(container);
 
             return container;
+        }
+
+        protected override T GetSut()
+        {
+            var vm = base.GetSut();
+
+            if (IsModalWindow)
+                Navigator.ModalStack.AddOrUpdate(typeof(T), t => vm,
+                    (t, v) => throw new Exception("Already added to modal stack"));
+            else
+                Navigator.NavigationStack.AddOrUpdate(typeof(T), t => vm,
+                    (t, v) => throw new Exception("Already added to stack"));
+
+            return vm;
         }
     }
 }

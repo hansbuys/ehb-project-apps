@@ -1,29 +1,37 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Input;
+using Common.Logging;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
     public class MainPageViewModel
     {
-        private readonly INavigationAdapter navigation;
         private readonly IAccountStore auth;
+        private readonly ILog log;
+        private readonly INavigationAdapter navigation;
 
-        public MainPageViewModel(INavigationAdapter navigation, IAccountStore auth)
+        public MainPageViewModel(INavigationAdapter navigation, IAccountStore auth, Logging logging)
         {
             this.navigation = navigation;
             this.auth = auth;
+            log = logging.GetLoggerFor<MainPageViewModel>();
 
             Initialize().Wait();
         }
 
+        public string Title => "De Dijlezonen Kassa";
+
+        public string LogoutCommandText => "Uitloggen";
+        public ICommand LogoutCommand => new Command(async () => await Logout().ConfigureAwait(false));
+        public ICommand NavigateToBarcodeScannerCommand => new Command(async () => await NavigateToBarcodeScanner().ConfigureAwait(false));
+        
         private async Task Initialize()
         {
             if (!await IsLoggedIn().ConfigureAwait(false))
-            {
-                await navigation.NavigateToModal<LoginViewModel>();
-            }
+                await NavigateToLogin();
         }
 
         private Task<bool> IsLoggedIn()
@@ -31,13 +39,21 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
             return auth.IsLoggedIn();
         }
 
-        public ICommand NavigateToSecondStageCommand => new Command(async () => await NavigateToSecondStage().ConfigureAwait(false));
-        public string Title => "De Dijlezonen Kassa";
-        public string NavigateToSecondStageCommandText => "Ga naar volgende";
-
-        private Task NavigateToSecondStage()
+        private async Task Logout()
         {
-            return navigation.NavigateTo<SecondStageViewModel>();
+            log.Debug("Logging out");
+
+            await auth.Logout().ConfigureAwait(false);
+            await NavigateToLogin().ConfigureAwait(false);
+        }
+        private Task NavigateToBarcodeScanner()
+        {
+            return navigation.NavigateTo<BarcodeScannerViewModel>();
+        }
+
+        private Task NavigateToLogin()
+        {
+            return navigation.NavigateToModal<LoginViewModel>();
         }
     }
 }

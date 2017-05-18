@@ -1,10 +1,10 @@
 ﻿using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using Xunit;
 using Xunit.Abstractions;
-using Ehb.Dijlezonen.Kassa.App.Testing;
 
-namespace Ehb.Dijlezonen.Kassa.App.Tests
+namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
 {
     public class MainPageViewModelTests : ViewModelTest<MainPageViewModel>
     {
@@ -17,19 +17,19 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests
         {
             GetSut();
 
-            Navigator.Should().HaveNavigatedToModal<LoginViewModel>();
+            Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
 
         [Fact]
         public void ShouldReturnToMainPageAfterLogin()
         {
-            var user = "test";
-            var pass = "test";
-            WhenUserIsKnown(user, pass);
+            const string user = "test";
+            const string pass = "test";
+            AccountStore.WhenUserIsKnown(user, pass);
                 
             GetSut();
             
-            var loginVm = Navigator.Should().HaveNavigatedToModal<LoginViewModel>().Which;
+            var loginVm = Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
             loginVm.User = user;
             loginVm.Password = pass;
             loginVm.LoginCommand.Click();
@@ -38,13 +38,24 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests
         }
 
         [Fact]
-        public void CanNavigateToSecondStageWhenLoggedIn()
+        public void LogoutLeadsToLogin()
         {
-            WhenLoggedIn();
+            AccountStore.WhenUserIsLoggedIn();
 
-            GetSut().NavigateToSecondStageCommand.Click();
+            GetSut().LogoutCommand.Click();
 
-            Navigator.Should().HaveNavigatedTo<SecondStageViewModel>();
+            AccountStore.Should().NotBeLoggedIn();
+            Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>();
+        }
+
+        [Fact]
+        public void NavigatesToBarcodeScanner()
+        {
+            AccountStore.WhenUserIsLoggedIn();
+
+            GetSut().NavigateToBarcodeScannerCommand.Click();
+            
+            Navigator.Should().HaveNavigatedTo<BarcodeScannerViewModel>();
         }
     }
 }

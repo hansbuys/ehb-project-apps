@@ -1,8 +1,6 @@
 ﻿using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
-using Ehb.Dijlezonen.Kassa.App.Shared.View;
-using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Xamarin.Auth;
 using Xamarin.Forms;
 
@@ -14,8 +12,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new MainPage());
-            
+            MainPage = new NavigationPage();
+
             var container = bootstrapper.Initialize(c =>
             {
                 c.RegisterInstance(accountStore);
@@ -24,13 +22,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
                 c.RegisterType<AccountStoreAdapter>().As<IAccountStore>();
             });
 
-            var logging = container.Resolve<Logging>();
-            var logger = logging.GetLoggerFor<App>();
-
-            logger.Debug("Loaded IoC container, starting app...");
-
-            var viewModel = container.Resolve<MainPageViewModel>();
-            MainPage.BindingContext = viewModel;
+            var nav = container.Resolve<INavigationAdapter>();
+            nav.NavigateTo<MainPageViewModel>();
         }
 
         protected override void OnStart()

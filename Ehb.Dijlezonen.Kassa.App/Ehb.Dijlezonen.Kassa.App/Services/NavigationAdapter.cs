@@ -2,8 +2,6 @@
 using Xamarin.Forms;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Common.Logging;
-using System;
-using Autofac;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
@@ -11,8 +9,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     {
         private readonly INavigation navigation;
 
-        private ILog log;
-        private ViewFactory viewFactory;
+        private readonly ILog log;
+        private readonly ViewFactory viewFactory;
 
         public NavigationAdapter(INavigation navigation, Logging logging, ViewFactory viewFactory)
         {
@@ -23,7 +21,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public Task NavigateTo<TViewModel>()
         {
-            Page view = viewFactory.ResolveViewFor<TViewModel>();
+            var view = viewFactory.ResolveViewFor<TViewModel>();
 
             log.Info($"Navigating to {view.GetType().Name}");
 
@@ -37,7 +35,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public Task NavigateToModal<TViewModel>()
         {
-            Page view = viewFactory.ResolveViewFor<TViewModel>();
+            var view = viewFactory.ResolveViewFor<TViewModel>();
 
             log.Info($"Navigating modally to {view.GetType().Name}");
 

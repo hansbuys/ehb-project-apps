@@ -9,8 +9,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         private readonly AccountStore accountStore;
         private bool isLoggedIn;
 
-        private const string user = "test";
-        private const string password = "test";
+        private const string TestUser = "test";
+        private const string TestPassword = "test";
 
         public AccountStoreAdapter(AccountStore accountStore)
         {
@@ -24,10 +24,17 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         Task<bool> IAccountStore.Login(string user, string password)
         {
-            if (user == AccountStoreAdapter.user && password == AccountStoreAdapter.password)
-            isLoggedIn = true;
+            if (user == TestUser && password == TestPassword)
+                isLoggedIn = true;
 
             return Task.FromResult(isLoggedIn);
+        }
+
+        public Task Logout()
+        {
+            isLoggedIn = false;
+
+            return Task.FromResult(0);
         }
     }
 }

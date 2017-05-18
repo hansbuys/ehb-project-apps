@@ -7,7 +7,7 @@
         <Label Text="{Binding Title}" 
            VerticalOptions="Center" 
            HorizontalOptions="Center" />
-        <Button Text="{Binding NavigateToSecondStageCommandText}" Command="{Binding NavigateToSecondStageCommand}"></Button>
+        <Button Text="{Binding LogoutCommandText}" Command="{Binding LogoutCommand}"></Button>
     </StackLayout>
 
 </ContentPage>

@@ -6,5 +6,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     {
         Task<bool> IsLoggedIn();
         Task<bool> Login(string user, string password);
+        Task Logout();
     }
 }

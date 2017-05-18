@@ -41,6 +41,10 @@
     <Compile Include="BootstrapperBase.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="IoC.cs" />
+    <Compile Include="Model\BarcodeScannerViewModel.cs" />
+    <Compile Include="View\BarcodeScanner.xaml.cs">
+      <DependentUpon>BarcodeScanner.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
@@ -49,12 +53,8 @@
     </Compile>
     <Compile Include="Model\LoginViewModel.cs" />
     <Compile Include="Model\MainPageViewModel.cs" />
-    <Compile Include="Model\SecondStageViewModel.cs" />
     <Compile Include="Model\UserInputViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="View\SecondStage.xaml.cs">
-      <DependentUpon>SecondStage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Services\AccountStoreAdapter.cs" />
     <Compile Include="Services\IAccountStore.cs" />
     <Compile Include="Services\INavigator.cs" />
@@ -114,13 +114,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="View\SecondStage.xaml">
+    <EmbeddedResource Include="View\Login.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="View\Login.xaml">
+    <EmbeddedResource Include="View\BarcodeScanner.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
