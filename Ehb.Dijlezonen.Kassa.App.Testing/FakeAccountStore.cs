@@ -38,7 +38,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         public void WhenUserIsKnown(string user, string pass)
         {
-            KnownUsers.AddOrUpdate(user, s => pass, (s, s1) => throw new Exception("User is already known"));
+            KnownUsers.AddOrUpdate(user, s => pass, (s, s1) => { throw new Exception("User is already known"); });
         }
     }
 }
