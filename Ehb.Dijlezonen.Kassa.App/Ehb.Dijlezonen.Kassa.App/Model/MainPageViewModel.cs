@@ -26,7 +26,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 
         public string LogoutCommandText => "Uitloggen";
         public ICommand LogoutCommand => new Command(async () => await Logout().ConfigureAwait(false));
-
+        public ICommand NavigateToBarcodeScannerCommand => new Command(async () => await NavigateToBarcodeScanner().ConfigureAwait(false));
+        
         private async Task Initialize()
         {
             if (!await IsLoggedIn().ConfigureAwait(false))
@@ -44,6 +45,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 
             await auth.Logout().ConfigureAwait(false);
             await NavigateToLogin().ConfigureAwait(false);
+        }
+        private Task NavigateToBarcodeScanner()
+        {
+            return navigation.NavigateTo<BarcodeScannerViewModel>();
         }
 
         private Task NavigateToLogin()

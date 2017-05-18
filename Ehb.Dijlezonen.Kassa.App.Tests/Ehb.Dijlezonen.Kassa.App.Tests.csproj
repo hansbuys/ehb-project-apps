@@ -100,6 +100,7 @@
     <Compile Include="Assertions\CommandAssertions.cs" />
     <Compile Include="Assertions\NavigationAssertions.cs" />
     <Compile Include="Assertions\PageAssertions.cs" />
+    <Compile Include="BarcodeScanner\BarcodeScannerViewModelTests.cs" />
     <Compile Include="Login\LoginViewModelTests.cs" />
     <Compile Include="MainPage\MainPageViewModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

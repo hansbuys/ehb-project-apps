@@ -15,7 +15,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
             where TViewModel : class
         {
             var vm = Subject.NavigationStack.Last().Value;
-            vm.Should().BeOfType<TViewModel>();
+            vm.Should().BeOfType<TViewModel>($"We expected the current viewmodel to be of type {typeof(TViewModel).Name}");
 
             CheckedThat($"we have navigated to view model '{typeof(TViewModel).Name}'");
 

@@ -47,5 +47,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
             AccountStore.Should().NotBeLoggedIn();
             Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
+
+        [Fact]
+        public void NavigatesToBarcodeScanner()
+        {
+            AccountStore.WhenUserIsLoggedIn();
+
+            GetSut().NavigateToBarcodeScannerCommand.Click();
+            
+            Navigator.Should().HaveNavigatedTo<BarcodeScannerViewModel>();
+        }
     }
 }
