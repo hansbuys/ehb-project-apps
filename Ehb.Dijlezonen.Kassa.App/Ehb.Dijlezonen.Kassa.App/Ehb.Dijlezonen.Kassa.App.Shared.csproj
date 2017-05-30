@@ -40,7 +40,6 @@
     </Compile>
     <Compile Include="BootstrapperBase.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="IoC.cs" />
     <Compile Include="Model\BarcodeScannerViewModel.cs" />
     <Compile Include="View\BarcodeScanner.xaml.cs">
       <DependentUpon>BarcodeScanner.xaml</DependentUpon>
