@@ -7,7 +7,8 @@ using Xunit.Abstractions;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
-    public abstract class ViewModelTest<T> : IoCBasedTest<T>
+    public abstract class ViewModelTest<TViewModel> : IoCBasedTest<TViewModel>
+        where TViewModel : class
     {
         protected ViewModelTest(ITestOutputHelper output) : base(output)
         {
@@ -36,13 +37,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             builder.RegisterInstance(AccountStore).As<IAccountStore>();
         }
 
-        protected override Task<T> GetSut()
+        protected override Task<TViewModel> GetSut()
         {
             var nav = (INavigationAdapter) Navigator;
 
             return IsModalWindow ? 
-                nav.NavigateToModal<T>() : 
-                nav.NavigateTo<T>();
+                nav.NavigateToModal<TViewModel>() : 
+                nav.NavigateTo<TViewModel>();
         }
     }
 }

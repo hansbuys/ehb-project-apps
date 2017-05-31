@@ -6,6 +6,7 @@ using Xunit.Abstractions;
 namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 {
     public abstract class IoCBasedTest<T> : TestBase, IDisposable
+        where T : class
     {
         private readonly IContainer container;
         private readonly ITestOutputHelper output;
