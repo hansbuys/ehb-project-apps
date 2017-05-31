@@ -1,4 +1,5 @@
-﻿using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+﻿using System.Threading.Tasks;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using Xunit;
@@ -38,22 +39,22 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         }
 
         [Fact]
-        public void LogoutLeadsToLogin()
+        public async Task LogoutLeadsToLogin()
         {
             AccountStore.WhenUserIsLoggedIn();
 
-            GetSut().LogoutCommand.Click();
+            (await GetSut()).LogoutCommand.Click();
 
             AccountStore.Should().NotBeLoggedIn();
             Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
 
         [Fact]
-        public void NavigatesToBarcodeScanner()
+        public async Task NavigatesToBarcodeScanner()
         {
             AccountStore.WhenUserIsLoggedIn();
 
-            GetSut().NavigateToBarcodeScannerCommand.Click();
+            (await GetSut()).NavigateToBarcodeScannerCommand.Click();
             
             Navigator.Should().HaveNavigatedTo<BarcodeScannerViewModel>();
         }

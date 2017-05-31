@@ -29,21 +29,24 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         public IContainer Container { get; private set; }
 
-        Task INavigationAdapter.NavigateTo<TViewModel>()
+        Task<TViewModel> INavigationAdapter.NavigateTo<TViewModel>()
         {
             log.Debug($"Navigating to {typeof(TViewModel).Name}");
 
-            NavigationStack.Push(Container.Resolve<TViewModel>());
-            return Task.FromResult(0);
+            var viewModel = Container.Resolve<TViewModel>();
+            NavigationStack.Push(viewModel);
+
+            return Task.FromResult(viewModel);
         }
 
-        Task INavigationAdapter.NavigateToModal<TViewModel>()
+        Task<TViewModel> INavigationAdapter.NavigateToModal<TViewModel>()
         {
             log.Debug($"Navigating modally to {typeof(TViewModel).Name}");
 
-            ModalStack.Push(Container.Resolve<TViewModel>());
+            var viewModel = Container.Resolve<TViewModel>();
+            ModalStack.Push(viewModel);
 
-            return Task.FromResult(0);
+            return Task.FromResult(viewModel);
         }
 
         Task INavigationAdapter.CloseModal()

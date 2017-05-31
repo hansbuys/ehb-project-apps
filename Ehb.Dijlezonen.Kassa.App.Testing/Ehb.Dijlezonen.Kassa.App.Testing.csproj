@@ -74,7 +74,6 @@
     <Compile Include="FakeAccountStore.cs" />
     <Compile Include="FakeNavigationAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestBootstrapper.cs" />
     <Compile Include="ViewModelTest.cs" />
   </ItemGroup>
   <ItemGroup>

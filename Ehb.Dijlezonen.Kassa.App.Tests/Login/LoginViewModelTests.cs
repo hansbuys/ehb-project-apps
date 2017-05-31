@@ -1,4 +1,5 @@
-﻿using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+﻿using System.Threading.Tasks;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using Xunit;
@@ -23,33 +24,33 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
         protected override bool IsModalWindow => true;
 
         [Fact]
-        public void CanLoginWithKnownUserAndPassword()
+        public async Task CanLoginWithKnownUserAndPassword()
         {
             const string user = "knownUser";
             const string pass = "knownPassword4KnownUser";
 
             AccountStore.WhenUserIsKnown(user, pass);
-            Login(GetSut(), user, pass);
+            Login(await GetSut(), user, pass);
 
             AccountStore.Should().BeLoggedIn();
         }
 
         [Fact]
-        public void CannotLoginWithUnknownUserAndPassword()
+        public async Task CannotLoginWithUnknownUserAndPassword()
         {
             const string user = "knownUser";
             const string pass = "knownPassword4KnownUser";
 
             AccountStore.WhenUserIsKnown(user, pass);
-            Login(GetSut(), "unknownUser", "wrongPassword");
+            Login(await GetSut(), "unknownUser", "wrongPassword");
 
             AccountStore.Should().NotBeLoggedIn();
         }
 
         [Fact]
-        public void LoginIsDisabledWithoutUserAndPassword()
+        public async Task LoginIsDisabledWithoutUserAndPassword()
         {
-            var vm = GetSut();
+            var vm = await GetSut();
 
             vm.User = string.Empty;
             vm.Password = string.Empty;
@@ -58,9 +59,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
         }
 
         [Fact]
-        public void LoginIsEnabledWithUserAndPassword()
+        public async Task LoginIsEnabledWithUserAndPassword()
         {
-            var vm = GetSut();
+            var vm = await GetSut();
 
             vm.User = "anything";
             vm.Password = "anything";

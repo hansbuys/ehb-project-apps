@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
@@ -8,11 +9,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
     public abstract class ViewModelTest<T> : IoCBasedTest<T>
     {
-        private readonly TestBootstrapper bootstrapper;
-
         protected ViewModelTest(ITestOutputHelper output) : base(output)
         {
-            bootstrapper = new TestBootstrapper(Logging);
         }
 
         protected FakeNavigationAdapter Navigator { get; private set; }
@@ -22,28 +20,29 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         protected override IContainer InitializeContainer()
         {
-            var container = bootstrapper.Initialize(builder =>
-            {
-                builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
-                builder.RegisterInstance(AccountStore).As<IAccountStore>();
-            });
+            var container = base.InitializeContainer();
 
             Navigator = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
-            Navigator?.SetResolver(container);
+            if (Navigator == null)
+                throw new Exception("No navigation adapter implemented!");
+            Navigator.SetResolver(container);
 
             return container;
         }
 
-        protected override T GetSut()
+        protected override void Configure(ContainerBuilder builder)
         {
-            var vm = base.GetSut();
+            builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
+            builder.RegisterInstance(AccountStore).As<IAccountStore>();
+        }
 
-            if (IsModalWindow)
-                Navigator.ModalStack.Push(vm);
-            else
-                Navigator.NavigationStack.Push(vm);
+        protected override Task<T> GetSut()
+        {
+            var nav = (INavigationAdapter) Navigator;
 
-            return vm;
+            return IsModalWindow ? 
+                nav.NavigateToModal<T>() : 
+                nav.NavigateTo<T>();
         }
     }
 }

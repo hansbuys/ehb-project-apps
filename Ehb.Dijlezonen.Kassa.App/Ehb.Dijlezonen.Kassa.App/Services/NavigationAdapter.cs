@@ -19,13 +19,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.viewFactory = viewFactory;
         }
 
-        public Task NavigateTo<TViewModel>()
+        public async Task<TViewModel> NavigateTo<TViewModel>()
         {
             var view = viewFactory.ResolveViewFor<TViewModel>();
 
             log.Info($"Navigating to {view.GetType().Name}");
 
-            return navigation.PushAsync(view);
+            await navigation.PushAsync(view);
+
+            return (TViewModel)view.BindingContext;
         }
 
         public Task CloseModal()
@@ -33,13 +35,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             return navigation.PopModalAsync();
         }
 
-        public Task NavigateToModal<TViewModel>()
+        public async Task<TViewModel> NavigateToModal<TViewModel>()
         {
             var view = viewFactory.ResolveViewFor<TViewModel>();
 
             log.Info($"Navigating modally to {view.GetType().Name}");
 
-            return navigation.PushModalAsync(view);
+            await navigation.PushModalAsync(view);
+
+            return (TViewModel)view.BindingContext;
         }
     }
 }
