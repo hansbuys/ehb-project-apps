@@ -26,13 +26,18 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
         [Fact]
         public async Task CanLoginWithKnownUserAndPassword()
         {
+            await LoginHappyPath();
+
+            AccountStore.Should().BeLoggedIn();
+        }
+
+        private async Task LoginHappyPath()
+        {
             const string user = "knownUser";
             const string pass = "knownPassword4KnownUser";
 
             AccountStore.WhenUserIsKnown(user, pass);
             Login(await GetSut(), user, pass);
-
-            AccountStore.Should().BeLoggedIn();
         }
 
         [Fact]
