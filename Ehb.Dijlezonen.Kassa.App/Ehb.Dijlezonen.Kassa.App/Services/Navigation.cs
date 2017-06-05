@@ -2,9 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
-using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 
-namespace Ehb.Dijlezonen.Kassa.App.Shared
+namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
     public class Navigation : IDisposable
     {
