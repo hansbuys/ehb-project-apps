@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Threading.Tasks;
+using Autofac;
 using Common.Logging;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
@@ -45,7 +46,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             log.Debug("Starting application.");
 
             var nav = container.Resolve<Navigation>();
-            nav.NavigateTo<MainPageViewModel>().GetAwaiter().GetResult();
+            Task.Run(() => nav.NavigateTo<MainPageViewModel>());
         }
 
         protected override void OnSleep()
