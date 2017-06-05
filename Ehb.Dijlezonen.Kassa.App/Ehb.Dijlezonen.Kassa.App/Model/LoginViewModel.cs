@@ -20,7 +20,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
             this.navigation = navigation;
             log = logging.GetLoggerFor<LoginViewModel>();
 
-            LoginCommand = new Command(async () => await Login().ConfigureAwait(false), CanLogin);
+            LoginCommand = new Command(async () => await Login(), CanLogin);
         }
 
         public string Title => "Log in aub.";
@@ -58,10 +58,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         {
             log.Debug("Attempting logging in");
 
-            if (await auth.Login(User, Password).ConfigureAwait(false))
+            if (await auth.Login(User, Password))
             {
                 log.Debug("Logged in success");
-                await navigation.CloseModal().ConfigureAwait(false);
+                await navigation.CloseModal();
             }
             else
             {
