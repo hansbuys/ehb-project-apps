@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using ModernHttpClient;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
@@ -16,14 +17,17 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         async Task<bool> IAccountStore.Login(string user, string password)
         {
-            var httpClient = new HttpClient();
-            var result = await httpClient.PostAsync("https://localhost:44308/api/token", new FormUrlEncodedContent(new []
+            using (var httpClient = new HttpClient(new NativeMessageHandler()))
             {
-                new KeyValuePair<string, string>("username", user), 
-                new KeyValuePair<string, string>("password", password) 
-            }));
+                var result = await httpClient.PostAsync("http://localhost:44307/api/token", new FormUrlEncodedContent(
+                    new[]
+                    {
+                        new KeyValuePair<string, string>("username", user),
+                        new KeyValuePair<string, string>("password", password)
+                    }));
 
-            return result.IsSuccessStatusCode;
+                return result.IsSuccessStatusCode;
+            }
         }
 
         public Task Logout()

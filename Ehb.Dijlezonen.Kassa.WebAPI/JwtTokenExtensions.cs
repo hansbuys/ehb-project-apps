@@ -3,28 +3,15 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Ehb.Dijlezonen.Kassa.WebAPI
 {
-    public static class Extensions
+    public static class JwtTokenExtensions
     {
-        public static IContainer AddAutofac(this IServiceCollection services)
-        {
-            var bootstrapper = new ApiBootstrapper();
-            return bootstrapper.Initialize(x =>
-            {
-                x.Populate(services);
-            });
-        }
-
-
         public static void SetupJwtBearerAuth(this IApplicationBuilder app, IConfigurationSection configuration)
         {
             var signingKey =

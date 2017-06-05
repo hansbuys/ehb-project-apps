@@ -3,7 +3,6 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -28,10 +27,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new RequireHttpsAttribute());
-            });
+            services.ConfigureWithMvc(Configuration.GetSection("MvcOptions"));
 
             Container = services.AddAutofac();
 
