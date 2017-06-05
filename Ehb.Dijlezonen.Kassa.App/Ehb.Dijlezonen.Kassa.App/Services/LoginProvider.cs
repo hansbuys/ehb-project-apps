@@ -36,11 +36,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
                         new KeyValuePair<string, string>("password", password)
                     })).ConfigureAwait(false);
 
-                var tokenAsJson = await result.Content.ReadAsStringAsync();
-                dynamic token = JsonConvert.DeserializeObject(tokenAsJson);
-
                 if (result.IsSuccessStatusCode)
                 {
+                    var tokenAsJson = await result.Content.ReadAsStringAsync();
+                    dynamic token = JsonConvert.DeserializeObject(tokenAsJson);
+
                     var accessToken = (string)token.access_token;
 
                     Token = new Token(
@@ -72,7 +72,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         private bool IsLoggedIn()
         {
-            return Token.IsValid;
+            return Token != null && Token.IsValid;
         }
     }
 }

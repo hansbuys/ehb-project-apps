@@ -1,5 +1,5 @@
-﻿using System;
-using Autofac;
+﻿using Autofac;
+using Common.Logging;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
@@ -11,6 +11,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
     {
         private IContainer container;
         private readonly Bootstrapper bootstrapper;
+        private readonly ILog log;
         
         public App(Bootstrapper bootstrapper)
         {
@@ -20,6 +21,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             this.bootstrapper = bootstrapper;
 
             InitializeContainer();
+
+            var logging = container.Resolve<Logging>();
+            log = logging.GetLoggerFor<App>();
+
+            log.Debug("Container has been initialized.");
         }
 
         private void InitializeContainer()
@@ -36,16 +42,20 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
 
         protected override void OnStart()
         {
+            log.Debug("Starting application.");
+
             var nav = container.Resolve<Navigation>();
             nav.NavigateTo<MainPageViewModel>().GetAwaiter().GetResult();
         }
 
         protected override void OnSleep()
         {
+            log.Debug("Application going to sleep.");
         }
 
         protected override void OnResume()
         {
+            log.Debug("Application resuming.");
         }
     }
 }
