@@ -5,27 +5,27 @@ using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
-    public class FakeAccountStore : IAccountStore
+    public class FakeLoginProvider : ILoginProvider
     {
         public bool IsLoggedIn { get; set; }
         public ConcurrentDictionary<string, string> KnownUsers { get; } = new ConcurrentDictionary<string, string>();
 
-        Task<bool> IAccountStore.IsLoggedIn()
+        Task<bool> ILoginProvider.IsLoggedIn()
         {
             return Task.FromResult(IsLoggedIn);
         }
 
-        Task<bool> IAccountStore.Login(string user, string password)
+        Task ILoginProvider.Login(string user, string password)
         {
             var isKnownUser = KnownUsers.ContainsKey(user) && KnownUsers[user] == password;
 
             if (isKnownUser)
                 IsLoggedIn = true;
 
-            return Task.FromResult(isKnownUser);
+            return Task.FromResult(0);
         }
 
-        Task IAccountStore.Logout()
+        Task ILoginProvider.Logout()
         {
             IsLoggedIn = false;
             return Task.FromResult(0);

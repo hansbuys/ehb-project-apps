@@ -26,7 +26,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             const string user = "test";
             const string pass = "test";
-            AccountStore.WhenUserIsKnown(user, pass);
+            LoginProvider.WhenUserIsKnown(user, pass);
                 
             GetSut();
             
@@ -41,18 +41,18 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         [Fact]
         public async Task LogoutLeadsToLogin()
         {
-            AccountStore.WhenUserIsLoggedIn();
+            LoginProvider.WhenUserIsLoggedIn();
 
             (await GetSut()).LogoutCommand.Click();
 
-            AccountStore.Should().NotBeLoggedIn();
+            LoginProvider.Should().NotBeLoggedIn();
             Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
 
         [Fact]
         public async Task NavigatesToBarcodeScanner()
         {
-            AccountStore.WhenUserIsLoggedIn();
+            LoginProvider.WhenUserIsLoggedIn();
 
             (await GetSut()).NavigateToBarcodeScannerCommand.Click();
             

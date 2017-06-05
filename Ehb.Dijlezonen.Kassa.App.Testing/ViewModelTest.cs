@@ -15,7 +15,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         }
 
         protected FakeNavigationAdapter Navigator { get; private set; }
-        protected FakeAccountStore AccountStore { get; } = new FakeAccountStore();
+        protected FakeLoginProvider LoginProvider { get; } = new FakeLoginProvider();
 
         protected virtual bool IsModalWindow => false;
 
@@ -34,7 +34,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         protected override void Configure(ContainerBuilder builder)
         {
             builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
-            builder.RegisterInstance(AccountStore).As<IAccountStore>();
+            builder.RegisterInstance(LoginProvider).As<ILoginProvider>();
         }
 
         protected override Task<TViewModel> GetSut()

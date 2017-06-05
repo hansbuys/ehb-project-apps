@@ -18,7 +18,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             {
                 c.RegisterInstance(MainPage.Navigation).As<INavigation>();
                 c.RegisterType<NavigationAdapter>().As<INavigationAdapter>();
-                c.RegisterType<AccountStoreAdapter>().As<IAccountStore>();
+
+                c.RegisterType<BackendConfiguration>().As<IBackendConfiguration>();
+                c.RegisterType<LoginProvider>().As<ILoginProvider>().SingleInstance();
             });
 
             var nav = container.Resolve<INavigationAdapter>();

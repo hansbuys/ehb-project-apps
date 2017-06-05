@@ -9,11 +9,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
     public class MainPageViewModel
     {
-        private readonly IAccountStore auth;
+        private readonly ILoginProvider auth;
         private readonly ILog log;
         private readonly INavigationAdapter navigation;
 
-        public MainPageViewModel(INavigationAdapter navigation, IAccountStore auth, Logging logging)
+        public MainPageViewModel(INavigationAdapter navigation, ILoginProvider auth, Logging logging)
         {
             this.navigation = navigation;
             this.auth = auth;

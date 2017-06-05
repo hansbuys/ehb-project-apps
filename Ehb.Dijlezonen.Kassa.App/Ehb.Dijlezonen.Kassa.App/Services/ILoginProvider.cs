@@ -2,10 +2,10 @@
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
-    public interface IAccountStore
+    public interface ILoginProvider
     {
         Task<bool> IsLoggedIn();
-        Task<bool> Login(string user, string password);
+        Task Login(string user, string password);
         Task Logout();
     }
 }

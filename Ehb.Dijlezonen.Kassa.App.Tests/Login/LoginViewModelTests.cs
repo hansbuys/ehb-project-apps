@@ -28,7 +28,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
         {
             await LoginHappyPath();
 
-            AccountStore.Should().BeLoggedIn();
+            LoginProvider.Should().BeLoggedIn();
         }
 
         private async Task LoginHappyPath()
@@ -36,7 +36,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
             const string user = "knownUser";
             const string pass = "knownPassword4KnownUser";
 
-            AccountStore.WhenUserIsKnown(user, pass);
+            LoginProvider.WhenUserIsKnown(user, pass);
             Login(await GetSut(), user, pass);
         }
 
@@ -46,10 +46,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
             const string user = "knownUser";
             const string pass = "knownPassword4KnownUser";
 
-            AccountStore.WhenUserIsKnown(user, pass);
+            LoginProvider.WhenUserIsKnown(user, pass);
             Login(await GetSut(), "unknownUser", "wrongPassword");
 
-            AccountStore.Should().NotBeLoggedIn();
+            LoginProvider.Should().NotBeLoggedIn();
         }
 
         [Fact]

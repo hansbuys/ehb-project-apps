@@ -98,7 +98,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Assertions\AccountStoreAssertions.cs" />
+    <Compile Include="Assertions\LoginProviderAssertions.cs" />
     <Compile Include="Assertions\AssertionProvider.cs" />
     <Compile Include="Assertions\CommandAssertions.cs" />
     <Compile Include="Assertions\NavigationAssertions.cs" />

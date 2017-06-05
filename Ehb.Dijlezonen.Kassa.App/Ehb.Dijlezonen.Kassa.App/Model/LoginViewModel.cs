@@ -8,13 +8,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
     public class LoginViewModel : UserInputViewModelBase
     {
-        private readonly IAccountStore auth;
+        private readonly ILoginProvider auth;
         private readonly ILog log;
         private readonly INavigationAdapter navigation;
         private string password;
         private string user;
 
-        public LoginViewModel(IAccountStore auth, INavigationAdapter navigation, Logging logging)
+        public LoginViewModel(ILoginProvider auth, INavigationAdapter navigation, Logging logging)
         {
             this.auth = auth;
             this.navigation = navigation;
@@ -58,7 +58,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         {
             log.Debug("Attempting logging in");
 
-            if (await auth.Login(User, Password))
+            await auth.Login(User, Password);
+
+            if (await auth.IsLoggedIn())
             {
                 log.Debug("Logged in success");
                 await navigation.CloseModal();
