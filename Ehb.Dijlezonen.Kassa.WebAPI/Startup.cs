@@ -29,19 +29,29 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
         {
             services.ConfigureWithMvc(Configuration.GetSection("MvcOptions"));
 
-            Container = services.AddAutofac();
+            Container = services.SetupAutofac(builder =>
+            {
+                if (Configuration.GetSection("TokenAuthentication").GetSection("UseFakeCredentials").Value == "True")
+                {
+                    builder.RegisterType<FakeIdentityResolver>().As<IIdentityResolver>();
+                }
+                else
+                {
+                    builder.RegisterType<IdentityResolver>().As<IIdentityResolver>();
+                }
+            });
 
             return new AutofacServiceProvider(Container);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
-            IApplicationLifetime appLifetime)
+            IApplicationLifetime appLifetime, IIdentityResolver resolver)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.SetupJwtBearerAuth(Configuration.GetSection("TokenAuthentication"));
+            app.SetupJwtBearerAuth(Configuration.GetSection("TokenAuthentication"), resolver);
 
             app.UseMvc();
             appLifetime.ApplicationStopped.Register(() => this.Container.Dispose());

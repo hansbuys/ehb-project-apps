@@ -12,7 +12,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
 {
     public static class JwtTokenExtensions
     {
-        public static void SetupJwtBearerAuth(this IApplicationBuilder app, IConfigurationSection configuration)
+        public static void SetupJwtBearerAuth(this IApplicationBuilder app, IConfigurationSection configuration, IIdentityResolver identityResolver)
         {
             var signingKey =
                 new SymmetricSecurityKey(
@@ -44,22 +44,15 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
                 Audience = configuration.GetSection("Audience").Value,
                 Issuer = configuration.GetSection("Issuer").Value,
                 SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
-                IdentityResolver = GetIdentity
+                IdentityResolver = identityResolver.GetIdentity
             };
 
             app.UseMiddleware<TokenProviderMiddleware>(Options.Create(tokenProviderOptions));
         }
+    }
 
-        private static Task<ClaimsIdentity> GetIdentity(string username, string password)
-        {
-            // DEMO CODE, DON NOT USE IN PRODUCTION!!!
-            if (username == "TEST" && password == "TEST123")
-            {
-                return Task.FromResult(new ClaimsIdentity(new GenericIdentity(username, "Token"), new Claim[] { }));
-            }
-
-            // Account doesn't exists
-            return Task.FromResult<ClaimsIdentity>(null);
-        }
+    public interface IIdentityResolver
+    {
+        Task<ClaimsIdentity> GetIdentity(string username, string password);
     }
 }

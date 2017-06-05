@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Ehb.Dijlezonen.Kassa.WebAPI
 {
     // source: https://dev.to/samueleresca/developing-token-authentication-using-aspnet-core
-    internal class TokenProviderOptions
+    public class TokenProviderOptions
     {
         /// <summary>
         /// The relative request path to listen on.

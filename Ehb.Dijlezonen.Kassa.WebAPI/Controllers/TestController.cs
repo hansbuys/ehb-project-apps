@@ -16,13 +16,21 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Controllers
             this.logger = logger;
         }
 
-
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
             logger.LogDebug("Getting values");
             return new[] {"value1", "value2"};
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Route("secure-get")]
+        public IEnumerable<string> SecureGet()
+        {
+            logger.LogDebug("Getting super secret admin values");
+            return new[] { "admin value1", "admin value2" };
         }
     }
 }
