@@ -10,22 +10,19 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     {
         private readonly IBackendConfiguration config;
 
-        private string Token { get; set; }
-        private DateTime TokenExpiration { get; set; }
-
         public LoginProvider(IBackendConfiguration config)
         {
             this.config = config;
         }
 
+        public event EventHandler LoggedIn;
+        private Token Token { get; set; }
+
+        Token ILoginProvider.Token => Token;
+
         Task<bool> ILoginProvider.IsLoggedIn()
         {
             return Task.FromResult(IsLoggedIn());
-        }
-
-        private bool IsLoggedIn()
-        {
-            return !string.IsNullOrEmpty(Token) && TokenExpiration > DateTime.UtcNow;
         }
 
         async Task ILoginProvider.Login(string user, string password)
@@ -40,24 +37,42 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
                     })).ConfigureAwait(false);
 
                 var tokenAsJson = await result.Content.ReadAsStringAsync();
-
-                dynamic tokenAsObject = JsonConvert.DeserializeObject(tokenAsJson);
+                dynamic token = JsonConvert.DeserializeObject(tokenAsJson);
 
                 if (result.IsSuccessStatusCode)
                 {
-                    Token = tokenAsObject.access_token;
-                    int tokenExpirationInSeconds = tokenAsObject.expires_in;
-                    TokenExpiration = DateTime.UtcNow.AddSeconds(tokenExpirationInSeconds);
+                    var accessToken = (string)token.access_token;
+
+                    Token = new Token(
+                        accessToken, 
+                        DateTime.UtcNow.AddSeconds((int) token.expires_in), 
+                        IsAdminToken(accessToken));
+
+
+                    LoggedIn?.Invoke(null, EventArgs.Empty);
                 }
             }
         }
 
-        public Task Logout()
+        private bool IsAdminToken(string token)
         {
-            TokenExpiration = DateTime.MinValue;
-            Token = "";
+            return false;
+        }
+
+        Task ILoginProvider.Logout()
+        {
+            Token = null;
+
+            LoggedOut?.Invoke(null, EventArgs.Empty);
 
             return Task.FromResult(0);
+        }
+
+        public event EventHandler LoggedOut;
+
+        private bool IsLoggedIn()
+        {
+            return Token.IsValid;
         }
     }
 }

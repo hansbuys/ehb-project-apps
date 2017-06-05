@@ -2,6 +2,7 @@
 using Xamarin.Forms;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Common.Logging;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Autofac;
+using Ehb.Dijlezonen.Kassa.App.Shared;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using Xunit.Abstractions;
@@ -14,8 +15,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         {
         }
 
-        protected FakeNavigationAdapter Navigator { get; private set; }
+        protected FakeNavigationAdapter NavigationAdapter { get; private set; }
         protected FakeLoginProvider LoginProvider { get; } = new FakeLoginProvider();
+
+        private Navigation navigation;
 
         protected virtual bool IsModalWindow => false;
 
@@ -23,10 +26,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         {
             var container = base.InitializeContainer();
 
-            Navigator = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
-            if (Navigator == null)
+            NavigationAdapter = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
+            if (NavigationAdapter == null)
                 throw new Exception("No navigation adapter implemented!");
-            Navigator.SetResolver(container);
+            NavigationAdapter.SetResolver(container);
+
+            navigation = container.Resolve<Navigation>();
 
             return container;
         }
@@ -39,11 +44,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         protected override Task<TViewModel> GetSut()
         {
-            var nav = (INavigationAdapter) Navigator;
-
-            return IsModalWindow ? 
-                nav.NavigateToModal<TViewModel>() : 
-                nav.NavigateTo<TViewModel>();
+            return IsModalWindow ?
+                navigation.NavigateToModal<TViewModel>() :
+                navigation.NavigateTo<TViewModel>();
         }
     }
 }

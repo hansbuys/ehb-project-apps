@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
@@ -8,13 +9,22 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
 {
     public partial class App
     {
+        private IContainer container;
+        private readonly Bootstrapper bootstrapper;
+        
         public App(Bootstrapper bootstrapper)
         {
             InitializeComponent();
 
             MainPage = new NavigationPage();
+            this.bootstrapper = bootstrapper;
 
-            var container = bootstrapper.Initialize(c =>
+            InitializeContainer();
+        }
+
+        private void InitializeContainer()
+        {
+            container = bootstrapper.Initialize(c =>
             {
                 c.RegisterInstance(MainPage.Navigation).As<INavigation>();
                 c.RegisterType<NavigationAdapter>().As<INavigationAdapter>();
@@ -22,24 +32,20 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
                 c.RegisterType<BackendConfiguration>().As<IBackendConfiguration>();
                 c.RegisterType<LoginProvider>().As<ILoginProvider>().SingleInstance();
             });
-
-            var nav = container.Resolve<INavigationAdapter>();
-            nav.NavigateTo<MainPageViewModel>();
         }
 
         protected override void OnStart()
         {
-            // Handle when your app starts
+            var nav = container.Resolve<Navigation>();
+            nav.NavigateTo<MainPageViewModel>().GetAwaiter().GetResult();
         }
 
         protected override void OnSleep()
         {
-            // Handle when your app sleeps
         }
 
         protected override void OnResume()
         {
-            // Handle when your app resumes
         }
     }
 }

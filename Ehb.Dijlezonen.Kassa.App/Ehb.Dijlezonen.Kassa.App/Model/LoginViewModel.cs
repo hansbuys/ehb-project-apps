@@ -6,7 +6,7 @@ using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
-    public class LoginViewModel : UserInputViewModelBase
+    public class LoginViewModel : PropertyChangedViewModelBase
     {
         private readonly ILoginProvider auth;
         private readonly ILog log;

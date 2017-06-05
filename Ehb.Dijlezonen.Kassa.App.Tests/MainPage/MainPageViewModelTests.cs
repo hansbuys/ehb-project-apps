@@ -18,7 +18,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             GetSut();
 
-            Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>();
+            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
 
         [Fact]
@@ -30,12 +30,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
                 
             GetSut();
             
-            var loginVm = Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
+            var loginVm = NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
             loginVm.User = user;
             loginVm.Password = pass;
             loginVm.LoginCommand.Click();
 
-            Navigator.Should().NotHaveModal<LoginViewModel>();
+            NavigationAdapter.Should().NotHaveModal<LoginViewModel>();
         }
 
         [Fact]
@@ -46,17 +46,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
             (await GetSut()).LogoutCommand.Click();
 
             LoginProvider.Should().NotBeLoggedIn();
-            Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>();
-        }
-
-        [Fact]
-        public async Task NavigatesToBarcodeScanner()
-        {
-            LoginProvider.WhenUserIsLoggedIn();
-
-            (await GetSut()).NavigateToBarcodeScannerCommand.Click();
-            
-            Navigator.Should().HaveNavigatedTo<BarcodeScannerViewModel>();
+            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
     }
 }

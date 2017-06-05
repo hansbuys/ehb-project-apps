@@ -20,7 +20,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             var isKnownUser = KnownUsers.ContainsKey(user) && KnownUsers[user] == password;
 
             if (isKnownUser)
-                IsLoggedIn = true;
+            {
+                WhenUserIsLoggedIn();
+            }
 
             return Task.FromResult(0);
         }
@@ -28,17 +30,34 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         Task ILoginProvider.Logout()
         {
             IsLoggedIn = false;
+            OnLoggedOut();
             return Task.FromResult(0);
         }
 
+        public event EventHandler LoggedOut;
+        public event EventHandler LoggedIn;
+
+        public Token Token => null;
+
         public void WhenUserIsLoggedIn()
         {
+            OnLoggedIn();
             IsLoggedIn = true;
         }
 
         public void WhenUserIsKnown(string user, string pass)
         {
             KnownUsers.AddOrUpdate(user, s => pass, (s, s1) => { throw new Exception("User is already known"); });
+        }
+
+        protected virtual void OnLoggedOut()
+        {
+            LoggedOut?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnLoggedIn()
+        {
+            LoggedIn?.Invoke(this, EventArgs.Empty);
         }
     }
 }
