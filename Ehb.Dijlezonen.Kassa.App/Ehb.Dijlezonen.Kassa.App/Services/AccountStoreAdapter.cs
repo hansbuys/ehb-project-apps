@@ -1,33 +1,29 @@
-﻿using System.Threading.Tasks;
-using Xamarin.Auth;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
     //TODO: implement this properly please
     public class AccountStoreAdapter : IAccountStore
     {
-        private readonly AccountStore accountStore;
         private bool isLoggedIn;
-
-        private const string TestUser = "test";
-        private const string TestPassword = "test";
-
-        public AccountStoreAdapter(AccountStore accountStore)
-        {
-            this.accountStore = accountStore;
-        }
 
         Task<bool> IAccountStore.IsLoggedIn()
         {
             return Task.FromResult(isLoggedIn);
         }
 
-        Task<bool> IAccountStore.Login(string user, string password)
+        async Task<bool> IAccountStore.Login(string user, string password)
         {
-            if (user == TestUser && password == TestPassword)
-                isLoggedIn = true;
+            var httpClient = new HttpClient();
+            var result = await httpClient.PostAsync("https://localhost:44308/api/token", new FormUrlEncodedContent(new []
+            {
+                new KeyValuePair<string, string>("username", user), 
+                new KeyValuePair<string, string>("password", password) 
+            }));
 
-            return Task.FromResult(isLoggedIn);
+            return result.IsSuccessStatusCode;
         }
 
         public Task Logout()

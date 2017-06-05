@@ -1,14 +1,14 @@
 ﻿using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
-using Xamarin.Auth;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared
 {
     public partial class App
     {
-        public App(BootstrapperBase bootstrapper, AccountStore accountStore)
+        public App(Bootstrapper bootstrapper)
         {
             InitializeComponent();
 
@@ -16,7 +16,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
 
             var container = bootstrapper.Initialize(c =>
             {
-                c.RegisterInstance(accountStore);
                 c.RegisterInstance(MainPage.Navigation).As<INavigation>();
                 c.RegisterType<NavigationAdapter>().As<INavigationAdapter>();
                 c.RegisterType<AccountStoreAdapter>().As<IAccountStore>();
