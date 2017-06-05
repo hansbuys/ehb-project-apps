@@ -3,7 +3,6 @@
     "Autofac": "4.5.0",
     "Common.Logging": "3.4.0-Beta2",
     "Common.Logging.Core": "3.4.0-Beta2",
-    "Microsoft.Bcl.Build": "1.0.21",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
     "NETStandard.Library": "1.6.1",
     "System.Net.Http": "4.3.2",
