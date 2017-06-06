@@ -7,9 +7,4 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         /// </summary>
         string BaseUrl { get; }
     }
-
-    public class BackendConfiguration : IBackendConfiguration
-    {
-        public string BaseUrl => "http://localhost:44307/api";
-    }
 }

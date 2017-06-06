@@ -28,12 +28,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public async Task<TViewModel> NavigateTo<TViewModel>()
         {
-            if (typeof(TViewModel).IsAssignableTo<IProtectedViewModel>())
-            {
-                await NavigateToLogin().ConfigureAwait(false);
-            }
+            if (!await login.IsLoggedIn() && typeof(TViewModel).IsAssignableTo<IProtectedViewModel>())
+                await login.Logout();
 
-            return await navigationAdapter.NavigateTo<TViewModel>().ConfigureAwait(false);
+            return await navigationAdapter.NavigateTo<TViewModel>();
         }
 
         public Task<TViewModel> NavigateToModal<TViewModel>()
@@ -53,7 +51,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         {
             if (!disposedValue && disposing)
             {
-                login.LoggedIn -= onLoggedOut;
+                login.LoggedOut -= onLoggedOut;
                 disposedValue = true;
             }
         }

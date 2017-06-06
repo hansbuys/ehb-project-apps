@@ -50,8 +50,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
                 context.Response.StatusCode = 400;
                 return context.Response.WriteAsync("Bad request.");
             }
-
-
+            
             return GenerateToken(context);
         }
 

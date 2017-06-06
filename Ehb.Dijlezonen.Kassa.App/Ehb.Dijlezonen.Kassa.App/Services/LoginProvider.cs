@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Common.Logging;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
+using ModernHttpClient;
 using Newtonsoft.Json;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
@@ -9,10 +12,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     public class LoginProvider : ILoginProvider
     {
         private readonly IBackendConfiguration config;
+        private readonly ILog log;
 
-        public LoginProvider(IBackendConfiguration config)
+        public LoginProvider(IBackendConfiguration config, Logging logging)
         {
             this.config = config;
+            this.log = logging.GetLoggerFor<LoginProvider>();
         }
 
         public event EventHandler LoggedIn;
@@ -27,16 +32,25 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         async Task ILoginProvider.Login(string user, string password)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = new HttpClient(new NativeMessageHandler()))
             {
-                var result = await httpClient.PostAsync(config.BaseUrl + "/token", new FormUrlEncodedContent(
-                    new[]
-                    {
-                        new KeyValuePair<string, string>("username", user),
-                        new KeyValuePair<string, string>("password", password)
-                    })).ConfigureAwait(false);
+                HttpResponseMessage result = null;
 
-                if (result.IsSuccessStatusCode)
+                try
+                {
+                    result = await httpClient.PostAsync(config.BaseUrl + "/token", new FormUrlEncodedContent(
+                        new[]
+                        {
+                            new KeyValuePair<string, string>("username", user),
+                            new KeyValuePair<string, string>("password", password)
+                        }));
+                }
+                catch (Exception e)
+                {
+                    log.Error("Unable to make the call", e);
+                }
+
+                if (result != null && result.IsSuccessStatusCode)
                 {
                     var tokenAsJson = await result.Content.ReadAsStringAsync();
                     dynamic token = JsonConvert.DeserializeObject(tokenAsJson);

@@ -16,10 +16,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
         
         public App(Bootstrapper bootstrapper)
         {
+            this.bootstrapper = bootstrapper;
+
             InitializeComponent();
 
             MainPage = new NavigationPage();
-            this.bootstrapper = bootstrapper;
 
             InitializeContainer();
 
@@ -35,8 +36,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             {
                 c.RegisterInstance(MainPage.Navigation).As<INavigation>();
                 c.RegisterType<NavigationAdapter>().As<INavigationAdapter>();
-
-                c.RegisterType<BackendConfiguration>().As<IBackendConfiguration>();
+                
                 c.RegisterType<LoginProvider>().As<ILoginProvider>().SingleInstance();
             });
         }
@@ -46,7 +46,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             log.Debug("Starting application.");
 
             var nav = container.Resolve<Navigation>();
-            Task.Run(() => nav.NavigateTo<MainPageViewModel>());
+
+            Device.BeginInvokeOnMainThread(async () => await nav.NavigateTo<MainPageViewModel>());
         }
 
         protected override void OnSleep()

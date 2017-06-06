@@ -88,6 +88,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="iOSBackendConfiguration.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Services\iOSLogger.cs" />
     <Compile Include="Services\iOSLoggerFactoryAdapter.cs" />

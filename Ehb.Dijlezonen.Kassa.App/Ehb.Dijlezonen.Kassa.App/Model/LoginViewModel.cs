@@ -54,7 +54,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
             return !string.IsNullOrWhiteSpace(User) && !string.IsNullOrWhiteSpace(Password);
         }
 
-        public async Task Login()
+        private async Task Login()
         {
             log.Debug("Attempting logging in");
 
