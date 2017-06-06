@@ -1,10 +1,6 @@
 using System;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,20 +8,22 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
 {
     public static class JwtTokenExtensions
     {
-        public static void SetupJwtBearerAuth(this IApplicationBuilder app, IConfigurationSection configuration, IIdentityResolver identityResolver)
+        public static void SetupJwtBearerAuth(this IApplicationBuilder app, IOptions<TokenAuthenticationOptions> configuration, IIdentityResolver identityResolver)
         {
+            var options = configuration.Value;
+
             var signingKey =
                 new SymmetricSecurityKey(
-                    Encoding.ASCII.GetBytes(configuration.GetSection("SecretKey").Value));
+                    Encoding.ASCII.GetBytes(options.SecretKey));
 
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = signingKey,
                 ValidateIssuer = true,
-                ValidIssuer = configuration.GetSection("Issuer").Value,
+                ValidIssuer = options.Issuer,
                 ValidateAudience = true,
-                ValidAudience = configuration.GetSection("Audience").Value,
+                ValidAudience = options.Audience,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             };
@@ -40,19 +38,14 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
 
             var tokenProviderOptions = new TokenProviderOptions
             {
-                Path = configuration.GetSection("TokenPath").Value,
-                Audience = configuration.GetSection("Audience").Value,
-                Issuer = configuration.GetSection("Issuer").Value,
+                Path = options.TokenPath,
+                Audience = options.Audience,
+                Issuer = options.Issuer,
                 SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
                 IdentityResolver = identityResolver.GetIdentity
             };
 
             app.UseMiddleware<TokenProviderMiddleware>(Options.Create(tokenProviderOptions));
         }
-    }
-
-    public interface IIdentityResolver
-    {
-        Task<ClaimsIdentity> GetIdentity(string username, string password);
     }
 }
