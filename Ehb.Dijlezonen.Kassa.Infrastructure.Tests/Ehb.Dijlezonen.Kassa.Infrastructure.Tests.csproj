@@ -10,10 +10,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ehb.Dijlezonen.Kassa.Infrastructure.Tests</RootNamespace>
     <AssemblyName>Ehb.Dijlezonen.Kassa.Infrastructure.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -94,7 +95,7 @@
       <Name>Ehb.Dijlezonen.Kassa.Infrastructure.Testing</Name>
     </ProjectReference>
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.Infrastructure\Ehb.Dijlezonen.Kassa.Infrastructure.csproj">
-      <Project>{6B730A0B-E55D-48F0-8C08-D898F3DBA420}</Project>
+      <Project>{90b3a787-e6d8-4e89-9e65-eed7d12b190c}</Project>
       <Name>Ehb.Dijlezonen.Kassa.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>

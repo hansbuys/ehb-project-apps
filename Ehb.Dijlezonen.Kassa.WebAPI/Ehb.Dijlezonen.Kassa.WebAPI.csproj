@@ -32,15 +32,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.3.4.0-Beta2\lib\netstandard1.3\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.Core">
-      <HintPath>..\packages\Common.Logging.Core.3.4.0-Beta2\lib\netstandard1.0\Common.Logging.Core.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  
-  <ItemGroup>
     <Content Update="appsettings.json">
       <TransformOnBuild>true</TransformOnBuild>
     </Content>

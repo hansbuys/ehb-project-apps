@@ -57,10 +57,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
                 var viewModel = assembly.DefinedTypes.SingleOrDefault(type => type.IsViewModelFor(view));
 
                 if (viewModel == null)
+                {
                     log.Warn($"No viewmodel found for type {view.Name}");
-
-                log.Info($"Registering viewmodel {viewModel.Name} for view {view.Name}");
-                viewFactory.Register(view.AsType(), viewModel.AsType());
+                }
+                else
+                {
+                    log.Info($"Registering viewmodel {viewModel.Name} for view {view.Name}");
+                    viewFactory.Register(view.AsType(), viewModel.AsType());
+                }
             }
         }
     }

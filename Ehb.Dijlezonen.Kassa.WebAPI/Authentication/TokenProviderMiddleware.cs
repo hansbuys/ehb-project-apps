@@ -67,10 +67,9 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
             var identity = await options.IdentityResolver(username, password);
             if (identity == null)
             {
-                context.Response.StatusCode = 400;
-
                 log.LogError($"{username} logged in with incorrect password.");
 
+                context.Response.StatusCode = 400;
                 await context.Response.WriteAsync("Invalid username or password.");
                 return;
             }

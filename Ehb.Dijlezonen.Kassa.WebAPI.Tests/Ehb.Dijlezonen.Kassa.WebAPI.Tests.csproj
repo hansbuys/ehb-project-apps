@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="4.19.2" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="1.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="1.1.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-preview-20161123-03" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
@@ -24,12 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.Infrastructure.Testing\Ehb.Dijlezonen.Kassa.Infrastructure.Testing.csproj" />
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.WebAPI\Ehb.Dijlezonen.Kassa.WebAPI.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="FluentAssertions">
-      <HintPath>..\packages\FluentAssertions.4.19.2\lib\netstandard1.3\FluentAssertions.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

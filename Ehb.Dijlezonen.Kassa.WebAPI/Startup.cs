@@ -38,11 +38,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
 
             var tokenOptions = Configuration.ReadOptions<TokenAuthenticationOptions>("TokenAuthentication", services: services);
             
-            var connection = @"Server=(localdb)\mssqllocaldb;Database=Ehb.Dijlezonen.Kassa;Trusted_Connection=True;";
-            services.AddDbContext<UserContext>(options =>
-            {
-                options.UseSqlServer(connection);
-            });
+            SetupDatabaseConnection(services);
 
             Container = services.SetupAutofac(builder =>
             {
@@ -59,6 +55,12 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
             });
             
             return new AutofacServiceProvider(Container);
+        }
+
+        protected virtual void SetupDatabaseConnection(IServiceCollection services)
+        {
+            var connection = @"Server=(localdb)\mssqllocaldb;Database=Ehb.Dijlezonen.Kassa;Trusted_Connection=True;";
+            services.AddDbContext<UserContext>(options => { options.UseSqlServer(connection); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
