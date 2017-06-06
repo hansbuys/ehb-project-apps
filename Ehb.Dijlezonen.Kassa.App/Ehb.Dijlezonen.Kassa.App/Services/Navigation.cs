@@ -9,16 +9,32 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     {
         private readonly INavigationAdapter navigationAdapter;
         private readonly ILoginProvider login;
+        private readonly EventHandler onLoggedIn;
         private readonly EventHandler onLoggedOut;
+        private readonly EventHandler needsPasswordChange;
 
         public Navigation(INavigationAdapter navigationAdapter, ILoginProvider login)
         {
             this.navigationAdapter = navigationAdapter;
             this.login = login;
 
+            onLoggedIn = async (sender, args) => await OnLoggedIn().ConfigureAwait(false);
             onLoggedOut = async (sender, args) => await OnLoggedOut().ConfigureAwait(false);
+            needsPasswordChange = async (sender, args) => await NeedsPasswordChange().ConfigureAwait(false);
 
+            login.LoggedIn += onLoggedIn;
             login.LoggedOut += onLoggedOut;
+            login.NeedsPasswordChange += needsPasswordChange;
+        }
+
+        private Task NeedsPasswordChange()
+        {
+            return navigationAdapter.NavigateToModal<PasswordChangeViewModel>();
+        }
+
+        private Task OnLoggedIn()
+        {
+            return navigationAdapter.CloseModal();
         }
 
         private Task OnLoggedOut()
@@ -51,6 +67,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         {
             if (!disposedValue && disposing)
             {
+                login.LoggedIn -= onLoggedIn;
                 login.LoggedOut -= onLoggedOut;
                 disposedValue = true;
             }

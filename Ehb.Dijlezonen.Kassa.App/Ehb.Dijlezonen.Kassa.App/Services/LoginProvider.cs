@@ -1,27 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Common.Logging;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
-using ModernHttpClient;
 using Newtonsoft.Json;
+using Ehb.Dijlezonen.Kassa.Infrastructure.Authentication;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
     public class LoginProvider : ILoginProvider
     {
         private readonly IBackendConfiguration config;
+        private readonly Func<JwtSecurityTokenHandler> getTokenHandler;
         private readonly ILog log;
 
-        public LoginProvider(IBackendConfiguration config, Logging logging)
+        public LoginProvider(IBackendConfiguration config, Logging logging, Func<JwtSecurityTokenHandler> getTokenHandler)
         {
             this.config = config;
+            this.getTokenHandler = getTokenHandler;
             this.log = logging.GetLoggerFor<LoginProvider>();
         }
 
         public event EventHandler LoggedIn;
+        public event EventHandler LoggedOut;
+        public event EventHandler NeedsPasswordChange;
+
         private Token Token { get; set; }
+        public Task ChangePassword(string newPassword)
+        {
+            throw new NotImplementedException();
+        }
 
         Token ILoginProvider.Token => Token;
 
@@ -32,7 +44,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         async Task ILoginProvider.Login(string user, string password)
         {
-            using (var httpClient = new HttpClient(new NativeMessageHandler()))
+            using (var httpClient = new HttpClient())
             {
                 HttpResponseMessage result = null;
 
@@ -60,17 +72,33 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
                     Token = new Token(
                         accessToken, 
                         DateTime.UtcNow.AddSeconds((int) token.expires_in), 
-                        IsAdminToken(accessToken));
+                        ParseIsAdminToken(accessToken),
+                        ParseNeedsPasswordChange(accessToken));
 
 
                     LoggedIn?.Invoke(null, EventArgs.Empty);
+
+                    if (Token.NeedsPasswordChange)
+                        NeedsPasswordChange?.Invoke(null, EventArgs.Empty);
                 }
             }
         }
 
-        private bool IsAdminToken(string token)
+        private bool ParseIsAdminToken(string token)
         {
-            return false;
+            return GetClaims(token)
+                .Any(x => x.Type == CustomClaimTypes.Role && x.Value == ClaimRoleTypes.Admin);
+        }
+
+        private IEnumerable<Claim> GetClaims(string token)
+        {
+            return getTokenHandler().ReadJwtToken(token).Claims;
+        }
+
+        private bool ParseNeedsPasswordChange(string token)
+        {
+            return GetClaims(token).Any(
+                x => x.Type == CustomClaimTypes.NeedsPasswordChange);
         }
 
         Task ILoginProvider.Logout()
@@ -81,9 +109,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
             return Task.FromResult(0);
         }
-
-        public event EventHandler LoggedOut;
-
+        
         private bool IsLoggedIn()
         {
             return Token != null && Token.IsValid;

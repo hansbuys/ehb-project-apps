@@ -11,17 +11,20 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         event EventHandler LoggedOut;
         event EventHandler LoggedIn;
+        event EventHandler NeedsPasswordChange;
 
         Token Token { get; }
+        Task ChangePassword(string newPassword);
     }
 
     public class Token
     {
-        public Token(string value, DateTime expiration, bool isAdmin = false)
+        public Token(string value, DateTime expiration, bool isAdmin = false, bool needsPasswordChange = false)
         {
             Value = value;
             Expiration = expiration;
             IsAdmin = isAdmin;
+            NeedsPasswordChange = needsPasswordChange;
         }
 
         public DateTime Expiration { get; }
@@ -29,5 +32,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public bool IsValid => !string.IsNullOrEmpty(Value) && Expiration > DateTime.UtcNow;
         public bool IsAdmin { get; }
+        public bool NeedsPasswordChange { get; }
     }
 }

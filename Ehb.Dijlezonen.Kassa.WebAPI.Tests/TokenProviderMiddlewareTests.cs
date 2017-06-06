@@ -58,7 +58,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
         {
             var response = await Client.PostAsync("/api/token", new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("username", "user"),
+                new KeyValuePair<string, string>("username", "gebruiker"),
                 new KeyValuePair<string, string>("password", "resu321")
             }));
 
@@ -111,7 +111,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
         {
             var rawResponse = await Client.PostAsync("/api/token", new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("username", "admin"),
+                new KeyValuePair<string, string>("username", "beheerder"),
                 new KeyValuePair<string, string>("password", "nimda321")
             }));
 

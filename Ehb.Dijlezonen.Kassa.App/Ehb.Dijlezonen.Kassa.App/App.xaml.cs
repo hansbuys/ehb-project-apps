@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Common.Logging;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;

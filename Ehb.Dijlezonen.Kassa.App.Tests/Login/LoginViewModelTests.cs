@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
@@ -31,23 +32,34 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
             LoginProvider.Should().BeLoggedIn();
         }
 
-        private async Task LoginHappyPath()
+        private class HappyPathOptions
         {
-            const string user = "knownUser";
-            const string pass = "knownPassword4KnownUser";
+            public string User { get; set; } = "knownUser";
+            public string Pass { get; set; } = "knownPassword4KnownUser";
+            public bool NeedsPasswordChange { get; set; }
+        }
 
-            LoginProvider.WhenUserIsKnown(user, pass);
-            Login(await GetSut(), user, pass);
+        private async Task LoginHappyPath(Action<HappyPathOptions> setup = null, Action<HappyPathOptions> beforeLogin = null)
+        {
+            var options = new HappyPathOptions();
+
+            setup?.Invoke(options);
+
+            LoginProvider.WhenUserIsKnown(options.User, options.Pass, options.NeedsPasswordChange);
+
+            beforeLogin?.Invoke(options);
+
+            Login(await GetSut(), options.User, options.Pass);
         }
 
         [Fact]
         public async Task CannotLoginWithUnknownUserAndPassword()
         {
-            const string user = "knownUser";
-            const string pass = "knownPassword4KnownUser";
-
-            LoginProvider.WhenUserIsKnown(user, pass);
-            Login(await GetSut(), "unknownUser", "wrongPassword");
+            await LoginHappyPath(beforeLogin: o =>
+            {
+                o.User = "Unknown";
+                o.Pass = "Unknown";
+            });
 
             LoginProvider.Should().NotBeLoggedIn();
         }
@@ -72,6 +84,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
             vm.Password = "anything";
 
             vm.LoginCommand.Should().BeEnabled();
+        }
+
+        [Fact]
+        public async Task DisplayPasswordChangeWhenPasswordShouldBeChangedAfterLogin()
+        {
+            await LoginHappyPath(setup: o => o.NeedsPasswordChange = true);
+
+            NavigationAdapter.Should().HaveNavigatedModallyTo<PasswordChangeViewModel>();
         }
     }
 }

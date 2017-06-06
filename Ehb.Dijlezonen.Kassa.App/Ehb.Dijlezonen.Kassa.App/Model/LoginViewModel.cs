@@ -10,14 +10,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
     {
         private readonly ILoginProvider auth;
         private readonly ILog log;
-        private readonly INavigationAdapter navigation;
         private string password;
         private string user;
 
-        public LoginViewModel(ILoginProvider auth, INavigationAdapter navigation, Logging logging)
+        public LoginViewModel(ILoginProvider auth, Logging logging)
         {
             this.auth = auth;
-            this.navigation = navigation;
             log = logging.GetLoggerFor<LoginViewModel>();
 
             LoginCommand = new Command(async () => await Login(), CanLogin);
@@ -42,8 +40,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
             get { return password; }
             set { Set(ref password, value, CredentialsChanged); }
         }
-
-
+        
         private void CredentialsChanged()
         {
             LoginCommand.ChangeCanExecute();
@@ -59,16 +56,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
             log.Debug("Attempting logging in");
 
             await auth.Login(User, Password);
-
-            if (await auth.IsLoggedIn())
-            {
-                log.Debug("Logged in success");
-                await navigation.CloseModal();
-            }
-            else
-            {
-                log.Debug("Login failed!");
-            }
         }
     }
 }
