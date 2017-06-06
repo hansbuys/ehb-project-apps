@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Authentication;
 using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model;
+using Microsoft.Extensions.Logging;
 
 namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage
 {
@@ -8,21 +9,25 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage
     {
         private readonly UserContext context;
         private readonly Crypto crypto;
+        private readonly ILogger<TestUserContextInitializer> log;
 
-        public TestUserContextInitializer(UserContext context, Crypto crypto)
+        public TestUserContextInitializer(UserContext context, Crypto crypto, ILogger<TestUserContextInitializer> log)
         {
             this.context = context;
             this.crypto = crypto;
+            this.log = log;
         }
 
         public void Initialize()
         {
+            log.LogDebug("Clearing roles & users");
             context.Roles.RemoveRange(context.Roles);
             context.Users.RemoveRange(context.Users);
             
             var userRole = new Role {Name = "User"};
             var adminRole = new Role {Name = "Admin", IsAdminRole = true};
 
+            log.LogDebug("Recreating roles");
             context.Roles.AddRange(
                 userRole,
                 adminRole);
@@ -30,6 +35,11 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage
             var adminPass = crypto.Encrypt("beheerder");
             var userPass = crypto.Encrypt("gebruiker");
 
+            log.LogDebug("Recreating users");
+            log.LogDebug($"admin pass: {adminPass.Password}");
+            log.LogDebug($"admin salt: {adminPass.Salt}");
+            log.LogDebug($"user pass: {userPass.Password}");
+            log.LogDebug($"user salt: {userPass.Salt}");
             context.Users.AddRange(
                 new User
                 {

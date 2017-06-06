@@ -91,7 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.Infrastructure.Testing\Ehb.Dijlezonen.Kassa.Infrastructure.Testing.csproj">
-      <Project>{9c533cf5-4596-4919-86a5-bf057baf0951}</Project>
+      <Project>{8944a873-d2d3-4236-ba00-451aa3648f6c}</Project>
       <Name>Ehb.Dijlezonen.Kassa.Infrastructure.Testing</Name>
     </ProjectReference>
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.Infrastructure\Ehb.Dijlezonen.Kassa.Infrastructure.csproj">

@@ -2,6 +2,7 @@ using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model;
 using System.Collections.Generic;
 using System.Linq;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Authentication;
+using Microsoft.Extensions.Logging;
 
 namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage
 {
@@ -9,11 +10,13 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage
     {
         private readonly UserContext context;
         private readonly Crypto crypto;
+        private readonly ILogger<UserContextInitializer> log;
 
-        public UserContextInitializer(UserContext context, Crypto crypto)
+        public UserContextInitializer(UserContext context, Crypto crypto, ILogger<UserContextInitializer> log)
         {
             this.context = context;
             this.crypto = crypto;
+            this.log = log;
         }
 
         public void Initialize()
@@ -22,6 +25,8 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage
             //there should always be roles, so this is the best check we have available.
             if (!context.Roles.Any())
             {
+                log.LogInformation("Seeding database.");
+
                 var userRole = new Role { Name = "User" };
                 var adminRole = new Role { Name = "Admin", IsAdminRole = true };
 

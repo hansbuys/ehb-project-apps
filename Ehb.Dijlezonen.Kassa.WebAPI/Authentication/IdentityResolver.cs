@@ -27,6 +27,8 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
             log.LogDebug($"fetching user {username}.");
             var user = await userContext.Users.Include(u => u.Roles).SingleOrDefaultAsync(u => u.Username == username).ConfigureAwait(false);
             log.LogDebug($"found user with id '{user?.Id}'.");
+            log.LogDebug($"found user with salt '{user?.Salt}'.");
+            log.LogDebug($"found user with password '{user?.Password}'.");
 
             if (user != null && crypto.Verify(new SecurePassword(user.Password, user.Salt), password))
             {
