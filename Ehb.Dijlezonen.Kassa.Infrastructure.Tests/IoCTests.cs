@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Common.Logging;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using FluentAssertions;
@@ -43,11 +44,11 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
         }
 
         [Fact]
-        public void CanConstructUsingFactory()
+        public async Task CanConstructUsingFactory()
         {
             const string expected = "test";
 
-            var echo = GetSut().Echo(expected);
+            var echo = (await GetSut()).Echo(expected);
 
             echo.Should().Be(expected);
         }

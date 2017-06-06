@@ -1,6 +1,4 @@
-﻿using Xamarin.Auth;
-
-namespace Ehb.Dijlezonen.Kassa.App.UWP
+﻿namespace Ehb.Dijlezonen.Kassa.App.UWP
 {
     public sealed partial class MainPage
     {
@@ -8,7 +6,7 @@ namespace Ehb.Dijlezonen.Kassa.App.UWP
         {
             InitializeComponent();
 
-            LoadApplication(new Shared.App(new Bootstrapper(), AccountStore.Create()));
+            LoadApplication(new Shared.App(new Bootstrapper()));
         }
     }
 }

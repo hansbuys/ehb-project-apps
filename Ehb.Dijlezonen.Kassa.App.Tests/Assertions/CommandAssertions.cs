@@ -14,7 +14,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
         {
             Subject.CanExecute(null).Should().BeFalse();
 
-            CheckedThat($"Command {Subject.GetType().Name} is not executable at this time.");
+            CheckedThat("command is not executable at this time.");
 
             return And();
         }
@@ -23,7 +23,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
         {
             Subject.CanExecute(null).Should().BeTrue();
 
-            CheckedThat($"Command {Subject.GetType().Name} is executable at this time.");
+            CheckedThat("command is executable at this time.");
 
             return And();
         }

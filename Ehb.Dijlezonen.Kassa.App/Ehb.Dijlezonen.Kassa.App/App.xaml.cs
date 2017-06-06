@@ -1,44 +1,63 @@
-﻿using Autofac;
+﻿using System.Threading.Tasks;
+using Autofac;
+using Common.Logging;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
-using Xamarin.Auth;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared
 {
     public partial class App
     {
-        public App(BootstrapperBase bootstrapper, AccountStore accountStore)
+        private IContainer container;
+        private readonly BootstrapperBase bootstrapper;
+        private readonly ILog log;
+        
+        public App(BootstrapperBase bootstrapper)
         {
+            this.bootstrapper = bootstrapper;
+
             InitializeComponent();
 
             MainPage = new NavigationPage();
 
-            var container = bootstrapper.Initialize(c =>
+            InitializeContainer();
+
+            var logging = container.Resolve<Logging>();
+            log = logging.GetLoggerFor<App>();
+
+            log.Debug("Container has been initialized.");
+        }
+
+        private void InitializeContainer()
+        {
+            container = bootstrapper.Initialize(c =>
             {
-                c.RegisterInstance(accountStore);
                 c.RegisterInstance(MainPage.Navigation).As<INavigation>();
                 c.RegisterType<NavigationAdapter>().As<INavigationAdapter>();
-                c.RegisterType<AccountStoreAdapter>().As<IAccountStore>();
+                
+                c.RegisterType<LoginProvider>().As<ILoginProvider>().SingleInstance();
             });
-
-            var nav = container.Resolve<INavigationAdapter>();
-            nav.NavigateTo<MainPageViewModel>();
         }
 
         protected override void OnStart()
         {
-            // Handle when your app starts
+            log.Debug("Starting application.");
+
+            var nav = container.Resolve<Navigation>();
+
+            Device.BeginInvokeOnMainThread(async () => await nav.NavigateTo<MainPageViewModel>());
         }
 
         protected override void OnSleep()
         {
-            // Handle when your app sleeps
+            log.Debug("Application going to sleep.");
         }
 
         protected override void OnResume()
         {
-            // Handle when your app resumes
+            log.Debug("Application resuming.");
         }
     }
 }

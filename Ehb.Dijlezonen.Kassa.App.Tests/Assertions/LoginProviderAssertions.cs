@@ -6,26 +6,26 @@ using FluentAssertions;
 
 namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 {
-    internal class AccountStoreAssertions : Assertions<FakeAccountStore, AccountStoreAssertions>
+    internal class LoginProviderAssertions : Assertions<FakeLoginProvider, LoginProviderAssertions>
     {
-        public AccountStoreAssertions(FakeAccountStore subject) : base(subject)
+        public LoginProviderAssertions(FakeLoginProvider subject) : base(subject)
         {
         }
 
-        internal AndConstraint<AccountStoreAssertions> BeLoggedIn()
+        internal AndConstraint<LoginProviderAssertions> BeLoggedIn()
         {
-            IAccountStore accountStore = Subject;
-            var isLoggedIn = accountStore.IsLoggedIn().Result;
+            ILoginProvider loginProvider = Subject;
+            var isLoggedIn = loginProvider.IsLoggedIn().Result;
             isLoggedIn.Should().BeTrue("we expected to be logged in");
 
             CheckedThat("we are logged in.");
             return And();
         }
 
-        internal AndConstraint<AccountStoreAssertions> NotBeLoggedIn()
+        internal AndConstraint<LoginProviderAssertions> NotBeLoggedIn()
         {
-            IAccountStore accountStore = Subject;
-            var isLoggedIn = accountStore.IsLoggedIn().Result;
+            ILoginProvider loginProvider = Subject;
+            var isLoggedIn = loginProvider.IsLoggedIn().Result;
             isLoggedIn.Should().BeFalse("we expected to be logged out");
 
             CheckedThat("we are not logged in.");

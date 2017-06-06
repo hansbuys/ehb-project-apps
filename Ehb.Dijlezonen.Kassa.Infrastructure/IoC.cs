@@ -2,7 +2,7 @@
 using Autofac;
 using Autofac.Features.ResolveAnything;
 
-namespace Ehb.Dijlezonen.Kassa.App.Shared
+namespace Ehb.Dijlezonen.Kassa.Infrastructure
 {
     public static class IoC
     {

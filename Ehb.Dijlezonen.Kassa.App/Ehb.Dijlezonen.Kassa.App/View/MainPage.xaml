@@ -8,6 +8,7 @@
            VerticalOptions="Center" 
            HorizontalOptions="Center" />
         <Button Text="{Binding LogoutCommandText}" Command="{Binding LogoutCommand}"></Button>
+        <Button IsVisible="{Binding IsAdmin}" Text="{Binding LogoutCommandText}" Command="{Binding LogoutCommand}"></Button>
     </StackLayout>
 
 </ContentPage>

@@ -6,21 +6,21 @@ using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
-    public class LoginViewModel : UserInputViewModelBase
+    public class LoginViewModel : PropertyChangedViewModelBase
     {
-        private readonly IAccountStore auth;
+        private readonly ILoginProvider auth;
         private readonly ILog log;
         private readonly INavigationAdapter navigation;
         private string password;
         private string user;
 
-        public LoginViewModel(IAccountStore auth, INavigationAdapter navigation, Logging logging)
+        public LoginViewModel(ILoginProvider auth, INavigationAdapter navigation, Logging logging)
         {
             this.auth = auth;
             this.navigation = navigation;
             log = logging.GetLoggerFor<LoginViewModel>();
 
-            LoginCommand = new Command(async () => await Login().ConfigureAwait(false), CanLogin);
+            LoginCommand = new Command(async () => await Login(), CanLogin);
         }
 
         public string Title => "Log in aub.";
@@ -54,14 +54,16 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
             return !string.IsNullOrWhiteSpace(User) && !string.IsNullOrWhiteSpace(Password);
         }
 
-        public async Task Login()
+        private async Task Login()
         {
             log.Debug("Attempting logging in");
 
-            if (await auth.Login(User, Password).ConfigureAwait(false))
+            await auth.Login(User, Password);
+
+            if (await auth.IsLoggedIn())
             {
                 log.Debug("Logged in success");
-                await navigation.CloseModal().ConfigureAwait(false);
+                await navigation.CloseModal();
             }
             else
             {

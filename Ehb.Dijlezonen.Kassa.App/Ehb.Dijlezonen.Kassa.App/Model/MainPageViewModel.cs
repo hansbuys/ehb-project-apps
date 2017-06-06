@@ -7,53 +7,29 @@ using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
-    public class MainPageViewModel
+    public class MainPageViewModel : PropertyChangedViewModelBase, IProtectedViewModel
     {
-        private readonly IAccountStore auth;
+        private readonly ILoginProvider auth;
         private readonly ILog log;
-        private readonly INavigationAdapter navigation;
 
-        public MainPageViewModel(INavigationAdapter navigation, IAccountStore auth, Logging logging)
+        public MainPageViewModel(ILoginProvider auth, Logging logging)
         {
-            this.navigation = navigation;
             this.auth = auth;
             log = logging.GetLoggerFor<MainPageViewModel>();
-
-            Initialize().Wait();
         }
 
         public string Title => "De Dijlezonen Kassa";
 
         public string LogoutCommandText => "Uitloggen";
         public ICommand LogoutCommand => new Command(async () => await Logout().ConfigureAwait(false));
-        public ICommand NavigateToBarcodeScannerCommand => new Command(async () => await NavigateToBarcodeScanner().ConfigureAwait(false));
-        
-        private async Task Initialize()
-        {
-            if (!await IsLoggedIn().ConfigureAwait(false))
-                await NavigateToLogin();
-        }
 
-        private Task<bool> IsLoggedIn()
-        {
-            return auth.IsLoggedIn();
-        }
+        public bool IsAdmin { get; set; }
 
         private async Task Logout()
         {
             log.Debug("Logging out");
 
             await auth.Logout().ConfigureAwait(false);
-            await NavigateToLogin().ConfigureAwait(false);
-        }
-        private Task NavigateToBarcodeScanner()
-        {
-            return navigation.NavigateTo<BarcodeScannerViewModel>();
-        }
-
-        private Task NavigateToLogin()
-        {
-            return navigation.NavigateToModal<LoginViewModel>();
         }
     }
 }

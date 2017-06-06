@@ -1,13 +1,10 @@
-﻿using Autofac;
-using Ehb.Dijlezonen.Kassa.App.Shared;
-using Ehb.Dijlezonen.Kassa.Infrastructure;
-using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
+using Autofac;
 
-namespace Ehb.Dijlezonen.Kassa.App.Testing
+namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 {
     public class TestBootstrapper : BootstrapperBase
     {
-        private TestLogging logging;
+        private readonly TestLogging logging;
 
         public TestBootstrapper(TestLogging logging)
         {
@@ -15,6 +12,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         }
 
         protected override void RegisterPorts(ContainerBuilder builder)
+        {
+        }
+
+        protected override void RegisterComponents(ContainerBuilder builder)
         {
             builder.RegisterInstance(logging).As<Logging>();
         }

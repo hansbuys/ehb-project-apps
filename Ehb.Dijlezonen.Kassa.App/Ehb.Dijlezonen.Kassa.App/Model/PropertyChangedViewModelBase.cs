@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
-    public class UserInputViewModelBase : INotifyPropertyChanged
+    public class PropertyChangedViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

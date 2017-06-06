@@ -7,7 +7,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Droid.Services
 {
     public class AndroidLogger : AbstractSimpleLogger
     {
-        public AndroidLogger(string logName, LogLevel logLevel, bool showlevel, bool showDateTime, bool showLogName, string dateTimeFormat) : base(logName, logLevel, showlevel, showDateTime, showLogName, dateTimeFormat)
+        public AndroidLogger(string logName, LogLevel logLevel, bool showlevel, bool showDateTime, bool showLogName,
+            string dateTimeFormat) : base(logName, logLevel, showlevel, showDateTime, showLogName, dateTimeFormat)
         {
         }
 
@@ -19,16 +20,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Droid.Services
             var logPriority = ToLogPriority(level);
 
             if (logPriority.HasValue)
-            {
                 if (exception == null)
-                {
                     Log.WriteLine(logPriority.Value, tag, format);
-                }
                 else
-                {
                     Log.Wtf(tag, format, exception);
-                }
-            }
         }
 
         private static LogPriority? ToLogPriority(LogLevel logLevel)

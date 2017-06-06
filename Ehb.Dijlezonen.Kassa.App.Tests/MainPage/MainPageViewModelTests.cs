@@ -1,4 +1,5 @@
-﻿using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+﻿using System.Threading.Tasks;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using Xunit;
@@ -17,7 +18,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             GetSut();
 
-            Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>();
+            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
 
         [Fact]
@@ -25,37 +26,27 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             const string user = "test";
             const string pass = "test";
-            AccountStore.WhenUserIsKnown(user, pass);
+            LoginProvider.WhenUserIsKnown(user, pass);
                 
             GetSut();
             
-            var loginVm = Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
+            var loginVm = NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
             loginVm.User = user;
             loginVm.Password = pass;
             loginVm.LoginCommand.Click();
 
-            Navigator.Should().NotHaveModal<LoginViewModel>();
+            NavigationAdapter.Should().NotHaveModal<LoginViewModel>();
         }
 
         [Fact]
-        public void LogoutLeadsToLogin()
+        public async Task LogoutLeadsToLogin()
         {
-            AccountStore.WhenUserIsLoggedIn();
+            LoginProvider.WhenUserIsLoggedIn();
 
-            GetSut().LogoutCommand.Click();
+            (await GetSut()).LogoutCommand.Click();
 
-            AccountStore.Should().NotBeLoggedIn();
-            Navigator.Should().HaveNavigatedModallyTo<LoginViewModel>();
-        }
-
-        [Fact]
-        public void NavigatesToBarcodeScanner()
-        {
-            AccountStore.WhenUserIsLoggedIn();
-
-            GetSut().NavigateToBarcodeScannerCommand.Click();
-            
-            Navigator.Should().HaveNavigatedTo<BarcodeScannerViewModel>();
+            LoginProvider.Should().NotBeLoggedIn();
+            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
     }
 }

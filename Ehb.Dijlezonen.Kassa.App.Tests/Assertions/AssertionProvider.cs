@@ -10,9 +10,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
             return new NavigatorAssertions(navigation);
         }
 
-        internal static AccountStoreAssertions Should(this FakeAccountStore page)
+        internal static LoginProviderAssertions Should(this FakeLoginProvider page)
         {
-            return new AccountStoreAssertions(page);
+            return new LoginProviderAssertions(page);
         }
 
         internal static PageAssertions Should(this Page page)

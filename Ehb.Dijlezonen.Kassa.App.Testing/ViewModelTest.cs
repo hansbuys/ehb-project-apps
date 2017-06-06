@@ -1,49 +1,52 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Autofac;
+using Ehb.Dijlezonen.Kassa.App.Shared;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using Xunit.Abstractions;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
-    public abstract class ViewModelTest<T> : IoCBasedTest<T>
+    public abstract class ViewModelTest<TViewModel> : IoCBasedTest<TViewModel>
+        where TViewModel : class
     {
-        private readonly TestBootstrapper bootstrapper;
-
         protected ViewModelTest(ITestOutputHelper output) : base(output)
         {
-            bootstrapper = new TestBootstrapper(Logging);
         }
 
-        protected FakeNavigationAdapter Navigator { get; private set; }
-        protected FakeAccountStore AccountStore { get; } = new FakeAccountStore();
+        protected FakeNavigationAdapter NavigationAdapter { get; private set; }
+        protected FakeLoginProvider LoginProvider { get; } = new FakeLoginProvider();
+
+        private Navigation navigation;
 
         protected virtual bool IsModalWindow => false;
 
         protected override IContainer InitializeContainer()
         {
-            var container = bootstrapper.Initialize(builder =>
-            {
-                builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
-                builder.RegisterInstance(AccountStore).As<IAccountStore>();
-            });
+            var container = base.InitializeContainer();
 
-            Navigator = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
-            Navigator?.SetResolver(container);
+            NavigationAdapter = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
+            if (NavigationAdapter == null)
+                throw new Exception("No navigation adapter implemented!");
+            NavigationAdapter.SetResolver(container);
+
+            navigation = container.Resolve<Navigation>();
 
             return container;
         }
 
-        protected override T GetSut()
+        protected override void Configure(ContainerBuilder builder)
         {
-            var vm = base.GetSut();
+            builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
+            builder.RegisterInstance(LoginProvider).As<ILoginProvider>();
+        }
 
-            if (IsModalWindow)
-                Navigator.ModalStack.Push(vm);
-            else
-                Navigator.NavigationStack.Push(vm);
-
-            return vm;
+        protected override Task<TViewModel> GetSut()
+        {
+            return IsModalWindow ?
+                navigation.NavigateToModal<TViewModel>() :
+                navigation.NavigateTo<TViewModel>();
         }
     }
 }
