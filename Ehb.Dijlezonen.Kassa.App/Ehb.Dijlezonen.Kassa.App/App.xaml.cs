@@ -11,10 +11,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
     public partial class App
     {
         private IContainer container;
-        private readonly Bootstrapper bootstrapper;
+        private readonly BootstrapperBase bootstrapper;
         private readonly ILog log;
         
-        public App(Bootstrapper bootstrapper)
+        public App(BootstrapperBase bootstrapper)
         {
             this.bootstrapper = bootstrapper;
 

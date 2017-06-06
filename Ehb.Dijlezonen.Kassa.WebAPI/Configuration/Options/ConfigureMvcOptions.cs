@@ -1,4 +1,4 @@
-namespace Ehb.Dijlezonen.Kassa.WebAPI
+namespace Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options
 {
     public class ConfigureMvcOptions
     {

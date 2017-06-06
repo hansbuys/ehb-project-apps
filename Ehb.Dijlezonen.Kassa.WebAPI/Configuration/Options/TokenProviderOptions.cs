@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Ehb.Dijlezonen.Kassa.WebAPI
+namespace Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options
 {
     // source: https://dev.to/samueleresca/developing-token-authentication-using-aspnet-core
     public class TokenProviderOptions

@@ -3,7 +3,7 @@ using Autofac;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure
 {
-    public abstract class Bootstrapper
+    public abstract class BootstrapperBase
     {
         /// <summary>
         ///     Register your external dependencies here,

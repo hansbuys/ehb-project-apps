@@ -6,7 +6,7 @@ using Ehb.Dijlezonen.Kassa.Infrastructure;
 
 namespace Ehb.Dijlezonen.Kassa.App.Droid
 {
-    public class Bootstrapper : BootstrapperBase
+    public class Bootstrapper : AppBootstrapperBase
     {
         protected override void RegisterPorts(ContainerBuilder builder)
         {

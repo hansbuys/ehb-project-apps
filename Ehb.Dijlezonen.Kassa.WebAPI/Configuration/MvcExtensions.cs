@@ -1,7 +1,8 @@
+using Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Ehb.Dijlezonen.Kassa.WebAPI
+namespace Ehb.Dijlezonen.Kassa.WebAPI.Configuration
 {
     internal static class MvcExtensions
     {

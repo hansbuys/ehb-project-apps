@@ -1,14 +1,18 @@
 using System;
 using System.Text;
+using Ehb.Dijlezonen.Kassa.WebAPI.Authentication;
+using Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MiddlewareOptions = Microsoft.Extensions.Options.Options;
 
-namespace Ehb.Dijlezonen.Kassa.WebAPI
+namespace Ehb.Dijlezonen.Kassa.WebAPI.Configuration
 {
     public static class JwtTokenExtensions
     {
-        public static void SetupJwtBearerAuth(this IApplicationBuilder app, IOptions<TokenAuthenticationOptions> configuration, IIdentityResolver identityResolver)
+        public static void SetupJwtBearerAuth(this IApplicationBuilder app,
+            IOptions<TokenAuthenticationOptions> configuration, IIdentityResolver identityResolver)
         {
             var options = configuration.Value;
 
@@ -45,7 +49,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
                 IdentityResolver = identityResolver.GetIdentity
             };
 
-            app.UseMiddleware<TokenProviderMiddleware>(Options.Create(tokenProviderOptions));
+            app.UseMiddleware<TokenProviderMiddleware>(MiddlewareOptions.Create(tokenProviderOptions));
         }
     }
 }

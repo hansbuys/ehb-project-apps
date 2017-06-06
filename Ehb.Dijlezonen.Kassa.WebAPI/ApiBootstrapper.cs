@@ -3,7 +3,7 @@ using Ehb.Dijlezonen.Kassa.Infrastructure;
 
 namespace Ehb.Dijlezonen.Kassa.WebAPI
 {
-    public class ApiBootstrapper : Bootstrapper
+    public class ApiBootstrapper : BootstrapperBase
     {
         protected override void RegisterPorts(ContainerBuilder builder)
         {
@@ -11,7 +11,6 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
 
         protected override void RegisterComponents(ContainerBuilder builder)
         {
-
         }
     }
 }

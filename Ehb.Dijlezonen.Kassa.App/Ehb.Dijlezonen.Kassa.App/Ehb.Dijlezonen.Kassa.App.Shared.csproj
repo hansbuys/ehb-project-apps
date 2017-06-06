@@ -38,7 +38,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BootstrapperBase.cs" />
+    <Compile Include="AppBootstrapperBase.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Model\IProtectedViewModel.cs" />
     <Compile Include="Services\IBackendConfiguration.cs" />

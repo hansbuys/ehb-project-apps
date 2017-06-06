@@ -4,12 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Ehb.Dijlezonen.Kassa.WebAPI
+namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
 {
     // source: https://dev.to/samueleresca/developing-token-authentication-using-aspnet-core
     public class TokenProviderMiddleware

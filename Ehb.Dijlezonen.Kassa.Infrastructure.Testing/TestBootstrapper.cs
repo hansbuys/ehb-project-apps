@@ -2,7 +2,7 @@ using Autofac;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 {
-    public class TestBootstrapper : Bootstrapper
+    public class TestBootstrapper : BootstrapperBase
     {
         private readonly TestLogging logging;
 

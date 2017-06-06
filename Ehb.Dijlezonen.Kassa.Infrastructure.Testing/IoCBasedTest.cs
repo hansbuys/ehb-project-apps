@@ -32,7 +32,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
         /// Override this method to be able to use a different bootstrapper implementation.
         /// </summary>
         /// <returns></returns>
-        protected virtual Bootstrapper GetBootstrapper()
+        protected virtual BootstrapperBase GetBootstrapper()
         {
             return new TestBootstrapper(Logging);
         }

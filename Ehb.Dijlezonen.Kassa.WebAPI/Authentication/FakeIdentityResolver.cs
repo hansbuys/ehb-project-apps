@@ -2,7 +2,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 
-namespace Ehb.Dijlezonen.Kassa.WebAPI
+namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
 {
     public class FakeIdentityResolver : IIdentityResolver
     {

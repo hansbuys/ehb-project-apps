@@ -1,6 +1,9 @@
 using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Ehb.Dijlezonen.Kassa.WebAPI.Authentication;
+using Ehb.Dijlezonen.Kassa.WebAPI.Configuration;
+using Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

@@ -10,7 +10,7 @@ using System;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared
 {
-    public abstract class BootstrapperBase : Bootstrapper
+    public abstract class AppBootstrapperBase : BootstrapperBase
     {
         private ILog log;
         
@@ -24,7 +24,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             var container = base.Initialize(addDependencies);
             
             var logging = container.Resolve<Logging>();
-            log = logging.GetLoggerFor<BootstrapperBase>();
+            log = logging.GetLoggerFor<AppBootstrapperBase>();
 
             var viewFactory = container.Resolve<ViewFactory>();
             viewFactory.SetResolver(container);
@@ -35,7 +35,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
 
         private void RegisterViews(ViewFactory viewFactory)
         {
-            var sharedAssembly = typeof(BootstrapperBase).GetTypeInfo().Assembly;
+            var sharedAssembly = typeof(AppBootstrapperBase).GetTypeInfo().Assembly;
             RegisterViews(viewFactory, sharedAssembly);
 
             var assembly = GetType().GetTypeInfo().Assembly;
