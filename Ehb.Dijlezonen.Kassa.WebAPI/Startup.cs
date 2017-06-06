@@ -34,7 +34,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
             var configureMvcOptions = Configuration.ReadOptions<ConfigureMvcOptions>();
             services.ConfigureWithMvc(configureMvcOptions);
 
-            var tokenOptions = Configuration.ReadOptions<TokenAuthenticationOptions>(services);
+            var tokenOptions = Configuration.ReadOptions<TokenAuthenticationOptions>("TokenAuthentication", services: services);
 
             Container = services.SetupAutofac(builder =>
             {
@@ -72,14 +72,15 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
         /// </summary>
         /// <typeparam name="TOptions"></typeparam>
         /// <param name="configuration">the configuration root to read the settings from</param>
+        /// <param name="sectionName">the name of the setting used in the appsettings file. Defaults to the name of <typeparam name="TOptions"></typeparam></param>
         /// <param name="services">when provided it will register the options to the services container.</param>
         /// <returns></returns>
-        public static TOptions ReadOptions<TOptions>(this IConfigurationRoot configuration, IServiceCollection services = null)
+        public static TOptions ReadOptions<TOptions>(this IConfigurationRoot configuration, string sectionName = null, IServiceCollection services = null)
             where TOptions : class, new()
         {
             var options = new TOptions();
 
-            var tokenAuth = configuration.GetSection("TokenAuthentication");
+            var tokenAuth = configuration.GetSection(sectionName ?? typeof(TOptions).Name);
             tokenAuth.Bind(options);
 
             services?.Configure<TokenAuthenticationOptions>(tokenAuth);
