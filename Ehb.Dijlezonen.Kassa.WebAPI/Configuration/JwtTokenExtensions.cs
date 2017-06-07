@@ -12,7 +12,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Configuration
     public static class JwtTokenExtensions
     {
         public static void SetupJwtBearerAuth(this IApplicationBuilder app,
-            IOptions<TokenAuthenticationOptions> configuration, IIdentityResolver identityResolver)
+            IOptions<TokenAuthenticationOptions> configuration)
         {
             var options = configuration.Value;
 
@@ -46,7 +46,6 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Configuration
                 Audience = options.Audience,
                 Issuer = options.Issuer,
                 SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
-                IdentityResolver = identityResolver.GetIdentity
             };
 
             app.UseMiddleware<TokenProviderMiddleware>(MiddlewareOptions.Create(tokenProviderOptions));

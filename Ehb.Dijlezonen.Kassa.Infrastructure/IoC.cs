@@ -4,9 +4,9 @@ using Autofac.Features.ResolveAnything;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure
 {
-    public static class IoC
+    internal static class IoC
     {
-        public static IContainer InitializeContainer(Action<ContainerBuilder> configure)
+        internal static IContainer InitializeContainer(Action<ContainerBuilder> configure)
         {
             var c = new ContainerBuilder();
 

@@ -2,10 +2,12 @@ using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Ehb.Dijlezonen.Kassa.WebAPI.Authentication;
+using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage;
 using Ehb.Dijlezonen.Kassa.WebAPI.Configuration;
 using Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,34 +36,48 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
             var configureMvcOptions = Configuration.ReadOptions<ConfigureMvcOptions>();
             services.ConfigureWithMvc(configureMvcOptions);
 
-            var tokenOptions = Configuration.ReadOptions<TokenAuthenticationOptions>("TokenAuthentication", services: services);
+            var tokenOptions = Configuration.ReadOptions<TokenAuthenticationOptions>("TokenAuthentication", services);
+            
+            SetupDatabaseConnection(services);
 
             Container = services.SetupAutofac(builder =>
             {
+                builder.RegisterType<IdentityResolver>().As<IIdentityResolver>();
+
                 if (tokenOptions.UseFakeCredentials)
                 {
-                    builder.RegisterType<FakeIdentityResolver>().As<IIdentityResolver>();
+                    builder.RegisterType<TestUserContextInitializer>().As<IDbContextInitializer>();
                 }
                 else
                 {
-                    builder.RegisterType<IdentityResolver>().As<IIdentityResolver>();
+                    builder.RegisterType<UserContextInitializer>().As<IDbContextInitializer>();
                 }
             });
-
+            
             return new AutofacServiceProvider(Container);
+        }
+
+        protected virtual void SetupDatabaseConnection(IServiceCollection services)
+        {
+            var connection = @"Server=(localdb)\mssqllocaldb;Database=Ehb.Dijlezonen.Kassa;Trusted_Connection=True;";
+            services.AddDbContext<UserContext>(options => { options.UseSqlServer(connection); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
-            IApplicationLifetime appLifetime, IIdentityResolver resolver, IOptions<TokenAuthenticationOptions> tokenOptions)
+            IApplicationLifetime appLifetime, IOptions<TokenAuthenticationOptions> tokenOptions, 
+            IDbContextInitializer dbInitializer)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.SetupJwtBearerAuth(tokenOptions, resolver);
+            app.SetupJwtBearerAuth(tokenOptions);
 
             app.UseMvc();
-            appLifetime.ApplicationStopped.Register(() => this.Container.Dispose());
+
+            dbInitializer.Initialize();
+
+            appLifetime.ApplicationStopped.Register(() => Container.Dispose());
         }
     }
 

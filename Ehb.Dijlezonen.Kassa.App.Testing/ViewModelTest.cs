@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Autofac;
-using Ehb.Dijlezonen.Kassa.App.Shared;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using Xunit.Abstractions;
