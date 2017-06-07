@@ -49,7 +49,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 
         protected void CheckedThat(string message)
         {
-            string traceMessage = $"Checked that {message}.";
+            var traceMessage = $"Checked that {message}.";
 
             writeOutput?.Invoke(traceMessage);
         }
