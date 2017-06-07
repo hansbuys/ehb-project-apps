@@ -8,7 +8,6 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model
 
         public string Username { get; set; }
         public string Password { get; set; }
-        public string Salt { get; set; }
 
         public bool AskNewPasswordOnNextLogin { get; set; }
 

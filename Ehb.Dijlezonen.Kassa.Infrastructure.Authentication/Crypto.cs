@@ -1,54 +1,67 @@
-﻿using System.Linq;
+﻿using System;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure.Authentication
 {
     public class Crypto
     {
-        private readonly Encoding encoding = Encoding.Unicode;
+        private const int Iterations = 10000;
+        private const int SaltLength = 16;
 
-        public SecurePassword Encrypt(string password)
+        public string Encrypt(string password)
         {
             var salt = GetNewRandomSalt();
 
             return SecurePassword(password, salt);
         }
 
-        private SecurePassword SecurePassword(string password, byte[] salt)
-        {
-            using (var hashing = SHA256.Create())
-            {
-                var passwordAsBytes = encoding.GetBytes(password);
-
-                var hash = hashing.ComputeHash(passwordAsBytes.Concat(salt).ToArray());
-
-                return new SecurePassword(
-                    encoding.GetString(hash),
-                    encoding.GetString(salt)
-                );
-            }
-        }
-
-        public bool Verify(SecurePassword secure, string plainTextPassword)
-        {
-            var salt = encoding.GetBytes(secure.Salt);
-
-            var password = SecurePassword(plainTextPassword, salt);
-            return password.Password == secure.Password;
-        }
-        
         private byte[] GetNewRandomSalt()
         {
             using (var rng = RandomNumberGenerator.Create())
             {
-                const int maxLength = 32;
-                var salt = new byte[maxLength];
+                var salt = new byte[SaltLength];
 
                 rng.GetBytes(salt);
 
                 return salt;
             }
+        }
+
+        private string SecurePassword(string password, byte[] salt)
+        {
+            var hash = HashPasswordWithSalt(password, salt);
+
+            var hashBytes = new byte[36];
+            Array.Copy(salt, 0, hashBytes, 0, SaltLength);
+            Array.Copy(hash, 0, hashBytes, SaltLength, 20);
+
+            var securePassword = Convert.ToBase64String(hashBytes);
+
+            return securePassword;
+        }
+
+        private byte[] HashPasswordWithSalt(string password, byte[] salt)
+        {
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations);
+            var hash = pbkdf2.GetBytes(20);
+
+            return hash;
+        }
+
+        public bool Verify(string securePassword, string plainTextPassword)
+        {
+            var hashBytes = Convert.FromBase64String(securePassword);
+
+            var salt = new byte[SaltLength];
+            Array.Copy(hashBytes, 0, salt, 0, SaltLength);
+
+            var hash = HashPasswordWithSalt(plainTextPassword, salt);
+
+            for (var i = 0; i < 20; i++)
+                if (hashBytes[i + SaltLength] != hash[i])
+                    return false;
+
+            return true;
         }
     }
 }

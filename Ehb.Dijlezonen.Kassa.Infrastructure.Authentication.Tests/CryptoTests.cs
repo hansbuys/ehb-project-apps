@@ -29,17 +29,5 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Authentication.Tests
             var secure = crypto.Encrypt("password");
             crypto.Verify(secure, "other-password").Should().BeFalse();
         }
-
-        [Fact]
-        public async Task DifferentSaltVerificationFails()
-        {
-            var crypto = await GetSut();
-
-            var secure = crypto.Encrypt("password");
-            
-            var other = new SecurePassword(secure.Password, "some-other-salt");
-            crypto.Verify(other, "password").Should().BeFalse();
-        }
-
     }
 }

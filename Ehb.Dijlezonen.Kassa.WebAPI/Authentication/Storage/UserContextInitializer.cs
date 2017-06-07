@@ -41,8 +41,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage
                     new User
                     {
                         Username = "beheerder",
-                        Password = adminPass.Password,
-                        Salt = adminPass.Salt,
+                        Password = adminPass,
                         AskNewPasswordOnNextLogin = true,
                         Roles = new List<Role>
                         {
@@ -53,8 +52,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage
                     new User
                     {
                         Username = "gebruiker",
-                        Password = userPass.Password,
-                        Salt = userPass.Salt,
+                        Password = userPass,
                         AskNewPasswordOnNextLogin = true,
                         Roles = new List<Role>
                         {
