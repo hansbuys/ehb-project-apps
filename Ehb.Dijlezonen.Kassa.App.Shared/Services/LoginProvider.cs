@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Common.Logging;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
@@ -28,11 +30,37 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         public event EventHandler LoggedIn;
         public event EventHandler LoggedOut;
         public event EventHandler NeedsPasswordChange;
+        public event EventHandler PasswordHasChanged;
 
         private Token Token { get; set; }
-        public Task ChangePassword(string newPassword)
+        public async Task ChangePassword(string oldPassword, string newPassword)
         {
-            throw new NotImplementedException();
+            var response = await PostJson(config.BaseUrl + "/password/change", new
+            {
+                oldPassword,
+                newPassword
+            });
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Password change failed!");
+
+            PasswordHasChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+
+        protected async Task<HttpResponseMessage> PostJson(string url, object body)
+        {
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", Token.Value);
+
+                var postBody = JsonConvert.SerializeObject(body);
+
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                return await client.PostAsync(url, new StringContent(postBody, Encoding.UTF8, "application/json"));
+            }
         }
 
         Token ILoginProvider.Token => Token;

@@ -36,7 +36,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
             var configureMvcOptions = Configuration.ReadOptions<ConfigureMvcOptions>();
             services.ConfigureWithMvc(configureMvcOptions);
 
-            var tokenOptions = Configuration.ReadOptions<TokenAuthenticationOptions>("TokenAuthentication", services: services);
+            var tokenOptions = Configuration.ReadOptions<TokenAuthenticationOptions>("TokenAuthentication", services);
             
             SetupDatabaseConnection(services);
 
@@ -65,13 +65,13 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
-            IApplicationLifetime appLifetime, IIdentityResolver resolver, IOptions<TokenAuthenticationOptions> tokenOptions, 
+            IApplicationLifetime appLifetime, IOptions<TokenAuthenticationOptions> tokenOptions, 
             IDbContextInitializer dbInitializer)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.SetupJwtBearerAuth(tokenOptions, resolver);
+            app.SetupJwtBearerAuth(tokenOptions);
 
             app.UseMvc();
 

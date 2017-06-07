@@ -106,6 +106,7 @@
     <Compile Include="Assertions\PageAssertions.cs" />
     <Compile Include="Login\LoginViewModelTests.cs" />
     <Compile Include="MainPage\MainPageViewModelTests.cs" />
+    <Compile Include="PasswordChange\PasswordChangeViewModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

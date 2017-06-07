@@ -11,25 +11,30 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         public PasswordChangeViewModel(ILoginProvider login)
         {
             this.login = login;
+
+            ChangePasswordCommand = new Command(
+                async () => await ChangePassword(),
+                CanChangePassword);
         }
 
         private bool CanChangePassword()
         {
-            return !string.IsNullOrEmpty(NewPassword) && NewPassword == ConfirmNewPassword;
+            return !string.IsNullOrEmpty(OldPassword) && !string.IsNullOrEmpty(NewPassword) && NewPassword == ConfirmNewPassword;
         }
 
         private Task ChangePassword()
         {
-            return login.ChangePassword(NewPassword);
+            return login.ChangePassword(OldPassword, NewPassword);
         }
 
         public string Title => "Verander je paswoord aub.";
 
+        public string OldPasswordPlaceholder => "Oud password";
         public string NewPasswordPlaceholder => "Nieuw password";
-        public string ConfirmNewPasswordPlaceholder => "Herlaal nieuw paswoord";
+        public string ConfirmNewPasswordPlaceholder => "Herhaal nieuw paswoord";
         public string ChangePasswordCommandText => "Verander paswoord";
 
-        public Command ChangePasswordCommand => new Command(async () => await ChangePassword().ConfigureAwait(false), CanChangePassword);
+        public Command ChangePasswordCommand { get; }
 
         private string newPassword;
         public string NewPassword
@@ -44,6 +49,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         {
             get { return confirmNewPassword; }
             set { Set(ref confirmNewPassword, value, PasswordsChanged); }
+        }
+
+        private string oldPassword;
+        public string OldPassword
+        {
+            get { return oldPassword; }
+            set { Set(ref oldPassword, value, PasswordsChanged); }
         }
 
         private void PasswordsChanged()

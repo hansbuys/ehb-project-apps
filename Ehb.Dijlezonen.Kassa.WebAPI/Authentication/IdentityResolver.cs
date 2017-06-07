@@ -37,7 +37,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
                 var roles = string.Join(", ", user.Roles.Select(x => x.Name));
                 log.LogDebug($"user has roles {roles}.");
 
-                var claims = user.Roles.Select(r => new Claim(ClaimTypes.Role, r.Name)).ToList();
+                var claims = user.Roles.Select(r => new Claim(CustomClaimTypes.Role, r.Name)).ToList();
 
                 if (user.AskNewPasswordOnNextLogin)
                 {

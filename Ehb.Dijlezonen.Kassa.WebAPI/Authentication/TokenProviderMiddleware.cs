@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage;
 using Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -37,7 +38,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
             };
         }
 
-        public Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context, IIdentityResolver identityResolver)
         {
             // If the request path doesn't match, skip
             if (!context.Request.Path.Equals(options.Path, StringComparison.Ordinal))
@@ -52,10 +53,10 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
                 return context.Response.WriteAsync("Bad request.");
             }
             
-            return GenerateToken(context);
+            return GenerateToken(context, identityResolver);
         }
 
-        private async Task GenerateToken(HttpContext context)
+        private async Task GenerateToken(HttpContext context, IIdentityResolver identityResolver)
         {
             log.LogDebug("generating token for request.");
 
@@ -64,7 +65,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
             
             log.LogDebug($"attempting to log in user {username}.");
 
-            var identity = await options.IdentityResolver(username, password);
+            var identity = await identityResolver.GetIdentity(username, password);
             if (identity == null)
             {
                 log.LogError($"{username} logged in with incorrect password.");
@@ -122,9 +123,6 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
 
             if (options.Expiration == TimeSpan.Zero)
                 throw new ArgumentException("Must be a non-zero TimeSpan.", nameof(TokenProviderOptions.Expiration));
-
-            if (options.IdentityResolver == null)
-                throw new ArgumentNullException(nameof(TokenProviderOptions.IdentityResolver));
 
             if (options.SigningCredentials == null)
                 throw new ArgumentNullException(nameof(TokenProviderOptions.SigningCredentials));

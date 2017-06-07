@@ -12,9 +12,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         event EventHandler LoggedOut;
         event EventHandler LoggedIn;
         event EventHandler NeedsPasswordChange;
+        event EventHandler PasswordHasChanged;
 
         Token Token { get; }
-        Task ChangePassword(string newPassword);
+        Task ChangePassword(string oldPassword, string newPassword);
     }
 
     public class Token

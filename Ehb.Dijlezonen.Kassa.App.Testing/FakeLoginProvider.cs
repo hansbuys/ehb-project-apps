@@ -48,11 +48,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         public event EventHandler LoggedOut;
         public event EventHandler LoggedIn;
         public event EventHandler NeedsPasswordChange;
+        public event EventHandler PasswordHasChanged;
 
         public Token Token => null;
-        public Task ChangePassword(string newPassword)
+        public Task ChangePassword(string oldPassword, string newPassword)
         {
             PasswordChanged = true;
+            PasswordHasChanged?.Invoke(this, EventArgs.Empty);
 
             return Task.FromResult(0);
         }
@@ -65,13 +67,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             IsLoggedIn = true;
         }
 
-        public void WhenUserIsKnown(string user, string pass, bool optionsNeedsPasswordChange = false)
+        public void WhenUserIsKnown(string user, string pass, bool userNeedsPasswordChange = false)
         {
             TestUsers.Add(new TestUser
             {
                 Username = user,
                 Password = pass,
-                NeedsPasswordChange = optionsNeedsPasswordChange
+                NeedsPasswordChange = userNeedsPasswordChange
             });
         }
 

@@ -2,6 +2,7 @@
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
+using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,22 +15,22 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         }
 
         [Fact]
-        public void WhenNotLoggedInLoginViewGetsDisplayed()
+        public async Task WhenNotLoggedInLoginViewGetsDisplayed()
         {
-            GetSut();
+            await GetSut();
 
             NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
 
         [Fact]
-        public void ShouldReturnToMainPageAfterLogin()
+        public async Task ShouldReturnToMainPageAfterLogin()
         {
             const string user = "test";
             const string pass = "test";
             LoginProvider.WhenUserIsKnown(user, pass);
-                
-            GetSut();
-            
+
+            await GetSut();
+
             var loginVm = NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
             loginVm.User = user;
             loginVm.Password = pass;
