@@ -26,6 +26,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 
         public string LogoutCommandText => "Uitloggen";
         public ICommand LogoutCommand => new Command(async () => await Logout().ConfigureAwait(false));
+        public string NavigateToAdminCommandText => "Administration";
+        public ICommand NavigateToAdminCommand => new Command(() => { /*does nothing yet*/ });
 
         private bool isAdmin;
         private EventHandler onLoggedIn;
