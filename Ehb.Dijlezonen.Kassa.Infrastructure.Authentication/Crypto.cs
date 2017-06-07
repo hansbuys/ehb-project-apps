@@ -6,37 +6,39 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Authentication
 {
     public class Crypto
     {
+        private readonly Encoding encoding = Encoding.Unicode;
+
         public SecurePassword Encrypt(string password)
         {
             var salt = GetNewRandomSalt();
 
+            return SecurePassword(password, salt);
+        }
+
+        private SecurePassword SecurePassword(string password, byte[] salt)
+        {
             using (var hashing = SHA256.Create())
             {
-                var passwordAsBytes = Encoding.Unicode.GetBytes(password);
+                var passwordAsBytes = encoding.GetBytes(password);
 
                 var hash = hashing.ComputeHash(passwordAsBytes.Concat(salt).ToArray());
-                
+
                 return new SecurePassword(
-                    Encoding.Unicode.GetString(hash),
-                    Encoding.Unicode.GetString(salt)
+                    encoding.GetString(hash),
+                    encoding.GetString(salt)
                 );
             }
         }
 
-        public bool Verify(SecurePassword password, string plainTextPassword)
+        public bool Verify(SecurePassword secure, string plainTextPassword)
         {
-            using (var hashing = SHA256.Create())
-            {
-                var salt = Encoding.Unicode.GetBytes(password.Salt);
-                var passwordAsBytes = Encoding.Unicode.GetBytes(plainTextPassword);
+            var salt = encoding.GetBytes(secure.Salt);
 
-                var hash = hashing.ComputeHash(passwordAsBytes.Concat(salt).ToArray());
-
-                return hash.SequenceEqual(Encoding.Unicode.GetBytes(password.Password));
-            }
+            var password = SecurePassword(plainTextPassword, salt);
+            return password.Password == secure.Password;
         }
         
-        private static byte[] GetNewRandomSalt()
+        private byte[] GetNewRandomSalt()
         {
             using (var rng = RandomNumberGenerator.Create())
             {
