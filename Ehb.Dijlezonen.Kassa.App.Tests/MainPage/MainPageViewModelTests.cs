@@ -2,7 +2,6 @@
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
-using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,7 +26,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             const string user = "test";
             const string pass = "test";
-            LoginProvider.WhenUserIsKnown(user, pass);
+            BackendClient.WhenUserIsKnown(user, pass);
 
             await GetSut();
 
@@ -42,11 +41,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         [Fact]
         public async Task LogoutLeadsToLogin()
         {
-            LoginProvider.WhenUserIsLoggedIn();
+            BackendClient.WhenUserIsLoggedIn();
 
             (await GetSut()).LogoutCommand.Click();
 
-            LoginProvider.Should().NotBeLoggedIn();
+            BackendClient.Should().NotBeLoggedIn();
             NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
     }

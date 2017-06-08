@@ -8,14 +8,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
     public class LoginViewModel : PropertyChangedViewModelBase
     {
-        private readonly ILoginProvider auth;
+        private readonly UserService userService;
         private readonly ILog log;
-        private string password;
-        private string user;
 
-        public LoginViewModel(ILoginProvider auth, Logging logging)
+        public LoginViewModel(UserService userService, Logging logging)
         {
-            this.auth = auth;
+            this.userService = userService;
             log = logging.GetLoggerFor<LoginViewModel>();
 
             LoginCommand = new Command(async () => await Login(), CanLogin);
@@ -29,12 +27,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 
         public Command LoginCommand { get; }
 
+        private string user;
         public string User
         {
             get { return user; }
             set { Set(ref user, value, CredentialsChanged); }
         }
 
+        private string password;
         public string Password
         {
             get { return password; }
@@ -55,7 +55,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         {
             log.Debug("Attempting logging in");
 
-            await auth.Login(User, Password);
+            await userService.Login(User, Password);
         }
     }
 }

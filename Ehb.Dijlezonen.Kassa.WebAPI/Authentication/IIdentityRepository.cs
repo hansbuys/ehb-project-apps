@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
 {
-    public interface IIdentityResolver
+    public interface IIdentityRepository
     {
-        Task<ClaimsIdentity> GetIdentity(string username, string password);
+        Task<Identity> GetIdentity(string username, string password);
     }
 }

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model
 {
@@ -11,6 +13,13 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model
 
         public bool AskNewPasswordOnNextLogin { get; set; }
 
-        public virtual List<Role> Roles { get; set; }
+        public virtual ICollection<UserRole> UserRoles { get; set; }
+
+        [NotMapped]
+        public IEnumerable<Role> Roles
+        {
+            get { return UserRoles.Select(x => x.Role); }
+            set { UserRoles = value.Select(x => new UserRole(Id, x.Id)).ToList(); }
+        }
     }
 }

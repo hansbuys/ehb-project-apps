@@ -1,39 +1,32 @@
-﻿using System;
-using System.Collections.Concurrent;
-using Ehb.Dijlezonen.Kassa.App.Shared.Services;
+﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using System.Linq;
-using Ehb.Dijlezonen.Kassa.App.Shared;
 using Autofac;
 using Common.Logging;
+using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
     public class FakeNavigationAdapter : INavigationAdapter
     {
-        public ConcurrentStack<object> ModalStack { get; } = new ConcurrentStack<object>();
-        public ConcurrentStack<object> NavigationStack { get; } = new ConcurrentStack<object>();
+        private readonly IComponentContext container;
 
         private readonly ILog log;
 
-        public FakeNavigationAdapter(Logging logging)
+        public FakeNavigationAdapter(Logging logging, IComponentContext container)
         {
-            this.log = logging.GetLoggerFor<FakeNavigationAdapter>();
+            this.container = container;
+            log = logging.GetLoggerFor<FakeNavigationAdapter>();
         }
 
-        internal void SetResolver(IContainer container)
-        {
-            Container = container;
-        }
-
-        public IContainer Container { get; private set; }
+        public ConcurrentStack<object> ModalStack { get; } = new ConcurrentStack<object>();
+        public ConcurrentStack<object> NavigationStack { get; } = new ConcurrentStack<object>();
 
         Task<TViewModel> INavigationAdapter.NavigateTo<TViewModel>()
         {
             log.Debug($"Navigating to {typeof(TViewModel).Name}");
 
-            var viewModel = Container.Resolve<TViewModel>();
+            var viewModel = container.Resolve<TViewModel>();
             NavigationStack.Push(viewModel);
 
             return Task.FromResult(viewModel);
@@ -43,7 +36,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         {
             log.Debug($"Navigating modally to {typeof(TViewModel).Name}");
 
-            var viewModel = Container.Resolve<TViewModel>();
+            var viewModel = container.Resolve<TViewModel>();
             ModalStack.Push(viewModel);
 
             return Task.FromResult(viewModel);

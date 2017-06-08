@@ -15,22 +15,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         ///     Value = View
         /// </summary>
         private readonly IDictionary<Type, Type> map;
+        private readonly IComponentContext container;
         private readonly ILog log;
-
-        public ViewFactory(Logging logging)
+        
+        public ViewFactory(Logging logging, IComponentContext container)
         {
+            this.container = container;
             log = logging.GetLoggerFor<ViewFactory>();
             map = new Dictionary<Type, Type>();
-        }
-
-        protected IContainer Container { get; private set; }
-
-        public void SetResolver(IContainer container)
-        {
-            if (Container != null)
-                throw new Exception("Resolver has already been set!");
-
-            Container = container;
         }
 
         public void Register(Type view, Type viewModel)
@@ -42,8 +34,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         {
             var viewType = map[typeof(TViewModel)];
 
-            var view = Container.Resolve(viewType) as Page;
-            var vm = Container.Resolve<TViewModel>();
+            var view = container.Resolve(viewType) as Page;
+            var vm = container.Resolve<TViewModel>();
 
             view.BindingContext = vm;
 

@@ -17,6 +17,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
         protected override void RegisterComponents(ContainerBuilder builder)
         {
             builder.RegisterType<ViewFactory>().SingleInstance();
+            builder.RegisterType<UserService>().SingleInstance();
         }
 
         public override IContainer Initialize(Action<ContainerBuilder> addDependencies = null)
@@ -27,7 +28,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
             log = logging.GetLoggerFor<AppBootstrapperBase>();
 
             var viewFactory = container.Resolve<ViewFactory>();
-            viewFactory.SetResolver(container);
             RegisterViews(viewFactory);
 
             return container;

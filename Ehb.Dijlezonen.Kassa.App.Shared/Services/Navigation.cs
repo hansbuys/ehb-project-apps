@@ -8,26 +8,28 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     public class Navigation : IDisposable
     {
         private readonly INavigationAdapter navigationAdapter;
-        private readonly ILoginProvider login;
+        private readonly UserService userService;
+        private readonly IBackendClient backendClient;
         private readonly EventHandler onLoggedIn;
         private readonly EventHandler onLoggedOut;
         private readonly EventHandler needsPasswordChange;
         private readonly EventHandler passwordHasChanged;
 
-        public Navigation(INavigationAdapter navigationAdapter, ILoginProvider login)
+        public Navigation(INavigationAdapter navigationAdapter, UserService userService, IBackendClient backendClient)
         {
             this.navigationAdapter = navigationAdapter;
-            this.login = login;
+            this.userService = userService;
+            this.backendClient = backendClient;
 
             onLoggedIn = async (sender, args) => await OnLoggedIn().ConfigureAwait(false);
             onLoggedOut = async (sender, args) => await OnLoggedOut().ConfigureAwait(false);
             needsPasswordChange = async (sender, args) => await NeedsPasswordChange().ConfigureAwait(false);
             passwordHasChanged = async (sender, args) => await PasswordHasChanged().ConfigureAwait(false);
 
-            login.LoggedIn += onLoggedIn;
-            login.LoggedOut += onLoggedOut;
-            login.NeedsPasswordChange += needsPasswordChange;
-            login.PasswordHasChanged += passwordHasChanged;
+            userService.LoggedIn += onLoggedIn;
+            userService.LoggedOut += onLoggedOut;
+            userService.NeedsPasswordChange += needsPasswordChange;
+            userService.PasswordHasChanged += passwordHasChanged;
         }
 
         private Task PasswordHasChanged()
@@ -52,8 +54,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public async Task<TViewModel> NavigateTo<TViewModel>()
         {
-            if (!await login.IsLoggedIn() && typeof(TViewModel).IsAssignableTo<IProtectedViewModel>())
-                await login.Logout();
+            if (backendClient.LoggedInUser == null && typeof(TViewModel).IsAssignableTo<IProtectedViewModel>())
+                await userService.Logout();
 
             return await navigationAdapter.NavigateTo<TViewModel>();
         }
@@ -69,16 +71,17 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue && disposing)
             {
-                login.LoggedIn -= onLoggedIn;
-                login.LoggedOut -= onLoggedOut;
-                login.NeedsPasswordChange -= needsPasswordChange;
-                login.PasswordHasChanged -= passwordHasChanged;
+                userService.LoggedIn -= onLoggedIn;
+                userService.LoggedOut -= onLoggedOut;
+                userService.NeedsPasswordChange -= needsPasswordChange;
+                userService.PasswordHasChanged -= passwordHasChanged;
+
                 disposedValue = true;
             }
         }

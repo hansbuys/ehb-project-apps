@@ -29,7 +29,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
             int tokenExpiresInSeconds = response.expires_in;
 
             accessToken.Should().NotBeNull();
-            accessToken.Claims.Should().NotContain(c => c.Type == CustomClaimTypes.Role && c.Value == "Admin");
+            accessToken.Claims.Should().NotContain(c => c.Type == ClaimTypes.Role && c.Value.Contains("Admin"));
 
             tokenExpiresInSeconds.Should().Be(300);
         }
