@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <None Remove="App.xaml" />
+    <None Remove="View\Admin\Overview.xaml" />
     <None Remove="View\Login.xaml" />
     <None Remove="View\MainPage.xaml" />
     <None Remove="View\PasswordChange.xaml" />
@@ -16,13 +17,19 @@
     <EmbeddedResource Include="App.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="View\Login.xaml">
+    <EmbeddedResource Include="View\Admin\AddUser.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\Admin\Overview.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\UserManagement\Login.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="View\MainPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="View\PasswordChange.xaml">
+    <EmbeddedResource Include="View\UserManagement\PasswordChange.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
@@ -40,6 +47,12 @@
 
   <ItemGroup>
     <Compile Update="App.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="View\Admin\AddUser.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="View\Admin\Overview.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

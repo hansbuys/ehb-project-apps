@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ehb.Dijlezonen.Kassa.App.Shared.View.Admin.AddUser">
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="Center" 
+                     HorizontalOptions="Center">
+            <Label Text="{Binding Subtitle}"></Label>
+            <Entry Placeholder="{Binding EmailAddressPlaceholder}" Text="{Binding EmailAddress}"/>
+            <Entry Placeholder="{Binding FirstnamePlaceholder}" Text="{Binding Firstname}"/>
+            <Entry Placeholder="{Binding LastnamePlaceholder}" Text="{Binding Lastname}"/>
+            <Entry Placeholder="{Binding PasswordPlaceholder}" Text="{Binding Password}"/>
+            <StackLayout Orientation="Horizontal">
+                <Switch IsToggled="{Binding IsBlocked}"/>
+                <Label Text="{Binding IsBlockedLabel}" VerticalOptions="Center" HorizontalTextAlignment="End" />
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Switch IsToggled="{Binding PasswordNeedsReset}"/>
+                <Label Text="{Binding PasswordNeedsResetLabel}" VerticalOptions="Center" HorizontalTextAlignment="End" />
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

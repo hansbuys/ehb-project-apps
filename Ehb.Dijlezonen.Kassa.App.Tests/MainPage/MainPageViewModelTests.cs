@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using Xunit;
@@ -47,6 +49,16 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
 
             BackendClient.Should().NotBeLoggedIn();
             NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
+        }
+
+        [Fact]
+        public async Task AdminCanNavigateToAdminOverview()
+        {
+            BackendClient.WhenAdminIsLoggedIn();
+
+            (await GetSut()).NavigateToAdminCommand.Click();
+            
+            NavigationAdapter.Should().HaveNavigatedTo<OverviewViewModel>();
         }
     }
 }
