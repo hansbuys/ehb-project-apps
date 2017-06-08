@@ -16,6 +16,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.log = logging.GetLoggerFor<UserService>();
         }
 
+        //maybe it's not the best idea to use events?
         public event EventHandler LoggedIn;
         public event EventHandler LoggedOut;
         public event EventHandler NeedsPasswordChange;

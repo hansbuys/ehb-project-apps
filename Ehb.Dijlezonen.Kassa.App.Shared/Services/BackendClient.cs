@@ -151,7 +151,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             private DateTime Expiration { get; }
             public string Value { get; }
 
-            public bool IsValid => !string.IsNullOrEmpty(Value) && Expiration < DateTime.UtcNow;
+            public bool IsValid => !string.IsNullOrEmpty(Value) && Expiration > DateTime.UtcNow;
         }
     }
 }
