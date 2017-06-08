@@ -6,11 +6,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
     public class PasswordChangeViewModel : PropertyChangedViewModelBase
     {
-        private readonly ILoginProvider login;
+        private readonly UserService userService;
 
-        public PasswordChangeViewModel(ILoginProvider login)
+        public PasswordChangeViewModel(UserService userService)
         {
-            this.login = login;
+            this.userService = userService;
 
             ChangePasswordCommand = new Command(
                 async () => await ChangePassword(),
@@ -24,7 +24,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 
         private Task ChangePassword()
         {
-            return login.ChangePassword(OldPassword, NewPassword);
+            return userService.ChangePassword(OldPassword, NewPassword);
         }
 
         public string Title => "Verander je paswoord aub.";
