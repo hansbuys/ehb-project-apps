@@ -40,10 +40,8 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Controllers
 
             if (!crypto.Verify(user.Password, body.oldPassword))
                 return BadRequest();
-
-            logger.LogDebug($"Users password was {user.Password}");
+            
             user.Password = crypto.Encrypt(body.newPassword);
-            logger.LogDebug($"Users password is now {user.Password}");
             user.AskNewPasswordOnNextLogin = false;
 
             await context.SaveChangesAsync();
