@@ -20,15 +20,10 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
             var rawResponse = await DoLoginUsingUserCredentials();
             rawResponse.EnsureSuccessStatusCode();
 
-            var response = await ParseJsonResponse(rawResponse);
-
             var accessToken = new JwtSecurityTokenHandler().ReadJwtToken(await GetAccessToken(rawResponse));
-            int tokenExpiresInSeconds = response.expires_in;
 
             accessToken.Should().NotBeNull();
             accessToken.Claims.Should().NotContain(c => c.Type == ClaimTypes.Role && c.Value.Contains("Admin"));
-
-            tokenExpiresInSeconds.Should().Be(300);
         }
 
         [Fact]
