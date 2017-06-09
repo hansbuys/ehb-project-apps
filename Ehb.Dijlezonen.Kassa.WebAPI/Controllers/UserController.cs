@@ -7,7 +7,6 @@ using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage;
 using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Ehb.Dijlezonen.Kassa.WebAPI.Controllers
 {
@@ -37,6 +36,9 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Controllers
                     AskNewPasswordOnNextLogin = userRegistration.AskNewPasswordOnNextLogin,
                     Roles = userRegistration.Roles.Select(x => context.Roles.Single(r => r.Name == x.Name))
                 };
+
+                if (context.Users.Any(u => u.Username == user.Username))
+                    return BadRequest("User already exists");
                 
                 context.Users.Add(user);
                 await context.SaveChangesAsync();
