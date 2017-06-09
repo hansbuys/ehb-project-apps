@@ -126,6 +126,8 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
 
         protected async Task<HttpResponseMessage> PostJson(string url, object body)
         {
+            output.WriteLine($"Sending post to '{url}', content: {body}");
+
             using (var client = await GetSut())
             {
                 var postBody = JsonConvert.SerializeObject(body);
@@ -151,6 +153,24 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
         protected void Logout()
         {
             LoginResponse = null;
+        }
+
+        protected async Task<HttpResponseMessage> CreateNewUser(string username, string password, bool passwordNeedsReset = true)
+        {
+            var response = await PostJson("/api/user/create", new
+            {
+                Username = username,
+                Password = password,
+                AskNewPasswordOnNextLogin = passwordNeedsReset,
+                Roles = new[]
+                {
+                    new
+                    {
+                        Name = "User"
+                    }
+                }
+            });
+            return response;
         }
     }
 
