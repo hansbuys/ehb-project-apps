@@ -1,3 +1,4 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -24,6 +25,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
 
             accessToken.Should().NotBeNull();
             accessToken.Claims.Should().NotContain(c => c.Type == ClaimTypes.Role && c.Value.Contains("Admin"));
+            accessToken.ValidTo.Should().BeAfter(DateTime.UtcNow);
         }
 
         [Fact]
