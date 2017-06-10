@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using Xunit;

@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Common.Logging;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
-    public class MainPageViewModel : PropertyChangedViewModelBase, IProtectedViewModel, IDisposable
+    public class MainPageViewModel : PropertyChangedViewModelBase, IRequireLogin, IDisposable
     {
         private readonly UserService userService;
+        private readonly Navigation navigation;
 
-        public MainPageViewModel(UserService userService, IBackendClient client)
+        private readonly EventHandler onLoggedIn;
+
+        public MainPageViewModel(UserService userService, IBackendClient client, Navigation navigation)
         {
             this.userService = userService;
+            this.navigation = navigation;
 
             onLoggedIn = (s, a) => IsAdmin = client.LoggedInUser?.IsAdmin ?? false;
             userService.LoggedIn += onLoggedIn;
@@ -24,11 +28,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         public string LogoutCommandText => "Uitloggen";
         public ICommand LogoutCommand => new Command(async () => await Logout());
         public string NavigateToAdminCommandText => "Administration";
-        public ICommand NavigateToAdminCommand => new Command(() => { /*does nothing yet*/ });
-
+        public ICommand NavigateToAdminCommand => new Command(async () => { await NavigateToAdminOverview(); });
+        
         private bool isAdmin;
-        private readonly EventHandler onLoggedIn;
-
         public bool IsAdmin
         {
             get { return isAdmin; }
@@ -38,6 +40,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         private Task Logout()
         {
             return userService.Logout();
+        }
+
+        private Task NavigateToAdminOverview()
+        {
+            return navigation.NavigateTo<OverviewViewModel>();
         }
 
         public void Dispose()

@@ -17,6 +17,10 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
             modelBuilder.Entity<UserRole>()
                 .HasKey(t => new { t.UserId, t.RoleId });
 

@@ -4,7 +4,7 @@ using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Xamarin.Forms;
 
-namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
+namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
 {
     public class LoginViewModel : PropertyChangedViewModelBase
     {

@@ -8,8 +8,8 @@ using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage;
 namespace Ehb.Dijlezonen.Kassa.WebAPI.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20170606155804_Add_Roles")]
-    partial class Add_Roles
+    [Migration("20170609213329_AddUsersAndRoles")]
+    partial class AddUsersAndRoles
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,13 +24,10 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Migrations
 
                     b.Property<bool>("IsAdminRole");
 
-                    b.Property<string>("Name");
-
-                    b.Property<int?>("UserId");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Roles");
                 });
@@ -42,22 +39,44 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Migrations
 
                     b.Property<bool>("AskNewPasswordOnNextLogin");
 
-                    b.Property<string>("Password");
+                    b.Property<string>("Password")
+                        .IsRequired();
 
-                    b.Property<string>("Salt");
-
-                    b.Property<string>("Username");
+                    b.Property<string>("Username")
+                        .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model.Role", b =>
+            modelBuilder.Entity("Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model.UserRole", b =>
                 {
-                    b.HasOne("Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model.User")
-                        .WithMany("Roles")
-                        .HasForeignKey("UserId");
+                    b.Property<int>("UserId");
+
+                    b.Property<int>("RoleId");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRole");
+                });
+
+            modelBuilder.Entity("Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model.UserRole", b =>
+                {
+                    b.HasOne("Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }

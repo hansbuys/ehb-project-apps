@@ -8,7 +8,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
     public class FakeBackendClient : IBackendClient
     {
         private TestUser loggedInUser;
-        public bool IsLoggedIn { get; set; }
         public ConcurrentBag<TestUser> TestUsers { get; } = new ConcurrentBag<TestUser>();
 
         public class TestUser
@@ -19,26 +18,22 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             public bool IsAdmin { get; set; }
         }
 
-        public Task Logout()
+        Task IBackendClient.Logout()
         {
-            IsLoggedIn = false;
+            loggedInUser = null;
             return Task.FromResult(0);
         }
 
-        public Task Login(string user, string password)
+        Task IBackendClient.Login(string user, string password)
         {
             loggedInUser = TestUsers.SingleOrDefault(x => x.Username == user && x.Password == password);
-
-            if (loggedInUser != null)
-            {
-                WhenUserIsLoggedIn();
-            }
 
             return Task.FromResult(0);
         }
 
         public User LoggedInUser => loggedInUser != null ? new User(loggedInUser.IsAdmin, loggedInUser.NeedsPasswordChange) : null;
-        public Task ChangePassword(string oldPassword, string newPassword)
+
+        Task IBackendClient.ChangePassword(string oldPassword, string newPassword)
         {
             PasswordChanged = true;
 
@@ -47,9 +42,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         public bool PasswordChanged { get; set; }
 
-        public void WhenUserIsLoggedIn()
+        public void WhenUserIsLoggedIn(string password = null)
         {
-            IsLoggedIn = true;
+            loggedInUser = new TestUser
+            {
+                IsAdmin = false,
+                Password = password
+            };
         }
 
         public void WhenUserIsKnown(string user, string pass, bool userNeedsPasswordChange = false, bool isAdmin = false)
@@ -61,6 +60,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
                 NeedsPasswordChange = userNeedsPasswordChange,
                 IsAdmin = isAdmin
             });
+        }
+
+        public void WhenAdminIsLoggedIn()
+        {
+            loggedInUser = new TestUser
+            {
+                IsAdmin = true
+            };
         }
     }
 }

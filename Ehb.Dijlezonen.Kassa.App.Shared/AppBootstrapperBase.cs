@@ -18,6 +18,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
         {
             builder.RegisterType<ViewFactory>().SingleInstance();
             builder.RegisterType<UserService>().SingleInstance();
+
+            //this is due to the events
+            builder.RegisterType<Navigation>().SingleInstance();
         }
 
         public override IContainer Initialize(Action<ContainerBuilder> addDependencies = null)

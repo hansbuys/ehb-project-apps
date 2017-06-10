@@ -51,7 +51,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
             LoggedIn?.Invoke(this, EventArgs.Empty);
 
-            if (client.LoggedInUser?.NeedsPasswordChange ?? false)
+            if (client.LoggedInUser != null && client.LoggedInUser.NeedsPasswordChange)
                 NeedsPasswordChange?.Invoke(this, EventArgs.Empty);
         }
 

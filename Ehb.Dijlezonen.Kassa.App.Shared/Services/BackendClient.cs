@@ -59,13 +59,18 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
                     var accessToken = (string)dynamicAccessToken.access_token;
 
-                    this.token = new Token(accessToken, DateTime.UtcNow.AddSeconds((int)dynamicAccessToken.expires_in));
+                    this.token = new Token(accessToken, ParseExpirationDateTime(accessToken));
 
                     this.user = new User(
                         ParseIsAdminToken(accessToken),
                         ParseNeedsPasswordChange(accessToken));
                 }
             }
+        }
+
+        private DateTime ParseExpirationDateTime(string accessToken)
+        {
+            return ReadJwtToken(accessToken).ValidTo;
         }
 
         private bool ParseIsAdminToken(string accessToken)
@@ -75,7 +80,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         private IEnumerable<Claim> GetClaims(string accessToken)
         {
-            return getTokenHandler().ReadJwtToken(accessToken).Claims;
+            return ReadJwtToken(accessToken).Claims;
+        }
+
+        private JwtSecurityToken ReadJwtToken(string accessToken)
+        {
+            return getTokenHandler().ReadJwtToken(accessToken);
         }
 
         private bool ParseNeedsPasswordChange(string accessToken)

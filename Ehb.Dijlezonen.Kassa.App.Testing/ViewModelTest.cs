@@ -21,6 +21,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         protected virtual bool IsModalWindow => false;
 
+        protected override void Configure(ContainerBuilder builder)
+        {
+            builder.RegisterType<UserService>().SingleInstance();
+            builder.RegisterType<Navigation>().SingleInstance();
+
+            builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
+            builder.RegisterInstance(BackendClient).As<IBackendClient>().SingleInstance();
+        }
+
         protected override IContainer InitializeContainer()
         {
             var container = base.InitializeContainer();
@@ -32,14 +41,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             navigation = container.Resolve<Navigation>();
 
             return container;
-        }
-
-        protected override void Configure(ContainerBuilder builder)
-        {
-            builder.RegisterType<UserService>().SingleInstance();
-
-            builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
-            builder.RegisterInstance(BackendClient).As<IBackendClient>().SingleInstance();
         }
 
         protected override Task<TViewModel> GetSut()

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
@@ -10,6 +11,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         private readonly INavigationAdapter navigationAdapter;
         private readonly UserService userService;
         private readonly IBackendClient backendClient;
+
         private readonly EventHandler onLoggedIn;
         private readonly EventHandler onLoggedOut;
         private readonly EventHandler needsPasswordChange;
@@ -21,10 +23,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.userService = userService;
             this.backendClient = backendClient;
 
-            onLoggedIn = async (sender, args) => await OnLoggedIn().ConfigureAwait(false);
-            onLoggedOut = async (sender, args) => await OnLoggedOut().ConfigureAwait(false);
-            needsPasswordChange = async (sender, args) => await NeedsPasswordChange().ConfigureAwait(false);
-            passwordHasChanged = async (sender, args) => await PasswordHasChanged().ConfigureAwait(false);
+            onLoggedIn = async (sender, args) => await OnLoggedIn();
+            onLoggedOut = async (sender, args) => await OnLoggedOut();
+            needsPasswordChange = async (sender, args) => await NeedsPasswordChange();
+            passwordHasChanged = async (sender, args) => await PasswordHasChanged();
 
             userService.LoggedIn += onLoggedIn;
             userService.LoggedOut += onLoggedOut;
@@ -54,10 +56,31 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public async Task<TViewModel> NavigateTo<TViewModel>()
         {
-            if (backendClient.LoggedInUser == null && typeof(TViewModel).IsAssignableTo<IProtectedViewModel>())
+            if (RequiresLogin<TViewModel>())
                 await userService.Logout();
 
+            CheckAdminPrivileges<TViewModel>();
+
             return await navigationAdapter.NavigateTo<TViewModel>();
+        }
+
+        private bool RequiresLogin<TViewModel>()
+        {
+            return backendClient.LoggedInUser == null && 
+                typeof(TViewModel).IsAssignableTo<IRequireLogin>();
+        }
+
+        private void CheckAdminPrivileges<TViewModel>()
+        {
+            if (RequiresAdminPrivileges<TViewModel>())
+                throw new Exception("This page required admin privileges.");
+        }
+
+        private bool RequiresAdminPrivileges<TViewModel>()
+        {
+            return backendClient.LoggedInUser != null && 
+                !backendClient.LoggedInUser.IsAdmin &&
+                typeof(TViewModel).IsAssignableTo<IRequireAdminPrivileges>();
         }
 
         public Task<TViewModel> NavigateToModal<TViewModel>()

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using FluentAssertions;
@@ -17,8 +17,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.PasswordChange
         [Fact]
         public async Task CanChangePassword()
         {
-            BackendClient.WhenUserIsKnown("user", "pass", true);
-            BackendClient.WhenUserIsLoggedIn();
+            BackendClient.WhenUserIsLoggedIn("pass");
 
             var vm = await GetSut();
 

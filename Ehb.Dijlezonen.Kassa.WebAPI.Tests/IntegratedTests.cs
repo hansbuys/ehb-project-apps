@@ -32,13 +32,15 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
                 .AddEnvironmentVariables();
             var configuration = builder.Build();
 
-            server = new TestServer(new WebHostBuilder()
+            var webHostBuilder = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureLogging(logging =>
                 {
                     logging.AddProvider(new XunitLoggingProvider(output, configuration.GetSection("Logging")));
                 })
-                .UseStartup<TestStartup>());
+                .UseStartup<TestStartup>();
+            
+            server = new TestServer(webHostBuilder);
         }
 
         protected async Task<HttpClient> GetSut()
@@ -60,19 +62,24 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
 
         protected async Task LoginUsingUserCredentials()
         {
-            output.WriteLine("Logging in as regular user");
-
             LoginResponse = await DoLoginUsingUserCredentials();
         }
         
-        protected async Task<HttpResponseMessage> DoLoginUsingUserCredentials(string password = null)
+        protected Task<HttpResponseMessage> DoLoginUsingUserCredentials(string password = null)
         {
+            return DoLoginUsingCredentials("gebruiker", password ?? "gebruiker");
+        }
+
+        protected async Task<HttpResponseMessage> DoLoginUsingCredentials(string username, string password)
+        {
+            output.WriteLine($"Logging in as {username}");
+
             using (var client = await GetSut())
             {
                 var response = await client.PostAsync("/api/token", new FormUrlEncodedContent(new[]
                 {
-                    new KeyValuePair<string, string>("username", "gebruiker"),
-                    new KeyValuePair<string, string>("password", password ?? "gebruiker")
+                    new KeyValuePair<string, string>("username", username),
+                    new KeyValuePair<string, string>("password", password)
                 }));
 
                 return response;
@@ -81,25 +88,12 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
 
         protected async Task LoginUsingAdminCredentials()
         {
-            output.WriteLine("Logging in as admin");
-
             LoginResponse = await DoLoginUsingAdminCredentials();
         }
 
-        protected async Task<HttpResponseMessage> DoLoginUsingAdminCredentials()
+        protected Task<HttpResponseMessage> DoLoginUsingAdminCredentials()
         {
-            using (var client = await GetSut())
-            {
-                var rawResponse = await client.PostAsync("/api/token", new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("username", "beheerder"),
-                    new KeyValuePair<string, string>("password", "beheerder")
-                }));
-
-                rawResponse.EnsureSuccessStatusCode();
-
-                return rawResponse;
-            }
+            return DoLoginUsingCredentials("beheerder", "beheerder");
         }
 
         private async Task SetClientCredentials(HttpClient client)
@@ -132,6 +126,8 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
 
         protected async Task<HttpResponseMessage> PostJson(string url, object body)
         {
+            output.WriteLine($"Sending post to '{url}', content: {body}");
+
             using (var client = await GetSut())
             {
                 var postBody = JsonConvert.SerializeObject(body);
@@ -157,6 +153,24 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
         protected void Logout()
         {
             LoginResponse = null;
+        }
+
+        protected async Task<HttpResponseMessage> CreateNewUser(string username, string password, bool passwordNeedsReset = true)
+        {
+            var response = await PostJson("/api/user/create", new
+            {
+                Username = username,
+                Password = password,
+                AskNewPasswordOnNextLogin = passwordNeedsReset,
+                Roles = new[]
+                {
+                    new
+                    {
+                        Name = "User"
+                    }
+                }
+            });
+            return response;
         }
     }
 

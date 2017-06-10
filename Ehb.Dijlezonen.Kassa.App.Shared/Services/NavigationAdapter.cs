@@ -25,7 +25,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
             log.Info($"Navigating to {view.GetType().Name}");
 
-            await navigation.PushAsync(view).ConfigureAwait(false);
+            await navigation.PushAsync(view);
 
             return (TViewModel)view.BindingContext;
         }
@@ -41,7 +41,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
             log.Info($"Navigating modally to {view.GetType().Name}");
             
-            await navigation.PushModalAsync(view).ConfigureAwait(false);
+            await navigation.PushModalAsync(view);
 
             return (TViewModel)view.BindingContext;
         }

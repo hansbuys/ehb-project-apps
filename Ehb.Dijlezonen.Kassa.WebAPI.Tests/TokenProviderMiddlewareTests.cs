@@ -1,10 +1,8 @@
-using System.Collections.Generic;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Ehb.Dijlezonen.Kassa.Infrastructure.Authentication;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -23,15 +21,11 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
             var rawResponse = await DoLoginUsingUserCredentials();
             rawResponse.EnsureSuccessStatusCode();
 
-            var response = await ParseJsonResponse(rawResponse);
-
             var accessToken = new JwtSecurityTokenHandler().ReadJwtToken(await GetAccessToken(rawResponse));
-            int tokenExpiresInSeconds = response.expires_in;
 
             accessToken.Should().NotBeNull();
             accessToken.Claims.Should().NotContain(c => c.Type == ClaimTypes.Role && c.Value.Contains("Admin"));
-
-            tokenExpiresInSeconds.Should().Be(300);
+            accessToken.ValidTo.Should().BeAfter(DateTime.UtcNow);
         }
 
         [Fact]
@@ -56,9 +50,10 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
         [Fact]
         public async Task CanLoginAsAdminUsingFakeCredentials()
         {
-            var rawResponse = await DoLoginUsingAdminCredentials();
+            var response = await DoLoginUsingAdminCredentials();
+            response.EnsureSuccessStatusCode();
 
-            var accessToken = new JwtSecurityTokenHandler().ReadJwtToken(await GetAccessToken(rawResponse));
+            var accessToken = new JwtSecurityTokenHandler().ReadJwtToken(await GetAccessToken(response));
 
             accessToken.Should().NotBeNull();
             accessToken.Claims.Should().ContainSingle(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
@@ -94,14 +89,13 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
-        [Fact]
-        public async Task WrongCredentialsReturnsBadRequest()
+        [Theory]
+        [InlineData("gebruiker")]
+        [InlineData("beheerder")]
+        [InlineData("test")]
+        public async Task WrongCredentialsCannotLogin(string username)
         {
-            var response = await PostForm("/api/token", new[]
-            {
-                new KeyValuePair<string, string>("username", "TEST"),
-                new KeyValuePair<string, string>("password", "WRONG PASSWORD")
-            });
+            var response =  await DoLoginUsingCredentials(username, "WRONG PASSWORD");
 
             response.IsSuccessStatusCode.Should().BeFalse();
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
