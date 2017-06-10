@@ -5,15 +5,15 @@ using FluentAssertions;
 
 namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 {
-    internal class FakeAuthenticationServiceAssertions : Assertions<FakeAuthenticationService, FakeAuthenticationServiceAssertions>
+    internal class FakeAuthenticationAssertions : Assertions<FakeAuthentication, FakeAuthenticationAssertions>
     {
-        public FakeAuthenticationServiceAssertions(FakeAuthenticationService subject) : base(subject)
+        public FakeAuthenticationAssertions(FakeAuthentication subject) : base(subject)
         {
         }
 
-        internal AndConstraint<FakeAuthenticationServiceAssertions> BeLoggedIn()
+        internal AndConstraint<FakeAuthenticationAssertions> BeLoggedIn()
         {
-            IAuthenticationService subject = Subject;
+            IAuthentication subject = Subject;
 
             subject.LoggedInUser.Should().NotBeNull("we expected to be logged in");
 
@@ -21,9 +21,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
             return And();
         }
 
-        internal AndConstraint<FakeAuthenticationServiceAssertions> NotBeLoggedIn()
+        internal AndConstraint<FakeAuthenticationAssertions> NotBeLoggedIn()
         {
-            IAuthenticationService subject = Subject;
+            IAuthentication subject = Subject;
 
             subject.LoggedInUser.Should().BeNull("we expected to be logged out");
 

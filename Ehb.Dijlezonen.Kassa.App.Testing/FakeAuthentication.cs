@@ -5,7 +5,7 @@ using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
-    public class FakeAuthenticationService : IAuthenticationService, ICredentialService
+    public class FakeAuthentication : IAuthentication, ICredentialService
     {
         private TestUser loggedInUser;
         public ConcurrentBag<TestUser> TestUsers { get; } = new ConcurrentBag<TestUser>();
@@ -18,13 +18,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             public bool IsAdmin { get; set; }
         }
 
-        Task IAuthenticationService.Logout()
+        Task IAuthentication.Logout()
         {
             loggedInUser = null;
             return Task.FromResult(0);
         }
 
-        Task IAuthenticationService.Login(string user, string password)
+        Task IAuthentication.Login(string user, string password)
         {
             loggedInUser = TestUsers.SingleOrDefault(x => x.Username == user && x.Password == password);
 

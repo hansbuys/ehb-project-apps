@@ -16,7 +16,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         }
 
         protected FakeNavigationAdapter NavigationAdapter { get; private set; }
-        protected FakeAuthenticationService AuthenticationService { get; } = new FakeAuthenticationService();
+        protected FakeAuthentication Authentication { get; } = new FakeAuthentication();
 
         private Navigation navigation;
 
@@ -26,8 +26,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         {
             builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
 
-            builder.RegisterInstance(AuthenticationService).As<IAuthenticationService>();
-            builder.RegisterInstance(AuthenticationService).As<ICredentialService>();
+            builder.RegisterInstance(Authentication).As<IAuthentication>();
+            builder.RegisterInstance(Authentication).As<ICredentialService>();
         }
 
         protected override BootstrapperBase GetBootstrapper()

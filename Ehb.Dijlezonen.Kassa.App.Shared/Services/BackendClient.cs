@@ -21,11 +21,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.getHttpClient = getHttpClient;
         }
 
-        public Task<HttpResponseMessage> PostForm(string url, IEnumerable<KeyValuePair<string, string>> form, bool requireLogin = false)
+        public async Task<HttpResponseMessage> PostForm(string url, IEnumerable<KeyValuePair<string, string>> form, bool requireLogin = false)
         {
             using (var httpClient = GetHttpClient(requireLogin))
             {
-                return httpClient.PostAsync(
+                return await httpClient.PostAsync(
                         config.BaseUrl + url,
                         new FormUrlEncodedContent(form));
             }
@@ -37,12 +37,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             {
                 var postBody = JsonConvert.SerializeObject(body);
 
-                var mediaType = "application/json";
+                const string mediaType = "application/json";
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
                 var content = new StringContent(postBody, Encoding.UTF8, mediaType);
 
                 return await client.PostAsync(
-                    url, 
+                    config.BaseUrl + url, 
                     content);
             }
         }

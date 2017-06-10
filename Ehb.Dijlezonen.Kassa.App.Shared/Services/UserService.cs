@@ -5,13 +5,14 @@ using Ehb.Dijlezonen.Kassa.Infrastructure;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
+    //TODO: maybe we don't need this service anymore
     public class UserService
     {
-        private readonly IAuthenticationService authentication;
+        private readonly IAuthentication authentication;
         private readonly ICredentialService credentials;
         private readonly ILog log;
 
-        public UserService(IAuthenticationService authentication, ICredentialService credentials, Logging logging)
+        public UserService(IAuthentication authentication, ICredentialService credentials, Logging logging)
         {
             this.authentication = authentication;
             this.credentials = credentials;

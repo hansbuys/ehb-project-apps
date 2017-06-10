@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
-    public class AuthenticationService : IAuthenticationService
+    public class Authentication : IAuthentication
     {
         private readonly BackendClient client;
         private readonly Func<JwtSecurityTokenHandler> getTokenHandler;
@@ -17,13 +17,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         private User user;
         private Token token;
 
-        public AuthenticationService(BackendClient client, Func<JwtSecurityTokenHandler> getTokenHandler)
+        public Authentication(BackendClient client, Func<JwtSecurityTokenHandler> getTokenHandler)
         {
             this.client = client;
             this.getTokenHandler = getTokenHandler;
         }
 
-        async Task IAuthenticationService.Login(string username, string password)
+        async Task IAuthentication.Login(string username, string password)
         {
             var result = await client.PostForm("/token", new[]
             {
@@ -73,7 +73,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             return getTokenHandler().ReadJwtToken(accessToken);
         }
 
-        Task IAuthenticationService.Logout()
+        Task IAuthentication.Logout()
         {
             user = null;
             token = null;
@@ -81,7 +81,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             return Task.FromResult(0);
         }
 
-        User IAuthenticationService.LoggedInUser
+        User IAuthentication.LoggedInUser
         {
             get
             {

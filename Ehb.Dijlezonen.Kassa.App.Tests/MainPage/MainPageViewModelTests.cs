@@ -28,7 +28,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             const string user = "test";
             const string pass = "test";
-            AuthenticationService.WhenUserIsKnown(user, pass);
+            Authentication.WhenUserIsKnown(user, pass);
 
             await GetSut();
 
@@ -43,18 +43,18 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         [Fact]
         public async Task LogoutLeadsToLogin()
         {
-            AuthenticationService.WhenUserIsLoggedIn();
+            Authentication.WhenUserIsLoggedIn();
 
             (await GetSut()).LogoutCommand.Click();
 
-            AuthenticationService.Should().NotBeLoggedIn();
+            Authentication.Should().NotBeLoggedIn();
             NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
 
         [Fact]
         public async Task AdminCanNavigateToAdminOverview()
         {
-            AuthenticationService.WhenAdminIsLoggedIn();
+            Authentication.WhenAdminIsLoggedIn();
 
             (await GetSut()).NavigateToAdminCommand.Click();
             

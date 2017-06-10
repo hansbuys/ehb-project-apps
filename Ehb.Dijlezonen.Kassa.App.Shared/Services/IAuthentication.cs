@@ -2,7 +2,7 @@
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
-    public interface IAuthenticationService
+    public interface IAuthentication
     {
         Task Login(string user, string password);
         Task Logout();
