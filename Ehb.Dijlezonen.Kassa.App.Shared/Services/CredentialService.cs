@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
@@ -26,14 +27,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             {
                 registration.Username,
                 registration.Password,
+                registration.Firstname,
+                registration.Lastname,
+                registration.IsBlocked,
                 AskNewPasswordOnNextLogin = registration.NeedsPasswordChange,
-                Roles = new[]
-                {
-                    new
-                    {
-                        Name = "User"
-                    }
-                }
+                Roles = registration.Roles.Select(x => new { Name = x })
             });
         }
     }

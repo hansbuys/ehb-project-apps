@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
+using Ehb.Dijlezonen.Kassa.Infrastructure.Authentication;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared
 {
@@ -12,6 +13,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
 
             //this is due to the events
             builder.RegisterType<Navigation>().SingleInstance();
+
+            builder.RegisterInstance(Duty.AllDuties);
         }
     }
 }

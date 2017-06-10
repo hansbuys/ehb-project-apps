@@ -28,7 +28,9 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
             var user = await userContext.Users
                 .Include(u => u.UserRoles)
                     .ThenInclude(u => u.Role)
-                .SingleOrDefaultAsync(u => u.Username == username)
+                .SingleOrDefaultAsync(u => 
+                    u.Username == username && 
+                    !u.IsBlocked)
                 .ConfigureAwait(false);
 
             if (AccountDoesNotExist(password, user))

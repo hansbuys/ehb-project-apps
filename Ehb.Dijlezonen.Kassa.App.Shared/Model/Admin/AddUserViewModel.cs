@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Common.Logging;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
+using Ehb.Dijlezonen.Kassa.Infrastructure.Authentication;
 using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin
@@ -13,11 +17,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin
         private readonly INavigationAdapter navigation;
         private readonly ICredentialService credential;
 
-        public AddUserViewModel(Logging logging, INavigationAdapter navigation, ICredentialService credential)
+        public AddUserViewModel(Logging logging, INavigationAdapter navigation, ICredentialService credential, IEnumerable<Duty> roles)
         {
             this.navigation = navigation;
             this.credential = credential;
             log = logging.GetLoggerFor<AddUserViewModel>();
+
+            Roles = new ObservableCollection<RoleSelectionViewModel>(
+                roles.Select(r => new RoleSelectionViewModel(r.Name, r.DisplayName)));
 
             AddNewUserCommand = new Command(async () => await AddNewUser(), CanAddNewUser);
         }
@@ -61,6 +68,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin
             set => Set(ref password, value, UpdateAddNewUserAccess);
         }
 
+        public string ConfirmPasswordPlaceholder => "Herhaal wachtwoord";
+
+        private string confirmPassword;
+        public string ConfirmPassword
+        {
+            get => confirmPassword;
+            set => Set(ref confirmPassword, value, UpdateAddNewUserAccess);
+        }
+
         public string IsBlockedLabel => "Geblokkeerd?";
 
         private bool isBlocked;
@@ -78,6 +94,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin
             get => passwordNeedsReset;
             set => Set(ref passwordNeedsReset, value);
         }
+
+        public string RolesLabel => "Selecteer de gewenste rollen:";
+        
+        public ObservableCollection<RoleSelectionViewModel> Roles { get; }
 
         private bool forceDisableAddNewUser;
 
@@ -98,7 +118,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin
                 !string.IsNullOrEmpty(Firstname) &&
                 !string.IsNullOrEmpty(Lastname) &&
                 !string.IsNullOrEmpty(EmailAddress) &&
-                !string.IsNullOrEmpty(Password);
+                !string.IsNullOrEmpty(Password) &&
+                !string.IsNullOrEmpty(ConfirmPassword) &&
+                Password == ConfirmPassword;
         }
 
         private async Task AddNewUser()
@@ -115,10 +137,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin
                     Password = Password,
                     IsBlocked = IsBlocked,
                     NeedsPasswordChange = PasswordNeedsReset,
-                    Roles = new[]
-                    {
-                        "User"
-                    }
+                    Roles = Roles.Where(x => x.IsRoleSelected).Select(x => x.Name)
                 });
             }
             catch (Exception ex)
@@ -133,5 +152,26 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin
 
         public string AddNewUserCommandText => "Registreer";
         public Command AddNewUserCommand { get; }
+    }
+
+    public class RoleSelectionViewModel : PropertyChangedViewModelBase
+    {
+        public RoleSelectionViewModel(string name, string displayName)
+        {
+            DisplayName = displayName;
+            Name = name;
+        }
+
+        public string DisplayName { get; }
+
+        private bool isRoleSelected;
+
+        public bool IsRoleSelected
+        {
+            get => isRoleSelected;
+            set => Set(ref isRoleSelected, value);
+        }
+
+        public string Name { get; }
     }
 }
