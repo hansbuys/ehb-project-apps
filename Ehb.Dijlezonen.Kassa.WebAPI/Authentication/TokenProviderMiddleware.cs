@@ -69,6 +69,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync("Invalid username or password.");
+                return;
             }
 
             // Serialize and return the response

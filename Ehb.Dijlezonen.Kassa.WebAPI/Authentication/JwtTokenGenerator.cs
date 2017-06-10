@@ -39,17 +39,13 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
 
             return new
             {
-                access_token = await CreateJwtToken(identity),
-                expires_in = (int)options.Expiration.TotalSeconds
+                access_token = await CreateJwtToken(identity)
             };
         }
 
         private async Task<string> CreateJwtToken(Identity identity)
         {
             var now = DateTime.UtcNow;
-
-            //???
-            var claim = new ClaimsIdentity(new GenericIdentity(identity.Name, "Token"), new Claim[] { });
 
             var claims = new List<Claim>
             {

@@ -8,8 +8,8 @@ using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage;
 namespace Ehb.Dijlezonen.Kassa.WebAPI.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20170608154507_UserRoleManyToMany")]
-    partial class UserRoleManyToMany
+    [Migration("20170610172044_AddUserFields")]
+    partial class AddUserFields
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,8 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Migrations
 
                     b.Property<bool>("IsAdminRole");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -38,11 +39,20 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Migrations
 
                     b.Property<bool>("AskNewPasswordOnNextLogin");
 
-                    b.Property<string>("Password");
+                    b.Property<string>("Firstname");
 
-                    b.Property<string>("Username");
+                    b.Property<string>("Lastname");
+
+                    b.Property<string>("Password")
+                        .IsRequired();
+
+                    b.Property<string>("Username")
+                        .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

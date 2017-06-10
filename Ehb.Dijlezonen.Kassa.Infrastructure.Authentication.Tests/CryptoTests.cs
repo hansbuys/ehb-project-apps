@@ -1,33 +1,39 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
-using Xunit.Abstractions;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure.Authentication.Tests
 {
-    public class CryptoTests : IoCBasedTest<Crypto>
+    public class CryptoTests
     {
-        public CryptoTests(ITestOutputHelper output) : base(output)
-        {
-        }
-
         [Fact]
-        public async Task SamePasswordsGetEncryptedAndVerified()
+        public void SamePasswordsGetEncryptedAndVerified()
         {
-            var crypto = await GetSut();
+            var crypto = new Crypto();
 
             var secure = crypto.Encrypt("password");
             crypto.Verify(secure, "password").Should().BeTrue();
         }
 
         [Fact]
-        public async Task DifferentPasswordsGetEncryptedAndVerificationFails()
+        public void DifferentPasswordsGetEncryptedAndVerificationFails()
         {
-            var crypto = await GetSut();
+            var crypto = new Crypto();
 
             var secure = crypto.Encrypt("password");
             crypto.Verify(secure, "other-password").Should().BeFalse();
+        }
+
+        [Fact]
+        public void NoTwoPasswordsAreIdentical()
+        {
+            var crypto = new Crypto();
+
+            var first = crypto.Encrypt("password");
+            var second = crypto.Encrypt("password");
+
+            first.Should().NotBe(second);
         }
     }
 }

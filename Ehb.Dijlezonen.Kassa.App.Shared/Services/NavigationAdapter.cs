@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Common.Logging;
@@ -19,29 +20,53 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.viewFactory = viewFactory;
         }
 
-        public async Task<TViewModel> NavigateTo<TViewModel>()
+        async Task<TViewModel> INavigationAdapter.NavigateTo<TViewModel>()
         {
             var view = viewFactory.ResolveViewFor<TViewModel>();
 
             log.Info($"Navigating to {view.GetType().Name}");
 
-            await navigation.PushAsync(view).ConfigureAwait(false);
+            await navigation.PushAsync(view);
 
             return (TViewModel)view.BindingContext;
         }
 
-        public Task CloseModal()
+        async Task INavigationAdapter.CloseModal()
         {
-            return navigation.PopModalAsync();
+            var modal = await navigation.PopModalAsync();
+
+            DisposeViewModel(modal, true);
         }
 
-        public async Task<TViewModel> NavigateToModal<TViewModel>()
+        async Task INavigationAdapter.Close()
+        {
+            var modal = await navigation.PopAsync();
+
+            DisposeViewModel(modal, false);
+        }
+
+        private void DisposeViewModel(BindableObject page, bool isModal)
+        {
+            if (page == null) return;
+
+            var modal = isModal ? "modal" : "";
+            log.Debug($"Closing {modal} view {page.GetType().Name}");
+
+            var vm = page.BindingContext as IDisposable;
+            if (vm != null)
+            {
+                log.Debug($"Disposing viewmodel {vm.GetType().Name}");
+                vm.Dispose();
+            }
+        }
+
+        async Task<TViewModel> INavigationAdapter.NavigateToModal<TViewModel>()
         {
             var view = viewFactory.ResolveViewFor<TViewModel>();
 
             log.Info($"Navigating modally to {view.GetType().Name}");
             
-            await navigation.PushModalAsync(view).ConfigureAwait(false);
+            await navigation.PushModalAsync(view);
 
             return (TViewModel)view.BindingContext;
         }

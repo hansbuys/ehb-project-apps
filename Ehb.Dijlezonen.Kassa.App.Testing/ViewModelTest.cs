@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using Xunit.Abstractions;
 
@@ -15,11 +16,25 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         }
 
         protected FakeNavigationAdapter NavigationAdapter { get; private set; }
-        protected FakeBackendClient BackendClient { get; } = new FakeBackendClient();
+        protected FakeAuthentication Authentication { get; } = new FakeAuthentication();
 
         private Navigation navigation;
 
         protected virtual bool IsModalWindow => false;
+        protected FakeCredentialService CredentialService { get; } = new FakeCredentialService();
+
+        protected override void Configure(ContainerBuilder builder)
+        {
+            builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
+
+            builder.RegisterInstance(Authentication).As<IAuthentication>();
+            builder.RegisterInstance(CredentialService).As<ICredentialService>();
+        }
+
+        protected override BootstrapperBase GetBootstrapper()
+        {
+            return new TestBootstrapper(Logging);
+        }
 
         protected override IContainer InitializeContainer()
         {
@@ -32,14 +47,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             navigation = container.Resolve<Navigation>();
 
             return container;
-        }
-
-        protected override void Configure(ContainerBuilder builder)
-        {
-            builder.RegisterType<UserService>().SingleInstance();
-
-            builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
-            builder.RegisterInstance(BackendClient).As<IBackendClient>().SingleInstance();
         }
 
         protected override Task<TViewModel> GetSut()

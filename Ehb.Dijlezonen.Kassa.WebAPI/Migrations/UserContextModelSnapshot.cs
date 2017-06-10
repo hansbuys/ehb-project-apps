@@ -23,7 +23,8 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Migrations
 
                     b.Property<bool>("IsAdminRole");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -37,11 +38,22 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Migrations
 
                     b.Property<bool>("AskNewPasswordOnNextLogin");
 
-                    b.Property<string>("Password");
+                    b.Property<string>("Firstname");
 
-                    b.Property<string>("Username");
+                    b.Property<bool>("IsBlocked");
+
+                    b.Property<string>("Lastname");
+
+                    b.Property<string>("Password")
+                        .IsRequired();
+
+                    b.Property<string>("Username")
+                        .IsRequired();
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

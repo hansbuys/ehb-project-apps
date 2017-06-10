@@ -99,11 +99,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Assertions\FakeBackendClientAssertions.cs" />
+    <Compile Include="Admin\AddUserViewModelTests.cs" />
+    <Compile Include="Assertions\FakeAuthenticationAssertions.cs" />
     <Compile Include="Assertions\AssertionProvider.cs" />
     <Compile Include="Assertions\CommandAssertions.cs" />
+    <Compile Include="Assertions\FakeCredentialServiceAssertions.cs" />
     <Compile Include="Assertions\NavigationAssertions.cs" />
-    <Compile Include="Assertions\PageAssertions.cs" />
     <Compile Include="Login\LoginViewModelTests.cs" />
     <Compile Include="MainPage\MainPageViewModelTests.cs" />
     <Compile Include="PasswordChange\PasswordChangeViewModelTests.cs" />
@@ -125,6 +126,10 @@
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.App.Testing\Ehb.Dijlezonen.Kassa.App.Testing.csproj">
       <Project>{589550D7-99C3-4AAC-8F32-71F90A09392F}</Project>
       <Name>Ehb.Dijlezonen.Kassa.App.Testing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.Infrastructure.Authentication\Ehb.Dijlezonen.Kassa.Infrastructure.Authentication.csproj">
+      <Project>{497D2B18-352F-41F0-9C54-D1B84BAA32AC}</Project>
+      <Name>Ehb.Dijlezonen.Kassa.Infrastructure.Authentication</Name>
     </ProjectReference>
     <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.Infrastructure.Testing\Ehb.Dijlezonen.Kassa.Infrastructure.Testing.csproj">
       <Project>{8944a873-d2d3-4236-ba00-451aa3648f6c}</Project>

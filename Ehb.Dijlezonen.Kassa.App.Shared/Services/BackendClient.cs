@@ -1,157 +1,83 @@
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Common.Logging;
-using Ehb.Dijlezonen.Kassa.Infrastructure;
-using Ehb.Dijlezonen.Kassa.Infrastructure.Authentication;
 using Newtonsoft.Json;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
-    public class BackendClient : IBackendClient
+    public class BackendClient
     {
-        private readonly Func<JwtSecurityTokenHandler> getTokenHandler;
         private readonly IBackendConfiguration config;
         private readonly Func<HttpClient> getHttpClient;
-        private readonly ILog log;
 
-        private Token token;
-        private User user;
+        public string AccessToken { get; set; }
 
-        public BackendClient(Func<JwtSecurityTokenHandler> getTokenHandler, IBackendConfiguration config, Func<HttpClient> getHttpClient, Logging logging)
+        public BackendClient(IBackendConfiguration config, Func<HttpClient> getHttpClient)
         {
-            this.getTokenHandler = getTokenHandler;
             this.config = config;
             this.getHttpClient = getHttpClient;
-            this.log = logging.GetLoggerFor<BackendClient>();
         }
 
-        async Task IBackendClient.Login(string username, string password)
+        public async Task<BackendClientCallResult> PostForm(string url, IEnumerable<KeyValuePair<string, string>> form)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = GetHttpClient())
             {
-                HttpResponseMessage result = null;
+                var response = await httpClient.PostAsync(
+                        config.BaseUrl + url,
+                        new FormUrlEncodedContent(form));
 
-                try
-                {
-                    result = await httpClient.PostAsync(config.BaseUrl + "/token", new FormUrlEncodedContent(
-                        new[]
-                        {
-                            new KeyValuePair<string, string>("username", username),
-                            new KeyValuePair<string, string>("password", password)
-                        }));
-                }
-                catch (Exception e)
-                {
-                    log.Error("Unable to make the call", e);
-                }
+                response.EnsureSuccessStatusCode();
 
-                if (result != null && result.IsSuccessStatusCode)
-                {
-                    var tokenAsJson = await result.Content.ReadAsStringAsync();
-                    dynamic dynamicAccessToken = JsonConvert.DeserializeObject(tokenAsJson);
-
-                    var accessToken = (string)dynamicAccessToken.access_token;
-
-                    this.token = new Token(accessToken, DateTime.UtcNow.AddSeconds((int)dynamicAccessToken.expires_in));
-
-                    this.user = new User(
-                        ParseIsAdminToken(accessToken),
-                        ParseNeedsPasswordChange(accessToken));
-                }
+                return new BackendClientCallResult(response);
             }
         }
 
-        private bool ParseIsAdminToken(string accessToken)
+        public async Task<BackendClientCallResult> PostJson(string url, object body)
         {
-            return GetClaims(accessToken).Any(x => x.Type == ClaimTypes.Role && x.Value == ClaimRoleTypes.Admin);
-        }
-
-        private IEnumerable<Claim> GetClaims(string accessToken)
-        {
-            return getTokenHandler().ReadJwtToken(accessToken).Claims;
-        }
-
-        private bool ParseNeedsPasswordChange(string accessToken)
-        {
-            return GetClaims(accessToken).Any(x => x.Type == CustomClaimTypes.NeedsPasswordChange);
-        }
-
-        Task IBackendClient.Logout()
-        {
-            user = null;
-            token = null;
-            return Task.FromResult(0);
-        }
-
-        async Task IBackendClient.ChangePassword(string oldPassword, string newPassword)
-        {
-            var response = await PostJson(config.BaseUrl + "/password/change", new
-            {
-                oldPassword,
-                newPassword
-            });
-
-            response.EnsureSuccessStatusCode();
-        }
-
-        User IBackendClient.LoggedInUser
-        {
-            get
-            {
-
-                if (token != null && token.IsValid)
-                {
-                    return user;
-                }
-
-                return null;
-            }
-        }
-
-        private async Task<HttpResponseMessage> PostJson(string url, object body)
-        {
-            using (var client = GetLoggedInHttpClient())
+            using (var client = GetHttpClient())
             {
                 var postBody = JsonConvert.SerializeObject(body);
 
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                const string mediaType = "application/json";
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
+                var content = new StringContent(postBody, Encoding.UTF8, mediaType);
 
-                return await client.PostAsync(url, new StringContent(postBody, Encoding.UTF8, "application/json"));
+                var response = await client.PostAsync(
+                    config.BaseUrl + url, 
+                    content);
+
+                response.EnsureSuccessStatusCode();
+
+                return new BackendClientCallResult(response);
             }
         }
 
-        private HttpClient GetLoggedInHttpClient()
+        private HttpClient GetHttpClient()
         {
-            if (token == null)
-                throw new Exception("You should be logged in first.");
-
             var client = getHttpClient();
 
-            client.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token.Value);
+            if (!string.IsNullOrEmpty(AccessToken))
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", AccessToken);
+            }
 
             return client;
         }
+    }
 
-        private class Token
+    public class BackendClientCallResult
+    {
+        private readonly HttpResponseMessage response;
+
+        public BackendClientCallResult(HttpResponseMessage response)
         {
-            public Token(string value, DateTime expiration)
-            {
-                Expiration = expiration;
-                Value = value;
-            }
-
-            private DateTime Expiration { get; }
-            public string Value { get; }
-
-            public bool IsValid => !string.IsNullOrEmpty(Value) && Expiration > DateTime.UtcNow;
+            this.response = response;
         }
+
+        public Task<string> GetContent => response.Content.ReadAsStringAsync();
     }
 }
