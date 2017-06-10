@@ -17,8 +17,26 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             {
                 oldPassword,
                 newPassword
-            },
-            true);
+            });
+
+            response.EnsureSuccessStatusCode();
+        }
+
+        async Task ICredentialService.RegisterNewUser(NewUserRegistration registration)
+        {
+            var response = await client.PostJson("/user/create", new
+            {
+                registration.Username,
+                registration.Password,
+                AskNewPasswordOnNextLogin = registration.NeedsPasswordChange,
+                Roles = new[]
+                {
+                    new
+                    {
+                        Name = "User"
+                    }
+                }
+            });
 
             response.EnsureSuccessStatusCode();
         }

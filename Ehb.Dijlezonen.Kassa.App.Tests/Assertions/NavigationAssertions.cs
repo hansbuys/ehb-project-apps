@@ -11,12 +11,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
         {
         }
 
-        internal AndWhichConstraint<NavigatorAssertions, TViewModel> BeDisplaying<TViewModel>(bool forceModal = false)
+        internal AndWhichConstraint<NavigatorAssertions, TViewModel> BeDisplaying<TViewModel>(bool modalOnly = false)
             where TViewModel : class
         {
             var vm = Subject.ModalStack.FirstOrDefault();
 
-            if (vm == null && !forceModal)
+            if (vm == null && !modalOnly)
                 vm = Subject.NavigationStack.FirstOrDefault();
 
             vm.Should().NotBeNull("we expected to be displaying something");

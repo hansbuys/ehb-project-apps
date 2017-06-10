@@ -21,9 +21,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.getHttpClient = getHttpClient;
         }
 
-        public async Task<HttpResponseMessage> PostForm(string url, IEnumerable<KeyValuePair<string, string>> form, bool requireLogin = false)
+        public async Task<HttpResponseMessage> PostForm(string url, IEnumerable<KeyValuePair<string, string>> form)
         {
-            using (var httpClient = GetHttpClient(requireLogin))
+            using (var httpClient = GetHttpClient())
             {
                 return await httpClient.PostAsync(
                         config.BaseUrl + url,
@@ -31,9 +31,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             }
         }
 
-        public async Task<HttpResponseMessage> PostJson(string url, object body, bool requireLogin = false)
+        public async Task<HttpResponseMessage> PostJson(string url, object body)
         {
-            using (var client = GetHttpClient(requireLogin))
+            using (var client = GetHttpClient())
             {
                 var postBody = JsonConvert.SerializeObject(body);
 
@@ -47,15 +47,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             }
         }
 
-        private HttpClient GetHttpClient(bool requireLogin)
+        private HttpClient GetHttpClient()
         {
             var client = getHttpClient();
 
-            if (requireLogin)
+            if (!string.IsNullOrEmpty(AccessToken))
             {
-                if (string.IsNullOrEmpty(AccessToken))
-                    throw new Exception("You should be logged in first.");
-
                 client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", AccessToken);
             }

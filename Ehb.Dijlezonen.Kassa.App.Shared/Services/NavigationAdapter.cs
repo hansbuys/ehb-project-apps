@@ -20,7 +20,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.viewFactory = viewFactory;
         }
 
-        public async Task<TViewModel> NavigateTo<TViewModel>()
+        async Task<TViewModel> INavigationAdapter.NavigateTo<TViewModel>()
         {
             var view = viewFactory.ResolveViewFor<TViewModel>();
 
@@ -31,24 +31,36 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             return (TViewModel)view.BindingContext;
         }
 
-        public async Task CloseModal()
+        async Task INavigationAdapter.CloseModal()
         {
             var modal = await navigation.PopModalAsync();
 
-            if (modal != null)
-            {
-                log.Debug($"Closing modal view {modal.GetType().Name}");
+            DisposeViewModel(modal, true);
+        }
 
-                var vm = modal.BindingContext as IDisposable;
-                if (vm != null)
-                {
-                    log.Debug($"Disposing viewmodel {vm.GetType().Name}");
-                    vm.Dispose();
-                }
+        async Task INavigationAdapter.Close()
+        {
+            var modal = await navigation.PopAsync();
+
+            DisposeViewModel(modal, false);
+        }
+
+        private void DisposeViewModel(BindableObject page, bool isModal)
+        {
+            if (page == null) return;
+
+            var modal = isModal ? "modal" : "";
+            log.Debug($"Closing {modal} view {page.GetType().Name}");
+
+            var vm = page.BindingContext as IDisposable;
+            if (vm != null)
+            {
+                log.Debug($"Disposing viewmodel {vm.GetType().Name}");
+                vm.Dispose();
             }
         }
 
-        public async Task<TViewModel> NavigateToModal<TViewModel>()
+        async Task<TViewModel> INavigationAdapter.NavigateToModal<TViewModel>()
         {
             var view = viewFactory.ResolveViewFor<TViewModel>();
 

@@ -8,5 +8,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         Task<TViewModel> NavigateToModal<TViewModel>();
         Task CloseModal();
+        Task Close();
     }
 }
