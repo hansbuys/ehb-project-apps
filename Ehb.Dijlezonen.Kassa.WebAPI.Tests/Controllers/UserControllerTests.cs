@@ -62,18 +62,36 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests.Controllers
             var username = "";
             var firstname = "";
             var lastname = "";
+            const bool isBlocked = true;
             await RunHappyPath(o =>
             {
                 username = o.Username;
                 firstname = o.Firstname;
                 lastname = o.Lastname;
+                o.IsBlocked = isBlocked;
+
+                o.LoginAfterRegistrationShouldSucceed = !isBlocked;
             });
 
             Context.Users.Should().ContainSingle(x => 
                 x.Username == username &&
                 x.AskNewPasswordOnNextLogin &&
                 x.Firstname == firstname && 
-                x.Lastname == lastname);
+                x.Lastname == lastname && 
+                x.IsBlocked == isBlocked);
+        }
+
+        [Fact]
+        public async Task ABlockedUserCannotLogin()
+        {
+            const bool isBlocked = true;
+            await RunHappyPath(o =>
+            {
+                o.IsBlocked = isBlocked;
+
+                o.LoginAfterRegistrationShouldSucceed = false;
+                o.LoginAfterRegistrationShouldFail = true;
+            });
         }
 
         private async Task RunHappyPath(Action<HappyPathOptions> setup = null)
@@ -90,7 +108,8 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests.Controllers
                 options.Password,
                 options.PasswordNeedsResetOnNextLogin,
                 options.Firstname,
-                options.Lastname);
+                options.Lastname,
+                options.IsBlocked);
 
             if (options.RegistrationShouldSucceed)
             {

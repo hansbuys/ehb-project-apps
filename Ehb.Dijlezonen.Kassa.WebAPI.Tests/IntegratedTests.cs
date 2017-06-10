@@ -157,8 +157,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
             LoginResponse = null;
         }
 
-        protected async Task<HttpResponseMessage> CreateNewUser(string username = "john.doe@domain-name.tld", string password = "will-be-encrypted", 
-            bool passwordNeedsReset = true, string firstname = "John", string lastname = "Doe")
+        protected async Task<HttpResponseMessage> CreateNewUser(string username = "john.doe@domain-name.tld", string password = "will-be-encrypted", bool passwordNeedsReset = true, string firstname = "John", string lastname = "Doe", bool optionsIsBlocked = false)
         {
             var response = await PostJson("/api/user/create", new
             {
@@ -166,7 +165,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
                 Password = password,
                 Firstname = firstname,
                 Lastname = lastname,
-                IsBlocked = false,
+                IsBlocked = optionsIsBlocked,
                 AskNewPasswordOnNextLogin = passwordNeedsReset,
                 Roles = new[]
                 {

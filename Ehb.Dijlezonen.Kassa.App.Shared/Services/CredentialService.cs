@@ -26,6 +26,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             {
                 registration.Username,
                 registration.Password,
+                registration.Firstname,
+                registration.Lastname,
+                registration.IsBlocked,
                 AskNewPasswordOnNextLogin = registration.NeedsPasswordChange,
                 Roles = new[]
                 {

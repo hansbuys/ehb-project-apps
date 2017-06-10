@@ -21,6 +21,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage.Model
         public string Lastname { get; set; }
 
         public bool AskNewPasswordOnNextLogin { get; set; }
+        public bool IsBlocked { get; set; }
 
         public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 

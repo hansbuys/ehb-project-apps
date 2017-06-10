@@ -47,9 +47,6 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Authentication
         {
             var now = DateTime.UtcNow;
 
-            //???
-            var claim = new ClaimsIdentity(new GenericIdentity(identity.Name, "Token"), new Claim[] { });
-
             var claims = new List<Claim>
             {
                 SubjectClaim(identity),

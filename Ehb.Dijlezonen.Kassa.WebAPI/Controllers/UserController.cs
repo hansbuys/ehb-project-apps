@@ -35,6 +35,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Controllers
                     Password = crypto.Encrypt(userRegistration.Password),
                     Firstname =  userRegistration.Firstname,
                     Lastname = userRegistration.Lastname,
+                    IsBlocked = userRegistration.IsBlocked,
                     AskNewPasswordOnNextLogin = userRegistration.AskNewPasswordOnNextLogin,
                     Roles = userRegistration.Roles.Select(x => context.Roles.Single(r => r.Name == x.Name))
                 };
@@ -64,6 +65,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Controllers
         public string Lastname { get; set; }
 
         public bool AskNewPasswordOnNextLogin { get; set; }
+        public bool IsBlocked { get; set; }
 
         public IEnumerable<RoleRegistration> Roles { get; set; }
     }
