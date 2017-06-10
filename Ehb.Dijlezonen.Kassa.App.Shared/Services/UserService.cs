@@ -26,42 +26,56 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public async Task ChangePassword(string oldPassword, string newPassword)
         {
+            log.Debug("Attempting to change password.");
+
             try
             {
                 await credentials.ChangePassword(oldPassword, newPassword);
             }
             catch (Exception ex)
             {
-                log.Error("Unable to change password", ex);
+                log.Error("Unable to change password.", ex);
                 throw;
             }
+
+            log.Debug("Password has been successfully changed.");
 
             PasswordHasChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public async Task Login(string user, string password)
         {
+            log.Debug("Attempting logging in.");
+
             try
             {
                 await authentication.Login(user, password);
             }
             catch (Exception ex)
             {
-                log.Error("Unable to login", ex);
+                log.Error("Unable to login.", ex);
                 throw;
             }
+
+            log.Debug($"{user} has succesfully logging in.");
 
             LoggedIn?.Invoke(this, EventArgs.Empty);
 
             if (authentication.LoggedInUser != null && authentication.LoggedInUser.NeedsPasswordChange)
+            {
+                log.Debug($"{user} needs to change passwords.");
+
                 NeedsPasswordChange?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public async Task Logout()
         {
-            log.Debug("Logging out");
+            log.Debug("User is logging out");
 
             await authentication.Logout();
+
+            log.Debug("User has logged out");
 
             LoggedOut?.Invoke(this, EventArgs.Empty);
         }

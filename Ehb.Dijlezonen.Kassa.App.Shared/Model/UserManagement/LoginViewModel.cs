@@ -53,8 +53,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
 
         private async Task Login()
         {
-            log.Debug("Attempting logging in");
-
             await userService.Login(User, Password);
         }
     }
