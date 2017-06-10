@@ -17,7 +17,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 
             subject.LoggedInUser.Should().NotBeNull("we expected to be logged in");
 
-            CheckedThat("we are logged in.");
+            CheckedThat("we are logged in");
             return And();
         }
 
@@ -27,7 +27,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
 
             subject.LoggedInUser.Should().BeNull("we expected to be logged out");
 
-            CheckedThat("we are not logged in.");
+            CheckedThat("we are not logged in");
             return And();
         }
     }

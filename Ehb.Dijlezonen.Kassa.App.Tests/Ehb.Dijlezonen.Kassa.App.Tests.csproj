@@ -99,11 +99,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Admin\AddUserViewModelTests.cs" />
     <Compile Include="Assertions\FakeAuthenticationAssertions.cs" />
     <Compile Include="Assertions\AssertionProvider.cs" />
     <Compile Include="Assertions\CommandAssertions.cs" />
+    <Compile Include="Assertions\FakeCredentialServiceAssertions.cs" />
     <Compile Include="Assertions\NavigationAssertions.cs" />
-    <Compile Include="Assertions\PageAssertions.cs" />
     <Compile Include="Login\LoginViewModelTests.cs" />
     <Compile Include="MainPage\MainPageViewModelTests.cs" />
     <Compile Include="PasswordChange\PasswordChangeViewModelTests.cs" />

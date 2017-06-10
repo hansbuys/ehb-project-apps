@@ -91,7 +91,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
             {
                 log.Error("Unable to login.", ex);
                 ForceDisableChangePasswordCommand = false;
-                throw;
+                return;
             }
 
             log.Debug("Logged in succesfully.");

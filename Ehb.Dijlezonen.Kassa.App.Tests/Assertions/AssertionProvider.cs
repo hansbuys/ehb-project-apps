@@ -15,9 +15,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
             return new FakeAuthenticationAssertions(authentication);
         }
 
-        internal static PageAssertions Should(this Page page)
+        internal static FakeCredentialServiceAssertions Should(this FakeCredentialService credentials)
         {
-            return new PageAssertions(page);
+            return new FakeCredentialServiceAssertions(credentials);
         }
 
         internal static CommandAssertions Should(this Command page)
