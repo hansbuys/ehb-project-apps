@@ -1,43 +1,35 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Input;
+using Common.Logging;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 {
-    public class MainPageViewModel
+    public class MainPageViewModel : PropertyChangedViewModelBase, IProtectedViewModel
     {
-        private readonly INavigationAdapter navigation;
-        private readonly IAccountStore auth;
+        private readonly ILoginProvider auth;
+        private readonly ILog log;
 
-        public MainPageViewModel(INavigationAdapter navigation, IAccountStore auth)
+        public MainPageViewModel(ILoginProvider auth, Logging logging)
         {
-            this.navigation = navigation;
             this.auth = auth;
-
-            Initialize().Wait();
+            log = logging.GetLoggerFor<MainPageViewModel>();
         }
 
-        private async Task Initialize()
-        {
-            if (!await IsLoggedIn().ConfigureAwait(false))
-            {
-                await navigation.NavigateToModal<LoginViewModel>();
-            }
-        }
-
-        private Task<bool> IsLoggedIn()
-        {
-            return auth.IsLoggedIn();
-        }
-
-        public ICommand NavigateToSecondStageCommand => new Command(async () => await NavigateToSecondStage().ConfigureAwait(false));
         public string Title => "De Dijlezonen Kassa";
-        public string NavigateToSecondStageCommandText => "Ga naar volgende";
 
-        private Task NavigateToSecondStage()
+        public string LogoutCommandText => "Uitloggen";
+        public ICommand LogoutCommand => new Command(async () => await Logout().ConfigureAwait(false));
+
+        public bool IsAdmin { get; set; }
+
+        private async Task Logout()
         {
-            return navigation.NavigateTo<SecondStageViewModel>();
+            log.Debug("Logging out");
+
+            await auth.Logout().ConfigureAwait(false);
         }
     }
 }

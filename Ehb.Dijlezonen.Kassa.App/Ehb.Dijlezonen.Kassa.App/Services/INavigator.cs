@@ -4,9 +4,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
     public interface INavigationAdapter
     {
-        Task NavigateTo<TViewModel>();
+        Task<TViewModel> NavigateTo<TViewModel>();
 
-        Task NavigateToModal<TViewModel>();
+        Task<TViewModel> NavigateToModal<TViewModel>();
         Task CloseModal();
     }
 }

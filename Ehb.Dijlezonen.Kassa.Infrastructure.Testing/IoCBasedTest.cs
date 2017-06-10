@@ -1,28 +1,40 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Autofac;
-using Autofac.Features.ResolveAnything;
 using Xunit.Abstractions;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 {
-    public abstract class IoCBasedTest<T> : TestBase
+    public abstract class IoCBasedTest<T> : TestBase, IDisposable
+        where T : class
     {
-        private readonly Lazy<IContainer> container;
+        private readonly IContainer container;
         private readonly ITestOutputHelper output;
 
         protected IoCBasedTest(ITestOutputHelper output) : base(output)
         {
             this.output = output;
-            container = new Lazy<IContainer>(InitializeContainer);
+            container = InitializeContainer();
         }
 
         protected virtual IContainer InitializeContainer()
         {
-            var c = new ContainerBuilder();
+            return GetBootstrapper().Initialize(builder =>
+            {
+                builder.RegisterInstance(output);
+                builder.RegisterInstance<Logging>(Logging);
 
-            Configure(c);
+                Configure(builder);
+            });
+        }
 
-            return c.Build();
+        /// <summary>
+        /// Override this method to be able to use a different bootstrapper implementation.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual BootstrapperBase GetBootstrapper()
+        {
+            return new TestBootstrapper(Logging);
         }
 
         /// <summary>
@@ -31,19 +43,30 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
         /// <param name="builder">Allows registration of dependencies.</param>
         protected virtual void Configure(ContainerBuilder builder)
         {
-            builder.RegisterSource(new AnyConcreteTypeNotAlreadyRegisteredSource());
-
-            builder.RegisterInstance(output);
-            builder.RegisterInstance<Logging>(Logging);
         }
 
         /// <summary>
         /// Use this method to create an instance of your system under test through dependency injection.
         /// </summary>
         /// <returns></returns>
-        protected virtual T GetSut()
+        protected virtual Task<T> GetSut()
         {
-            return container.Value.Resolve<T>();
+            return Task.FromResult(container.Resolve<T>());
+        }
+
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                container?.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

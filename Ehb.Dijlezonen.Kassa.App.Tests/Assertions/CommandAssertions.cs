@@ -10,20 +10,20 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
         {
         }
 
-        internal AndConstraint<CommandAssertions> NotBeExecutable()
+        internal AndConstraint<CommandAssertions> BeDisabled()
         {
             Subject.CanExecute(null).Should().BeFalse();
 
-            CheckedThat($"Command {Subject.GetType().Name} is not executable at this time.");
+            CheckedThat("command is not executable at this time.");
 
             return And();
         }
 
-        internal AndConstraint<CommandAssertions> BeExecutable()
+        internal AndConstraint<CommandAssertions> BeEnabled()
         {
             Subject.CanExecute(null).Should().BeTrue();
 
-            CheckedThat($"Command {Subject.GetType().Name} is executable at this time.");
+            CheckedThat("command is executable at this time.");
 
             return And();
         }

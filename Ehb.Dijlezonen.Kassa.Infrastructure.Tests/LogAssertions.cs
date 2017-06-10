@@ -14,7 +14,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Tests
         {
             var loggingEvent = Subject.Events.Should().Contain(e => e.RenderedMessage == message).Which;
 
-            CheckedThat($"'{message}' has been logged.");
+            CheckedThat($"'{message}' has been logged");
 
             return AndWhich(loggingEvent);
         }

@@ -1,55 +1,52 @@
-﻿using Autofac;
+﻿using System;
+using System.Threading.Tasks;
+using Autofac;
+using Ehb.Dijlezonen.Kassa.App.Shared;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using Xunit.Abstractions;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
-    public abstract class ViewModelTest<T> : IoCBasedTest<T>
+    public abstract class ViewModelTest<TViewModel> : IoCBasedTest<TViewModel>
+        where TViewModel : class
     {
-        private TestBootstrapper bootstrapper;
-        protected FakeNavigationAdapter Navigator { get; private set; }
-        protected FakeAccountStore AccountStore { get; } = new FakeAccountStore();
-
         protected ViewModelTest(ITestOutputHelper output) : base(output)
         {
-            bootstrapper = new TestBootstrapper(Logging);
         }
 
-        protected void WhenUserIsKnown(string user, string pass)
-        {
-            Options.AccountStoreOptions.KnownUsers.Add(user, pass);
-        }
+        protected FakeNavigationAdapter NavigationAdapter { get; private set; }
+        protected FakeLoginProvider LoginProvider { get; } = new FakeLoginProvider();
 
-        protected TestOptions Options = new TestOptions();
-        protected class TestOptions
-        {
-            internal FakeAccountStore.TestOptions AccountStoreOptions { get; } = new FakeAccountStore.TestOptions();
-        }
+        private Navigation navigation;
 
-        protected void WhenLoggedIn()
-        {
-            Options.AccountStoreOptions.IsLoggedIn = true;
-        }
-
-        protected override T GetSut()
-        {
-            AccountStore.Initialize(Options.AccountStoreOptions);
-
-            return base.GetSut();
-        }
+        protected virtual bool IsModalWindow => false;
 
         protected override IContainer InitializeContainer()
         {
-            var container = bootstrapper.Initialize(builder =>
-            {
-                builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
-                builder.RegisterInstance(AccountStore).As<IAccountStore>();
-            });
+            var container = base.InitializeContainer();
 
-            Navigator = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
+            NavigationAdapter = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
+            if (NavigationAdapter == null)
+                throw new Exception("No navigation adapter implemented!");
+            NavigationAdapter.SetResolver(container);
+
+            navigation = container.Resolve<Navigation>();
 
             return container;
+        }
+
+        protected override void Configure(ContainerBuilder builder)
+        {
+            builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
+            builder.RegisterInstance(LoginProvider).As<ILoginProvider>();
+        }
+
+        protected override Task<TViewModel> GetSut()
+        {
+            return IsModalWindow ?
+                navigation.NavigateToModal<TViewModel>() :
+                navigation.NavigateTo<TViewModel>();
         }
     }
 }

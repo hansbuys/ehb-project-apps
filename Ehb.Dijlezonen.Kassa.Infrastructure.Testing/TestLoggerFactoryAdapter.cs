@@ -1,4 +1,5 @@
-﻿using Common.Logging.Simple;
+﻿using System.Linq;
+using Common.Logging.Simple;
 using Xunit.Abstractions;
 
 namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
@@ -16,7 +17,9 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
         {
             base.AddEvent(loggerEvent);
 
-            output.WriteLine($"Logging: {loggerEvent.RenderedMessage}");
+            var shortSourceName = loggerEvent.Source.Name.Split('.').Last();
+
+            output.WriteLine($"{shortSourceName} : {loggerEvent.RenderedMessage}");
         }
     }
 }

@@ -2,8 +2,6 @@
 using Xamarin.Forms;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Common.Logging;
-using System;
-using Autofac;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
@@ -11,8 +9,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     {
         private readonly INavigation navigation;
 
-        private ILog log;
-        private ViewFactory viewFactory;
+        private readonly ILog log;
+        private readonly ViewFactory viewFactory;
 
         public NavigationAdapter(INavigation navigation, Logging logging, ViewFactory viewFactory)
         {
@@ -21,13 +19,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.viewFactory = viewFactory;
         }
 
-        public Task NavigateTo<TViewModel>()
+        public async Task<TViewModel> NavigateTo<TViewModel>()
         {
-            Page view = viewFactory.ResolveViewFor<TViewModel>();
+            var view = viewFactory.ResolveViewFor<TViewModel>();
 
             log.Info($"Navigating to {view.GetType().Name}");
 
-            return navigation.PushAsync(view);
+            await navigation.PushAsync(view).ConfigureAwait(false);
+
+            return (TViewModel)view.BindingContext;
         }
 
         public Task CloseModal()
@@ -35,13 +35,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             return navigation.PopModalAsync();
         }
 
-        public Task NavigateToModal<TViewModel>()
+        public async Task<TViewModel> NavigateToModal<TViewModel>()
         {
-            Page view = viewFactory.ResolveViewFor<TViewModel>();
+            var view = viewFactory.ResolveViewFor<TViewModel>();
 
             log.Info($"Navigating modally to {view.GetType().Name}");
+            
+            await navigation.PushModalAsync(view).ConfigureAwait(false);
 
-            return navigation.PushModalAsync(view);
+            return (TViewModel)view.BindingContext;
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+﻿using System.Threading.Tasks;
+using Ehb.Dijlezonen.Kassa.App.Shared.Model;
+using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using Xunit;
 using Xunit.Abstractions;
-using Ehb.Dijlezonen.Kassa.App.Testing;
 
-namespace Ehb.Dijlezonen.Kassa.App.Tests
+namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
 {
     public class MainPageViewModelTests : ViewModelTest<MainPageViewModel>
     {
@@ -17,34 +18,35 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests
         {
             GetSut();
 
-            Navigator.Should().HaveNavigatedToModal<LoginViewModel>();
+            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
 
         [Fact]
         public void ShouldReturnToMainPageAfterLogin()
         {
-            var user = "test";
-            var pass = "test";
-            WhenUserIsKnown(user, pass);
+            const string user = "test";
+            const string pass = "test";
+            LoginProvider.WhenUserIsKnown(user, pass);
                 
             GetSut();
             
-            var loginVm = Navigator.Should().HaveNavigatedToModal<LoginViewModel>().Which;
+            var loginVm = NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
             loginVm.User = user;
             loginVm.Password = pass;
             loginVm.LoginCommand.Click();
 
-            Navigator.Should().NotHaveModal<LoginViewModel>();
+            NavigationAdapter.Should().NotHaveModal<LoginViewModel>();
         }
 
         [Fact]
-        public void CanNavigateToSecondStageWhenLoggedIn()
+        public async Task LogoutLeadsToLogin()
         {
-            WhenLoggedIn();
+            LoginProvider.WhenUserIsLoggedIn();
 
-            GetSut().NavigateToSecondStageCommand.Click();
+            (await GetSut()).LogoutCommand.Click();
 
-            Navigator.Should().HaveNavigatedTo<SecondStageViewModel>();
+            LoginProvider.Should().NotBeLoggedIn();
+            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
     }
 }

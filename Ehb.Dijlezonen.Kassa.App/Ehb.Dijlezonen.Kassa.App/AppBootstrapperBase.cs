@@ -10,54 +10,32 @@ using System;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared
 {
-    public abstract class BootstrapperBase
+    public abstract class AppBootstrapperBase : BootstrapperBase
     {
         private ILog log;
-
-        /// <summary>
-        ///     Register your external dependencies here,
-        ///     these should be usable in production code and mocked out in unit tests.
-        /// </summary>
-        /// <param name="builder">The IoC container builder, use this to register your dependencies.</param>
-        protected abstract void RegisterPorts(ContainerBuilder builder);
-
-        /// <summary>
-        ///     Register your internal dependencies here,
-        ///     these should be usable in both production code and unit tests.
-        /// </summary>
-        /// <param name="builder">The IoC container builder, use this to register your dependencies.</param>
-        protected virtual void RegisterComponents(ContainerBuilder builder)
+        
+        protected override void RegisterComponents(ContainerBuilder builder)
         {
             builder.RegisterType<ViewFactory>().SingleInstance();
         }
 
-        public IContainer Initialize(Action<ContainerBuilder> addDependencies = null)
+        public override IContainer Initialize(Action<ContainerBuilder> addDependencies = null)
         {
-            IContainer container = IoC.InitializeContainer(builder =>
-            {
-                RegisterDependencies(builder);
-
-                addDependencies?.Invoke(builder);
-            });
+            var container = base.Initialize(addDependencies);
             
             var logging = container.Resolve<Logging>();
-            log = logging.GetLoggerFor<BootstrapperBase>();
+            log = logging.GetLoggerFor<AppBootstrapperBase>();
 
             var viewFactory = container.Resolve<ViewFactory>();
+            viewFactory.SetResolver(container);
             RegisterViews(viewFactory);
 
             return container;
         }
 
-        private void RegisterDependencies(ContainerBuilder builder)
-        {
-            RegisterPorts(builder);
-            RegisterComponents(builder);
-        }
-
         private void RegisterViews(ViewFactory viewFactory)
         {
-            var sharedAssembly = typeof(BootstrapperBase).GetTypeInfo().Assembly;
+            var sharedAssembly = typeof(AppBootstrapperBase).GetTypeInfo().Assembly;
             RegisterViews(viewFactory, sharedAssembly);
 
             var assembly = GetType().GetTypeInfo().Assembly;
