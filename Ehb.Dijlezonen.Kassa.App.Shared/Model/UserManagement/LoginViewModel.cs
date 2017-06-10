@@ -38,11 +38,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
         public string LoginCommandText => "Log in";
 
 
-        private bool disableChangePasswordCommand;
-        public bool DisableChangePasswordCommand
+        private bool forceDisableChangePasswordCommand;
+        public bool ForceDisableChangePasswordCommand
         {
-            get => disableChangePasswordCommand;
-            set => Set(ref disableChangePasswordCommand, value, UpdateLoginCommandAccess);
+            get => forceDisableChangePasswordCommand;
+            set => Set(ref forceDisableChangePasswordCommand, value, UpdateLoginCommandAccess);
         }
 
         public Command LoginCommand { get; }
@@ -68,7 +68,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
 
         private bool CanLogin()
         {
-            return !DisableChangePasswordCommand && AllFieldsValidate();
+            return !ForceDisableChangePasswordCommand && AllFieldsValidate();
         }
 
         private bool AllFieldsValidate()
@@ -81,7 +81,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
         private async Task Login()
         {
             log.Debug("Attempting logging in.");
-            DisableChangePasswordCommand = true;
+            ForceDisableChangePasswordCommand = true;
 
             try
             {
@@ -90,7 +90,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
             catch (Exception ex)
             {
                 log.Error("Unable to login.", ex);
-                DisableChangePasswordCommand = false;
+                ForceDisableChangePasswordCommand = false;
                 throw;
             }
 

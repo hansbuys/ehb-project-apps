@@ -23,16 +23,16 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
                 CanChangePassword);
         }
         
-        private bool disableChangePasswordCommand;
-        public bool DisableChangePasswordCommand
+        private bool forceDisableChangePasswordCommand;
+        public bool ForceDisableChangePasswordCommand
         {
-            get { return disableChangePasswordCommand; }
-            set { Set(ref disableChangePasswordCommand, value, UpdateChangePasswordAccess); }
+            get { return forceDisableChangePasswordCommand; }
+            set { Set(ref forceDisableChangePasswordCommand, value, UpdateChangePasswordAccess); }
         }
 
         private bool CanChangePassword()
         {
-            return !DisableChangePasswordCommand && AllFieldsValidate();
+            return !ForceDisableChangePasswordCommand && AllFieldsValidate();
         }
 
         private bool AllFieldsValidate()
@@ -46,7 +46,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
         private async Task ChangePassword()
         {
             log.Debug("Attempting to change password.");
-            DisableChangePasswordCommand = true;
+            ForceDisableChangePasswordCommand = true;
 
             try
             {
@@ -55,7 +55,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
             catch (Exception ex)
             {
                 log.Error("Unable to change password.", ex);
-                DisableChangePasswordCommand = false;
+                ForceDisableChangePasswordCommand = false;
                 throw;
             }
 

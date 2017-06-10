@@ -42,6 +42,31 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
             NavigationAdapter.Should().BeDisplaying<MainPageViewModel>();
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task AdminSectionShouldBeAvailableForAdminAfterLogin(bool userIsAdmin)
+        {
+            const string user = "test";
+            const string pass = "test";
+            Authentication.WhenUserIsKnown(user, pass, isAdmin: userIsAdmin);
+
+            var vm = await GetSut();
+
+            var loginVm = NavigationAdapter.Should().BeDisplaying<LoginViewModel>(true).Which;
+            loginVm.User = user;
+            loginVm.Password = pass;
+            loginVm.LoginCommand.Click();
+
+            NavigationAdapter.Should().NotBeDisplaying<LoginViewModel>();
+            NavigationAdapter.Should().BeDisplaying<MainPageViewModel>();
+
+            if (userIsAdmin)
+                vm.NavigateToAdminCommand.Should().BeEnabled();
+            else
+                vm.NavigateToAdminCommand.Should().BeDisabled();
+        }
+
         [Fact]
         public async Task LogoutLeadsToLogin()
         {

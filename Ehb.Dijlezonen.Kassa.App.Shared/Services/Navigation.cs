@@ -38,7 +38,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public async Task<TViewModel> NavigateTo<TViewModel>()
         {
-
             CheckAdminPrivileges<TViewModel>();
 
             var vm = await navigationAdapter.NavigateTo<TViewModel>();

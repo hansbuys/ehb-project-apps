@@ -21,15 +21,20 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
             this.client = client;
             this.navigation = navigation;
             this.log = logging.GetLoggerFor<MainPageViewModel>();
-
-            UpdateIsAdmin();
+            
             onLoggedIn = (s, a) => UpdateIsAdmin();
             client.LoggedIn += onLoggedIn;
+
+            NavigateToAdminCommand = new Command(async () => { await NavigateToAdminOverview(); }, () => IsAdmin);
+            LogoutCommand = new Command(async () => await Logout());
+
+            UpdateIsAdmin();
         }
 
         private void UpdateIsAdmin()
         {
-            IsAdmin = client.LoggedInUser?.IsAdmin ?? false;
+            var admin = client.LoggedInUser?.IsAdmin;
+            IsAdmin = admin.HasValue && admin.Value;
         }
 
         public string Title => "De Dijlezonen Kassa";
@@ -42,15 +47,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
         }
 
         public string LogoutCommandText => "Uitloggen";
-        public Command LogoutCommand => new Command(async () => await Logout());
+        public Command LogoutCommand { get; }
 
         public string NavigateToAdminCommandText => "Administration";
-        public Command NavigateToAdminCommand => new Command(async () => { await NavigateToAdminOverview(); }, CanNavigateToAdminOverview);
-
-        private bool CanNavigateToAdminOverview()
-        {
-            return IsAdmin;
-        }
+        public Command NavigateToAdminCommand { get; }
 
         private void UpdateNavigateToAdminAccess()
         {
