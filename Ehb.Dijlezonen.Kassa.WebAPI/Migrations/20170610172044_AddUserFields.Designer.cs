@@ -8,9 +8,10 @@ using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage;
 namespace Ehb.Dijlezonen.Kassa.WebAPI.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20170610172044_AddUserFields")]
+    partial class AddUserFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")

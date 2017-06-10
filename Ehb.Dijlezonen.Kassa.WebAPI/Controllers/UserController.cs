@@ -33,6 +33,8 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Controllers
                 {
                     Username =  userRegistration.Username,
                     Password = crypto.Encrypt(userRegistration.Password),
+                    Firstname =  userRegistration.Firstname,
+                    Lastname = userRegistration.Lastname,
                     AskNewPasswordOnNextLogin = userRegistration.AskNewPasswordOnNextLogin,
                     Roles = userRegistration.Roles.Select(x => context.Roles.Single(r => r.Name == x.Name))
                 };
@@ -52,9 +54,15 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Controllers
     public class UserRegistration
     {
         [Required]
+        [EmailAddress]
         public string Username { get; set; }
         [Required]
         public string Password { get; set; }
+
+
+        public string Firstname { get; set; }
+        public string Lastname { get; set; }
+
         public bool AskNewPasswordOnNextLogin { get; set; }
 
         public IEnumerable<RoleRegistration> Roles { get; set; }

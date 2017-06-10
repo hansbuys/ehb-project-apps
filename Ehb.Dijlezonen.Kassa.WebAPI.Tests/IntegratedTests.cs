@@ -20,6 +20,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
     {
         private readonly ITestOutputHelper output;
         private readonly TestServer server;
+        protected UserContext Context { get; set; }
 
         private HttpResponseMessage LoginResponse { get; set; }
 
@@ -46,6 +47,7 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
         protected async Task<HttpClient> GetSut()
         {
             var client = server.CreateClient();
+            Context = (UserContext)server.Host.Services.GetService(typeof(UserContext));
 
             if (LoginResponse != null && LoginResponse.IsSuccessStatusCode)
             {
@@ -155,12 +157,16 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Tests
             LoginResponse = null;
         }
 
-        protected async Task<HttpResponseMessage> CreateNewUser(string username, string password, bool passwordNeedsReset = true)
+        protected async Task<HttpResponseMessage> CreateNewUser(string username = "john.doe@domain-name.tld", string password = "will-be-encrypted", 
+            bool passwordNeedsReset = true, string firstname = "John", string lastname = "Doe")
         {
             var response = await PostJson("/api/user/create", new
             {
                 Username = username,
                 Password = password,
+                Firstname = firstname,
+                Lastname = lastname,
+                IsBlocked = false,
                 AskNewPasswordOnNextLogin = passwordNeedsReset,
                 Roles = new[]
                 {
