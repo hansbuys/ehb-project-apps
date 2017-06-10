@@ -7,12 +7,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
     public class UserService
     {
-        private readonly IBackendClient client;
+        private readonly IAuthenticationService authentication;
+        private readonly ICredentialService credentials;
         private readonly ILog log;
 
-        public UserService(IBackendClient client, Logging logging)
+        public UserService(IAuthenticationService authentication, ICredentialService credentials, Logging logging)
         {
-            this.client = client;
+            this.authentication = authentication;
+            this.credentials = credentials;
             this.log = logging.GetLoggerFor<UserService>();
         }
 
@@ -26,7 +28,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         {
             try
             {
-                await client.ChangePassword(oldPassword, newPassword);
+                await credentials.ChangePassword(oldPassword, newPassword);
             }
             catch (Exception ex)
             {
@@ -41,7 +43,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         {
             try
             {
-                await client.Login(user, password);
+                await authentication.Login(user, password);
             }
             catch (Exception ex)
             {
@@ -51,7 +53,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
             LoggedIn?.Invoke(this, EventArgs.Empty);
 
-            if (client.LoggedInUser != null && client.LoggedInUser.NeedsPasswordChange)
+            if (authentication.LoggedInUser != null && authentication.LoggedInUser.NeedsPasswordChange)
                 NeedsPasswordChange?.Invoke(this, EventArgs.Empty);
         }
 
@@ -59,7 +61,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         {
             log.Debug("Logging out");
 
-            await client.Logout();
+            await authentication.Logout();
 
             LoggedOut?.Invoke(this, EventArgs.Empty);
         }

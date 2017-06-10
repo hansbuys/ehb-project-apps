@@ -36,7 +36,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
                 c.RegisterInstance(MainPage.Navigation).As<INavigation>();
                 c.RegisterType<NavigationAdapter>().As<INavigationAdapter>();
                 
-                c.RegisterType<BackendClient>().As<IBackendClient>().SingleInstance();
+                c.RegisterType<AuthenticationService>()
+                    .As<IAuthenticationService>()
+                    .As<ICredentialService>()
+                    .SingleInstance();
             });
         }
 

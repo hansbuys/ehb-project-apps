@@ -99,7 +99,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Assertions\FakeBackendClientAssertions.cs" />
+    <Compile Include="Assertions\FakeAuthenticationServiceAssertions.cs" />
     <Compile Include="Assertions\AssertionProvider.cs" />
     <Compile Include="Assertions\CommandAssertions.cs" />
     <Compile Include="Assertions\NavigationAssertions.cs" />

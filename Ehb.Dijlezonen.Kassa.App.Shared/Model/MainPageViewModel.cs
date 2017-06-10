@@ -14,7 +14,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model
 
         private readonly EventHandler onLoggedIn;
 
-        public MainPageViewModel(UserService userService, IBackendClient client, Navigation navigation)
+        public MainPageViewModel(UserService userService, IAuthenticationService client, Navigation navigation)
         {
             this.userService = userService;
             this.navigation = navigation;

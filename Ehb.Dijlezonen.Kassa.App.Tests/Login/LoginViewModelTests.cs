@@ -29,7 +29,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
         {
             await LoginHappyPath();
 
-            BackendClient.Should().BeLoggedIn();
+            AuthenticationService.Should().BeLoggedIn();
         }
 
         private class HappyPathOptions
@@ -46,7 +46,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
 
             setup?.Invoke(options);
 
-            BackendClient.WhenUserIsKnown(options.User, options.Pass, options.NeedsPasswordChange, options.IsAdmin);
+            AuthenticationService.WhenUserIsKnown(options.User, options.Pass, options.NeedsPasswordChange, options.IsAdmin);
 
             beforeLogin?.Invoke(options);
 
@@ -62,7 +62,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
                 o.Pass = "Unknown";
             });
 
-            BackendClient.Should().NotBeLoggedIn();
+            AuthenticationService.Should().NotBeLoggedIn();
         }
 
         [Fact]

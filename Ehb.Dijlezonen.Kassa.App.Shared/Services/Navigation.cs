@@ -10,18 +10,18 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     {
         private readonly INavigationAdapter navigationAdapter;
         private readonly UserService userService;
-        private readonly IBackendClient backendClient;
+        private readonly IAuthenticationService authenticationService;
 
         private readonly EventHandler onLoggedIn;
         private readonly EventHandler onLoggedOut;
         private readonly EventHandler needsPasswordChange;
         private readonly EventHandler passwordHasChanged;
 
-        public Navigation(INavigationAdapter navigationAdapter, UserService userService, IBackendClient backendClient)
+        public Navigation(INavigationAdapter navigationAdapter, UserService userService, IAuthenticationService authenticationService)
         {
             this.navigationAdapter = navigationAdapter;
             this.userService = userService;
-            this.backendClient = backendClient;
+            this.authenticationService = authenticationService;
 
             onLoggedIn = async (sender, args) => await OnLoggedIn();
             onLoggedOut = async (sender, args) => await OnLoggedOut();
@@ -66,7 +66,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         private bool RequiresLogin<TViewModel>()
         {
-            return backendClient.LoggedInUser == null && 
+            return authenticationService.LoggedInUser == null && 
                 typeof(TViewModel).IsAssignableTo<IRequireLogin>();
         }
 
@@ -78,8 +78,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         private bool RequiresAdminPrivileges<TViewModel>()
         {
-            return backendClient.LoggedInUser != null && 
-                !backendClient.LoggedInUser.IsAdmin &&
+            return authenticationService.LoggedInUser != null && 
+                !authenticationService.LoggedInUser.IsAdmin &&
                 typeof(TViewModel).IsAssignableTo<IRequireAdminPrivileges>();
         }
 

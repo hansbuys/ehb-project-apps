@@ -10,27 +10,19 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
     public class ViewFactory
     {
-        /// <summary>
-        ///     Key value pair of types to indicate the relation between ViewModel and View.
-        ///     Key = ViewModel
-        ///     Value = View
-        /// </summary>
         private readonly IDictionary<Type, Type> mapViewModelToView;
-        /// <summary>
-        ///     Key value pair of types to indicate the relation between ViewModel and View.
-        ///     Key = ViewModel
-        ///     Value = View
-        /// </summary>
         private readonly IDictionary<Type, Type> mapViewToViewModel;
         private readonly IComponentContext container;
         private readonly ILog log;
         
-        public ViewFactory(Logging logging, IComponentContext container)
+        public ViewFactory(Logging logging, IComponentContext container, ViewFactoryResolver resolver)
         {
             this.container = container;
             log = logging.GetLoggerFor<ViewFactory>();
             mapViewModelToView = new Dictionary<Type, Type>();
             mapViewToViewModel = new Dictionary<Type, Type>();
+
+            resolver.RegisterViews(this);
         }
 
         public void Register(Type view, Type viewModel)

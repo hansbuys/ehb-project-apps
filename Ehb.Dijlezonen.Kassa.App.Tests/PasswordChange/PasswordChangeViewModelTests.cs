@@ -17,18 +17,18 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.PasswordChange
         [Fact]
         public async Task CanChangePassword()
         {
-            BackendClient.WhenUserIsLoggedIn("pass");
+            AuthenticationService.WhenUserIsLoggedIn("pass");
 
             var vm = await GetSut();
 
-            BackendClient.PasswordChanged.Should().BeFalse();
+            AuthenticationService.PasswordChanged.Should().BeFalse();
 
             vm.OldPassword = "pass";
             vm.NewPassword = "new-pass";
             vm.ConfirmNewPassword = "new-pass";
             vm.ChangePasswordCommand.Click();
 
-            BackendClient.PasswordChanged.Should().BeTrue();
+            AuthenticationService.PasswordChanged.Should().BeTrue();
         }
 
         [Fact]

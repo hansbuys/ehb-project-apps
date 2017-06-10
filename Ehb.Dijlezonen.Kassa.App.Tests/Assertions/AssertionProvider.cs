@@ -10,9 +10,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
             return new NavigatorAssertions(navigation);
         }
 
-        internal static FakeBackendClientAssertions Should(this FakeBackendClient client)
+        internal static FakeAuthenticationServiceAssertions Should(this FakeAuthenticationService authentication)
         {
-            return new FakeBackendClientAssertions(client);
+            return new FakeAuthenticationServiceAssertions(authentication);
         }
 
         internal static PageAssertions Should(this Page page)

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using Xunit.Abstractions;
 
@@ -15,7 +16,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         }
 
         protected FakeNavigationAdapter NavigationAdapter { get; private set; }
-        protected FakeBackendClient BackendClient { get; } = new FakeBackendClient();
+        protected FakeAuthenticationService AuthenticationService { get; } = new FakeAuthenticationService();
 
         private Navigation navigation;
 
@@ -23,11 +24,15 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         protected override void Configure(ContainerBuilder builder)
         {
-            builder.RegisterType<UserService>().SingleInstance();
-            builder.RegisterType<Navigation>().SingleInstance();
-
             builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
-            builder.RegisterInstance(BackendClient).As<IBackendClient>().SingleInstance();
+
+            builder.RegisterInstance(AuthenticationService).As<IAuthenticationService>().SingleInstance();
+            builder.RegisterInstance(AuthenticationService).As<ICredentialService>().SingleInstance();
+        }
+
+        protected override BootstrapperBase GetBootstrapper()
+        {
+            return new TestBootstrapper(Logging);
         }
 
         protected override IContainer InitializeContainer()

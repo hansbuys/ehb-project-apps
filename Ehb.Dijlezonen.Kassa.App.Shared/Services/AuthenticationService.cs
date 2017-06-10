@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
-    public class BackendClient : IBackendClient
+    public class AuthenticationService : IAuthenticationService, ICredentialService
     {
         private readonly Func<JwtSecurityTokenHandler> getTokenHandler;
         private readonly IBackendConfiguration config;
@@ -24,15 +24,38 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         private Token token;
         private User user;
 
-        public BackendClient(Func<JwtSecurityTokenHandler> getTokenHandler, IBackendConfiguration config, Func<HttpClient> getHttpClient, Logging logging)
+        public AuthenticationService(Func<JwtSecurityTokenHandler> getTokenHandler, IBackendConfiguration config, Func<HttpClient> getHttpClient, Logging logging)
         {
             this.getTokenHandler = getTokenHandler;
             this.config = config;
             this.getHttpClient = getHttpClient;
-            this.log = logging.GetLoggerFor<BackendClient>();
+            this.log = logging.GetLoggerFor<AuthenticationService>();
         }
 
-        async Task IBackendClient.Login(string username, string password)
+        async Task IAuthenticationService.Login(string username, string password)
+        {
+            var result = await PostForm("/token", new[]
+            {
+                new KeyValuePair<string, string>("username", username),
+                new KeyValuePair<string, string>("password", password)
+            });
+
+            if (result != null && result.IsSuccessStatusCode)
+            {
+                var tokenAsJson = await result.Content.ReadAsStringAsync();
+                dynamic dynamicAccessToken = JsonConvert.DeserializeObject(tokenAsJson);
+
+                var accessToken = (string)dynamicAccessToken.access_token;
+
+                token = new Token(accessToken, ParseExpirationDateTime(accessToken));
+
+                user = new User(
+                    ParseIsAdminToken(accessToken),
+                    ParseNeedsPasswordChange(accessToken));
+            }
+        }
+
+        private async Task<HttpResponseMessage> PostForm(string url, IEnumerable<KeyValuePair<string, string>> form)
         {
             using (var httpClient = new HttpClient())
             {
@@ -40,31 +63,16 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
                 try
                 {
-                    result = await httpClient.PostAsync(config.BaseUrl + "/token", new FormUrlEncodedContent(
-                        new[]
-                        {
-                            new KeyValuePair<string, string>("username", username),
-                            new KeyValuePair<string, string>("password", password)
-                        }));
+                    result = await httpClient.PostAsync(
+                        config.BaseUrl + url, 
+                        new FormUrlEncodedContent(form));
                 }
                 catch (Exception e)
                 {
                     log.Error("Unable to make the call", e);
                 }
 
-                if (result != null && result.IsSuccessStatusCode)
-                {
-                    var tokenAsJson = await result.Content.ReadAsStringAsync();
-                    dynamic dynamicAccessToken = JsonConvert.DeserializeObject(tokenAsJson);
-
-                    var accessToken = (string)dynamicAccessToken.access_token;
-
-                    this.token = new Token(accessToken, ParseExpirationDateTime(accessToken));
-
-                    this.user = new User(
-                        ParseIsAdminToken(accessToken),
-                        ParseNeedsPasswordChange(accessToken));
-                }
+                return result;
             }
         }
 
@@ -93,14 +101,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             return GetClaims(accessToken).Any(x => x.Type == CustomClaimTypes.NeedsPasswordChange);
         }
 
-        Task IBackendClient.Logout()
+        Task IAuthenticationService.Logout()
         {
             user = null;
             token = null;
             return Task.FromResult(0);
         }
 
-        async Task IBackendClient.ChangePassword(string oldPassword, string newPassword)
+        async Task ICredentialService.ChangePassword(string oldPassword, string newPassword)
         {
             var response = await PostJson(config.BaseUrl + "/password/change", new
             {
@@ -111,7 +119,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             response.EnsureSuccessStatusCode();
         }
 
-        User IBackendClient.LoggedInUser
+        User IAuthenticationService.LoggedInUser
         {
             get
             {
