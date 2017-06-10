@@ -9,44 +9,26 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     public class Navigation : IDisposable
     {
         private readonly INavigationAdapter navigationAdapter;
-        private readonly UserService userService;
-        private readonly IBackendClient backendClient;
-
-        private readonly EventHandler onLoggedIn;
+        private readonly IAuthentication authentication;
+        
         private readonly EventHandler onLoggedOut;
         private readonly EventHandler needsPasswordChange;
-        private readonly EventHandler passwordHasChanged;
 
-        public Navigation(INavigationAdapter navigationAdapter, UserService userService, IBackendClient backendClient)
+        public Navigation(INavigationAdapter navigationAdapter, IAuthentication authentication)
         {
             this.navigationAdapter = navigationAdapter;
-            this.userService = userService;
-            this.backendClient = backendClient;
-
-            onLoggedIn = async (sender, args) => await OnLoggedIn();
+            this.authentication = authentication;
+            
             onLoggedOut = async (sender, args) => await OnLoggedOut();
             needsPasswordChange = async (sender, args) => await NeedsPasswordChange();
-            passwordHasChanged = async (sender, args) => await PasswordHasChanged();
-
-            userService.LoggedIn += onLoggedIn;
-            userService.LoggedOut += onLoggedOut;
-            userService.NeedsPasswordChange += needsPasswordChange;
-            userService.PasswordHasChanged += passwordHasChanged;
-        }
-
-        private Task PasswordHasChanged()
-        {
-            return navigationAdapter.CloseModal();
+            
+            authentication.NeedsPasswordChange += needsPasswordChange;
+            authentication.LoggedOut += onLoggedOut;
         }
 
         private Task NeedsPasswordChange()
         {
             return navigationAdapter.NavigateToModal<PasswordChangeViewModel>();
-        }
-
-        private Task OnLoggedIn()
-        {
-            return navigationAdapter.CloseModal();
         }
 
         private Task OnLoggedOut()
@@ -56,18 +38,20 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public async Task<TViewModel> NavigateTo<TViewModel>()
         {
-            if (RequiresLogin<TViewModel>())
-                await userService.Logout();
-
             CheckAdminPrivileges<TViewModel>();
 
-            return await navigationAdapter.NavigateTo<TViewModel>();
+            var vm = await navigationAdapter.NavigateTo<TViewModel>();
+
+            if (RequiresAuthentication<TViewModel>())
+                await NavigateToLogin();
+
+            return vm;
         }
 
-        private bool RequiresLogin<TViewModel>()
+        private bool RequiresAuthentication<TViewModel>()
         {
-            return backendClient.LoggedInUser == null && 
-                typeof(TViewModel).IsAssignableTo<IRequireLogin>();
+            return authentication.LoggedInUser == null && 
+                typeof(TViewModel).IsAssignableTo<IRequireAuthentication>();
         }
 
         private void CheckAdminPrivileges<TViewModel>()
@@ -78,8 +62,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         private bool RequiresAdminPrivileges<TViewModel>()
         {
-            return backendClient.LoggedInUser != null && 
-                !backendClient.LoggedInUser.IsAdmin &&
+            return authentication.LoggedInUser != null && 
+                !authentication.LoggedInUser.IsAdmin &&
                 typeof(TViewModel).IsAssignableTo<IRequireAdminPrivileges>();
         }
 
@@ -100,10 +84,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         {
             if (!disposedValue && disposing)
             {
-                userService.LoggedIn -= onLoggedIn;
-                userService.LoggedOut -= onLoggedOut;
-                userService.NeedsPasswordChange -= needsPasswordChange;
-                userService.PasswordHasChanged -= passwordHasChanged;
+                authentication.LoggedOut -= onLoggedOut;
+                authentication.NeedsPasswordChange -= needsPasswordChange;
 
                 disposedValue = true;
             }

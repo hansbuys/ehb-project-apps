@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Autofac;
 using Common.Logging;
@@ -46,6 +47,9 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         {
             object vm;
             ModalStack.TryPop(out vm);
+
+            var disposable = vm as IDisposable;
+            disposable?.Dispose();
 
             log.Debug($"Closing modal view {vm.GetType().Name}");
             return Task.FromResult(0);

@@ -6,10 +6,10 @@
     <StackLayout VerticalOptions="Center" 
                  HorizontalOptions="Center">
         <Label Text="{Binding Title}" />
+
+        <Button Text="{Binding NavigateToAdminCommandText}" Command="{Binding NavigateToAdminCommand}" IsVisible="{Binding IsAdmin}" />
         
-        <Button IsVisible="{Binding IsAdmin}" Text="{Binding NavigateToAdminCommandText}" Command="{Binding NavigateToAdminCommand}"></Button>
-        
-        <Button Text="{Binding LogoutCommandText}" Command="{Binding LogoutCommand}"></Button>
+        <Button Text="{Binding LogoutCommandText}" Command="{Binding LogoutCommand}" />
     </StackLayout>
 
 </ContentPage>

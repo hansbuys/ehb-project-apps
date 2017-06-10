@@ -4,6 +4,7 @@ using Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
+using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,7 +21,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             await GetSut();
 
-            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
+            NavigationAdapter.Should().BeDisplaying<LoginViewModel>(true);
         }
 
         [Fact]
@@ -28,37 +29,66 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             const string user = "test";
             const string pass = "test";
-            BackendClient.WhenUserIsKnown(user, pass);
+            Authentication.WhenUserIsKnown(user, pass);
 
             await GetSut();
 
-            var loginVm = NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
+            var loginVm = NavigationAdapter.Should().BeDisplaying<LoginViewModel>(true).Which;
             loginVm.User = user;
             loginVm.Password = pass;
             loginVm.LoginCommand.Click();
 
-            NavigationAdapter.Should().NotHaveModal<LoginViewModel>();
+            NavigationAdapter.Should().NotBeDisplaying<LoginViewModel>();
+            NavigationAdapter.Should().BeDisplaying<MainPageViewModel>();
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task AdminSectionShouldBeAvailableForAdminAfterLogin(bool userIsAdmin)
+        {
+            const string user = "test";
+            const string pass = "test";
+            Authentication.WhenUserIsKnown(user, pass, isAdmin: userIsAdmin);
+
+            var vm = await GetSut();
+
+            var loginVm = NavigationAdapter.Should().BeDisplaying<LoginViewModel>(true).Which;
+            loginVm.User = user;
+            loginVm.Password = pass;
+            loginVm.LoginCommand.Click();
+
+            NavigationAdapter.Should().NotBeDisplaying<LoginViewModel>();
+            NavigationAdapter.Should().BeDisplaying<MainPageViewModel>();
+
+            if (userIsAdmin)
+                vm.NavigateToAdminCommand.Should().BeEnabled();
+            else
+                vm.NavigateToAdminCommand.Should().BeDisabled();
         }
 
         [Fact]
         public async Task LogoutLeadsToLogin()
         {
-            BackendClient.WhenUserIsLoggedIn();
+            Authentication.WhenUserIsLoggedIn();
 
             (await GetSut()).LogoutCommand.Click();
 
-            BackendClient.Should().NotBeLoggedIn();
-            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
+            Authentication.Should().NotBeLoggedIn();
+            NavigationAdapter.Should().BeDisplaying<LoginViewModel>(true);
         }
 
         [Fact]
         public async Task AdminCanNavigateToAdminOverview()
         {
-            BackendClient.WhenAdminIsLoggedIn();
+            Authentication.WhenAdminIsLoggedIn();
 
-            (await GetSut()).NavigateToAdminCommand.Click();
+            var vm = await GetSut();
+            vm.IsAdmin.Should().BeTrue();
+            vm.NavigateToAdminCommand.Should().BeEnabled();
+            vm.NavigateToAdminCommand.Click();
             
-            NavigationAdapter.Should().HaveNavigatedTo<OverviewViewModel>();
+            NavigationAdapter.Should().BeDisplaying<OverviewViewModel>();
         }
     }
 }

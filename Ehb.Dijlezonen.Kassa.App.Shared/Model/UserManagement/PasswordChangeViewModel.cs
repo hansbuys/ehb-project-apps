@@ -1,30 +1,66 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Common.Logging;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
 {
     public class PasswordChangeViewModel : PropertyChangedViewModelBase
     {
-        private readonly UserService userService;
+        private readonly ICredentialService credentials;
+        private readonly INavigationAdapter navigation;
 
-        public PasswordChangeViewModel(UserService userService)
+        public PasswordChangeViewModel(ICredentialService credentials, INavigationAdapter navigation, Logging logging)
         {
-            this.userService = userService;
+            this.credentials = credentials;
+            this.navigation = navigation;
+            log = logging.GetLoggerFor<PasswordChangeViewModel>();
 
             ChangePasswordCommand = new Command(
                 async () => await ChangePassword(),
                 CanChangePassword);
         }
+        
+        private bool forceDisableChangePasswordCommand;
+        public bool ForceDisableChangePasswordCommand
+        {
+            get { return forceDisableChangePasswordCommand; }
+            set { Set(ref forceDisableChangePasswordCommand, value, UpdateChangePasswordAccess); }
+        }
 
         private bool CanChangePassword()
         {
-            return !string.IsNullOrEmpty(OldPassword) && !string.IsNullOrEmpty(NewPassword) && NewPassword == ConfirmNewPassword;
+            return !ForceDisableChangePasswordCommand && AllFieldsValidate();
         }
 
-        private Task ChangePassword()
+        private bool AllFieldsValidate()
         {
-            return userService.ChangePassword(OldPassword, NewPassword);
+            return 
+                !string.IsNullOrEmpty(OldPassword) && 
+                !string.IsNullOrEmpty(NewPassword) && 
+                NewPassword == ConfirmNewPassword;
+        }
+
+        private async Task ChangePassword()
+        {
+            log.Debug("Attempting to change password.");
+            ForceDisableChangePasswordCommand = true;
+
+            try
+            {
+                await credentials.ChangePassword(OldPassword, NewPassword);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Unable to change password.", ex);
+                ForceDisableChangePasswordCommand = false;
+                throw;
+            }
+
+            log.Debug("Password has been successfully changed.");
+            await navigation.CloseModal();
         }
 
         public string Title => "Verander je paswoord aub.";
@@ -40,7 +76,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
         public string NewPassword
         {
             get { return newPassword; }
-            set { Set(ref newPassword, value, PasswordsChanged); }
+            set { Set(ref newPassword, value, UpdateChangePasswordAccess); }
         }
 
         private string confirmNewPassword;
@@ -48,17 +84,19 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
         public string ConfirmNewPassword
         {
             get { return confirmNewPassword; }
-            set { Set(ref confirmNewPassword, value, PasswordsChanged); }
+            set { Set(ref confirmNewPassword, value, UpdateChangePasswordAccess); }
         }
 
         private string oldPassword;
+        private ILog log;
+
         public string OldPassword
         {
             get { return oldPassword; }
-            set { Set(ref oldPassword, value, PasswordsChanged); }
+            set { Set(ref oldPassword, value, UpdateChangePasswordAccess); }
         }
 
-        private void PasswordsChanged()
+        private void UpdateChangePasswordAccess()
         {
             ChangePasswordCommand.ChangeCanExecute();
         }

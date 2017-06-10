@@ -29,28 +29,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
         {
             await LoginHappyPath();
 
-            BackendClient.Should().BeLoggedIn();
-        }
-
-        private class HappyPathOptions
-        {
-            public string User { get; set; } = "knownUser";
-            public string Pass { get; set; } = "knownPassword4KnownUser";
-            public bool NeedsPasswordChange { get; set; }
-            public bool IsAdmin { get; set; }
-        }
-
-        private async Task LoginHappyPath(Action<HappyPathOptions> setup = null, Action<HappyPathOptions> beforeLogin = null)
-        {
-            var options = new HappyPathOptions();
-
-            setup?.Invoke(options);
-
-            BackendClient.WhenUserIsKnown(options.User, options.Pass, options.NeedsPasswordChange, options.IsAdmin);
-
-            beforeLogin?.Invoke(options);
-
-            Login(await GetSut(), options.User, options.Pass);
+            Authentication.Should().BeLoggedIn();
+            NavigationAdapter.Should().NotBeDisplaying<LoginViewModel>();
         }
 
         [Fact]
@@ -62,7 +42,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
                 o.Pass = "Unknown";
             });
 
-            BackendClient.Should().NotBeLoggedIn();
+            Authentication.Should().NotBeLoggedIn();
         }
 
         [Fact]
@@ -92,7 +72,42 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
         {
             await LoginHappyPath(setup: o => o.NeedsPasswordChange = true);
 
-            NavigationAdapter.Should().HaveNavigatedModallyTo<PasswordChangeViewModel>();
+            NavigationAdapter.Should().BeDisplaying<PasswordChangeViewModel>(true);
+        }
+
+        [Fact]
+        public async Task WhileLoggingInLoginShouldBeDisabled()
+        {
+            var vm = await LoginHappyPath(o => o.NeedsPasswordChange = true);
+
+            vm.LoginCommand.Should().BeDisabled();
+        }
+
+        private async Task<LoginViewModel> LoginHappyPath(Action<HappyPathOptions> setup = null, Action<HappyPathOptions> beforeLogin = null)
+        {
+            var options = new HappyPathOptions();
+
+            setup?.Invoke(options);
+
+            Authentication.WhenUserIsKnown(options.User, options.Pass, options.NeedsPasswordChange, options.IsAdmin);
+
+            beforeLogin?.Invoke(options);
+
+            var vm = await GetSut();
+
+            NavigationAdapter.Should().BeDisplaying<LoginViewModel>();
+
+            Login(vm, options.User, options.Pass);
+
+            return vm;
+        }
+
+        private class HappyPathOptions
+        {
+            public string User { get; set; } = "knownUser";
+            public string Pass { get; set; } = "knownPassword4KnownUser";
+            public bool NeedsPasswordChange { get; set; }
+            public bool IsAdmin { get; set; }
         }
     }
 }

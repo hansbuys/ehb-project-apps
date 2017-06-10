@@ -22,20 +22,12 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
             return GetBootstrapper().Initialize(builder =>
             {
                 builder.RegisterInstance(output);
-                builder.RegisterInstance<Logging>(Logging);
 
                 Configure(builder);
             });
         }
-
-        /// <summary>
-        /// Override this method to be able to use a different bootstrapper implementation.
-        /// </summary>
-        /// <returns></returns>
-        protected virtual BootstrapperBase GetBootstrapper()
-        {
-            return new TestBootstrapper(Logging);
-        }
+        
+        protected abstract BootstrapperBase GetBootstrapper();
 
         /// <summary>
         /// Use this method to register additional dependencies.

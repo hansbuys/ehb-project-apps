@@ -2,13 +2,8 @@
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 {
-    public interface IBackendClient
+    public interface ICredentialService
     {
-        Task Login(string user, string password);
-        Task Logout();
-
         Task ChangePassword(string oldPassword, string newPassword);
-
-        User LoggedInUser { get; }
     }
 }
