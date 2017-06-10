@@ -58,10 +58,12 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Controllers
         [EmailAddress]
         public string Username { get; set; }
         [Required]
+        [StringLength(64, MinimumLength = 8)]
         public string Password { get; set; }
-
-
+        
+        [StringLength(64, MinimumLength = 1)]
         public string Firstname { get; set; }
+        [StringLength(64, MinimumLength = 1)]
         public string Lastname { get; set; }
 
         public bool AskNewPasswordOnNextLogin { get; set; }
