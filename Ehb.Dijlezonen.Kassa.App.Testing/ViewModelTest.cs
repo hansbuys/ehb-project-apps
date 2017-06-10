@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Autofac;
-using Ehb.Dijlezonen.Kassa.App.Shared;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.Infrastructure.Testing;
 using Xunit.Abstractions;
@@ -16,7 +15,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         }
 
         protected FakeNavigationAdapter NavigationAdapter { get; private set; }
-        protected FakeLoginProvider LoginProvider { get; } = new FakeLoginProvider();
+        protected FakeBackendClient BackendClient { get; } = new FakeBackendClient();
 
         private Navigation navigation;
 
@@ -29,7 +28,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             NavigationAdapter = container.Resolve<INavigationAdapter>() as FakeNavigationAdapter;
             if (NavigationAdapter == null)
                 throw new Exception("No navigation adapter implemented!");
-            NavigationAdapter.SetResolver(container);
 
             navigation = container.Resolve<Navigation>();
 
@@ -38,8 +36,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
 
         protected override void Configure(ContainerBuilder builder)
         {
+            builder.RegisterType<UserService>().SingleInstance();
+
             builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
-            builder.RegisterInstance(LoginProvider).As<ILoginProvider>();
+            builder.RegisterInstance(BackendClient).As<IBackendClient>().SingleInstance();
         }
 
         protected override Task<TViewModel> GetSut()

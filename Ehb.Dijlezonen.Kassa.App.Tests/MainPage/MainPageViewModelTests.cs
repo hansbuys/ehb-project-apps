@@ -14,22 +14,22 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         }
 
         [Fact]
-        public void WhenNotLoggedInLoginViewGetsDisplayed()
+        public async Task WhenNotLoggedInLoginViewGetsDisplayed()
         {
-            GetSut();
+            await GetSut();
 
             NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
 
         [Fact]
-        public void ShouldReturnToMainPageAfterLogin()
+        public async Task ShouldReturnToMainPageAfterLogin()
         {
             const string user = "test";
             const string pass = "test";
-            LoginProvider.WhenUserIsKnown(user, pass);
-                
-            GetSut();
-            
+            BackendClient.WhenUserIsKnown(user, pass);
+
+            await GetSut();
+
             var loginVm = NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
             loginVm.User = user;
             loginVm.Password = pass;
@@ -41,11 +41,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         [Fact]
         public async Task LogoutLeadsToLogin()
         {
-            LoginProvider.WhenUserIsLoggedIn();
+            BackendClient.WhenUserIsLoggedIn();
 
             (await GetSut()).LogoutCommand.Click();
 
-            LoginProvider.Should().NotBeLoggedIn();
+            BackendClient.Should().NotBeLoggedIn();
             NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
         }
     }

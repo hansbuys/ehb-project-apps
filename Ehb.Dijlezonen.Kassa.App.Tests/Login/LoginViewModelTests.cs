@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
@@ -28,28 +29,40 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
         {
             await LoginHappyPath();
 
-            LoginProvider.Should().BeLoggedIn();
+            BackendClient.Should().BeLoggedIn();
         }
 
-        private async Task LoginHappyPath()
+        private class HappyPathOptions
         {
-            const string user = "knownUser";
-            const string pass = "knownPassword4KnownUser";
+            public string User { get; set; } = "knownUser";
+            public string Pass { get; set; } = "knownPassword4KnownUser";
+            public bool NeedsPasswordChange { get; set; }
+            public bool IsAdmin { get; set; }
+        }
 
-            LoginProvider.WhenUserIsKnown(user, pass);
-            Login(await GetSut(), user, pass);
+        private async Task LoginHappyPath(Action<HappyPathOptions> setup = null, Action<HappyPathOptions> beforeLogin = null)
+        {
+            var options = new HappyPathOptions();
+
+            setup?.Invoke(options);
+
+            BackendClient.WhenUserIsKnown(options.User, options.Pass, options.NeedsPasswordChange, options.IsAdmin);
+
+            beforeLogin?.Invoke(options);
+
+            Login(await GetSut(), options.User, options.Pass);
         }
 
         [Fact]
         public async Task CannotLoginWithUnknownUserAndPassword()
         {
-            const string user = "knownUser";
-            const string pass = "knownPassword4KnownUser";
+            await LoginHappyPath(beforeLogin: o =>
+            {
+                o.User = "Unknown";
+                o.Pass = "Unknown";
+            });
 
-            LoginProvider.WhenUserIsKnown(user, pass);
-            Login(await GetSut(), "unknownUser", "wrongPassword");
-
-            LoginProvider.Should().NotBeLoggedIn();
+            BackendClient.Should().NotBeLoggedIn();
         }
 
         [Fact]
@@ -72,6 +85,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Login
             vm.Password = "anything";
 
             vm.LoginCommand.Should().BeEnabled();
+        }
+
+        [Fact]
+        public async Task DisplayPasswordChangeWhenPasswordShouldBeChangedAfterLogin()
+        {
+            await LoginHappyPath(setup: o => o.NeedsPasswordChange = true);
+
+            NavigationAdapter.Should().HaveNavigatedModallyTo<PasswordChangeViewModel>();
         }
     }
 }

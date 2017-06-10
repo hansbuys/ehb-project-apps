@@ -1,24 +1,30 @@
 using System;
 using System.Text;
-using Ehb.Dijlezonen.Kassa.WebAPI.Authentication;
 using Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using MiddlewareOptions = Microsoft.Extensions.Options.Options;
 
 namespace Ehb.Dijlezonen.Kassa.WebAPI.Configuration
 {
     public static class JwtTokenExtensions
     {
-        public static void SetupJwtBearerAuth(this IApplicationBuilder app,
-            IOptions<TokenAuthenticationOptions> configuration, IIdentityResolver identityResolver)
+        public static void UseJwtTokenGenerator(this IServiceCollection services, TokenAuthenticationOptions options)
         {
-            var options = configuration.Value;
+            var signingKey = CreateSymmetricSecurityKey(options);
 
-            var signingKey =
-                new SymmetricSecurityKey(
-                    Encoding.ASCII.GetBytes(options.SecretKey));
+            services.Configure<TokenProviderOptions>(x =>
+            {
+                x.Path = options.TokenPath;
+                x.Audience = options.Audience;
+                x.Issuer = options.Issuer;
+                x.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+            });
+        }
+
+        public static void SetupJwtTokenGenerator(this IApplicationBuilder app, TokenAuthenticationOptions options)
+        {
+            var signingKey = CreateSymmetricSecurityKey(options);
 
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -39,17 +45,14 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI.Configuration
                 TokenValidationParameters = tokenValidationParameters,
                 RequireHttpsMetadata = true
             });
+        }
 
-            var tokenProviderOptions = new TokenProviderOptions
-            {
-                Path = options.TokenPath,
-                Audience = options.Audience,
-                Issuer = options.Issuer,
-                SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
-                IdentityResolver = identityResolver.GetIdentity
-            };
-
-            app.UseMiddleware<TokenProviderMiddleware>(MiddlewareOptions.Create(tokenProviderOptions));
+        private static SymmetricSecurityKey CreateSymmetricSecurityKey(TokenAuthenticationOptions options)
+        {
+            var signingKey =
+                new SymmetricSecurityKey(
+                    Encoding.ASCII.GetBytes(options.SecretKey));
+            return signingKey;
         }
     }
 }

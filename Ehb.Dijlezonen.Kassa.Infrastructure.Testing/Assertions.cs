@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Runtime.Remoting.Messaging;
+using System.Threading;
 using FluentAssertions;
 using FluentAssertions.Primitives;
 
@@ -8,29 +8,26 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 {
     public static class Assertions
     {
-        private const string ContextKey = "assertions-testoutput-delegate";
+        //we want to separate WriteTestOutput for each running test.
+        private static readonly AsyncLocal<Guid> Id = new AsyncLocal<Guid>();
 
-        private static readonly ConcurrentDictionary<Guid, Action<string>> writeOutputDelegates =
+        private static readonly ConcurrentDictionary<Guid, Action<string>> WriteOutputDelegates =
             new ConcurrentDictionary<Guid, Action<string>>();
 
         public static Action<string> WriteTestOutput
         {
             set
             {
-                var id = Guid.NewGuid();
+                Id.Value = Guid.NewGuid();
 
-                writeOutputDelegates.AddOrUpdate(id, value,
+                WriteOutputDelegates.AddOrUpdate(Id.Value, value,
                     (guid, action) => { throw new Exception("Key already in use."); });
-
-                CallContext.LogicalSetData(ContextKey, id);
             }
             internal get
             {
-                var id = (Guid)CallContext.LogicalGetData(ContextKey);
-
                 Action<string> value;
-                if (!writeOutputDelegates.TryGetValue(id, out value))
-                    throw new Exception("Unabled to find write-testoutput delegate for testing.");
+                if (!WriteOutputDelegates.TryGetValue(Id.Value, out value))
+                    throw new Exception("Unable to find write-testoutput delegate for testing.");
 
                 return value;
             }
@@ -52,7 +49,7 @@ namespace Ehb.Dijlezonen.Kassa.Infrastructure.Testing
 
         protected void CheckedThat(string message)
         {
-            string traceMessage = $"Checked that {message}.";
+            var traceMessage = $"Checked that {message}.";
 
             writeOutput?.Invoke(traceMessage);
         }

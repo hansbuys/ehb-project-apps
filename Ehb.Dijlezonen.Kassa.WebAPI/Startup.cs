@@ -2,10 +2,12 @@ using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Ehb.Dijlezonen.Kassa.WebAPI.Authentication;
+using Ehb.Dijlezonen.Kassa.WebAPI.Authentication.Storage;
 using Ehb.Dijlezonen.Kassa.WebAPI.Configuration;
 using Ehb.Dijlezonen.Kassa.WebAPI.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -31,20 +33,36 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            var configureMvcOptions = Configuration.ReadOptions<ConfigureMvcOptions>();
-            services.ConfigureWithMvc(configureMvcOptions);
+            services.ConfigureWithMvc(Configuration);
+            
+            SetupDatabaseConnection(services);
 
-            var tokenOptions = Configuration.ReadOptions<TokenAuthenticationOptions>("TokenAuthentication", services: services);
+            return SetContainerAndCreateServiceProvider(services);
+        }
+
+        protected virtual void SetupDatabaseConnection(IServiceCollection services)
+        {
+            var connection = @"Server=(localdb)\mssqllocaldb;Database=Ehb.Dijlezonen.Kassa;Trusted_Connection=True;";
+            services.AddDbContext<UserContext>(options => { options.UseSqlServer(connection); });
+        }
+
+        private IServiceProvider SetContainerAndCreateServiceProvider(IServiceCollection services)
+        {
+            var tokenOptions = Configuration.ReadOptions<TokenAuthenticationOptions>("TokenAuthentication", services);
+
+            services.UseJwtTokenGenerator(tokenOptions);
 
             Container = services.SetupAutofac(builder =>
             {
+                builder.RegisterType<IdentityRepository>().As<IIdentityRepository>();
+
                 if (tokenOptions.UseFakeCredentials)
                 {
-                    builder.RegisterType<FakeIdentityResolver>().As<IIdentityResolver>();
+                    builder.RegisterType<TestUserContextInitializer>().As<IDbContextInitializer>();
                 }
                 else
                 {
-                    builder.RegisterType<IdentityResolver>().As<IIdentityResolver>();
+                    builder.RegisterType<UserContextInitializer>().As<IDbContextInitializer>();
                 }
             });
 
@@ -53,39 +71,20 @@ namespace Ehb.Dijlezonen.Kassa.WebAPI
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
-            IApplicationLifetime appLifetime, IIdentityResolver resolver, IOptions<TokenAuthenticationOptions> tokenOptions)
+            IApplicationLifetime appLifetime, IOptions<TokenProviderOptions> tokenProviderOptions, 
+            IOptions<TokenAuthenticationOptions> tokenAuthenticationOptions, IDbContextInitializer dbInitializer)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
-            app.SetupJwtBearerAuth(tokenOptions, resolver);
+            
+            app.SetupJwtTokenGenerator(tokenAuthenticationOptions.Value);
+            app.UseMiddleware<TokenProviderMiddleware>(Options.Create(tokenProviderOptions.Value));
 
             app.UseMvc();
-            appLifetime.ApplicationStopped.Register(() => this.Container.Dispose());
-        }
-    }
 
-    public static class ConfigurationExtensions
-    {
-        /// <summary>
-        /// Reads settings from appsettings into a strongly typed object.
-        /// </summary>
-        /// <typeparam name="TOptions"></typeparam>
-        /// <param name="configuration">the configuration root to read the settings from</param>
-        /// <param name="sectionName">the name of the setting used in the appsettings file. Defaults to the name of <typeparam name="TOptions"></typeparam></param>
-        /// <param name="services">when provided it will register the options to the services container.</param>
-        /// <returns></returns>
-        public static TOptions ReadOptions<TOptions>(this IConfigurationRoot configuration, string sectionName = null, IServiceCollection services = null)
-            where TOptions : class, new()
-        {
-            var options = new TOptions();
+            dbInitializer.Initialize();
 
-            var tokenAuth = configuration.GetSection(sectionName ?? typeof(TOptions).Name);
-            tokenAuth.Bind(options);
-
-            services?.Configure<TokenAuthenticationOptions>(tokenAuth);
-
-            return options;
+            appLifetime.ApplicationStopped.Register(() => Container.Dispose());
         }
     }
 }

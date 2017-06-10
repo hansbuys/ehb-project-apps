@@ -158,13 +158,13 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Ehb.Dijlezonen.Kassa.Infrastructure\Ehb.Dijlezonen.Kassa.Infrastructure.csproj">
-      <Project>{6B730A0B-E55D-48F0-8C08-D898F3DBA420}</Project>
-      <Name>Ehb.Dijlezonen.Kassa.Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Ehb.Dijlezonen.Kassa.App\Ehb.Dijlezonen.Kassa.App.Shared.csproj">
-      <Project>{D31DEA7E-239E-43BA-8215-FA9A83BEE5B4}</Project>
+    <ProjectReference Include="..\..\Ehb.Dijlezonen.Kassa.App.Shared\Ehb.Dijlezonen.Kassa.App.Shared.csproj">
+      <Project>{8c660cae-10d5-471c-b0eb-9cf7152577fc}</Project>
       <Name>Ehb.Dijlezonen.Kassa.App.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Ehb.Dijlezonen.Kassa.Infrastructure\Ehb.Dijlezonen.Kassa.Infrastructure.csproj">
+      <Project>{90b3a787-e6d8-4e89-9e65-eed7d12b190c}</Project>
+      <Name>Ehb.Dijlezonen.Kassa.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

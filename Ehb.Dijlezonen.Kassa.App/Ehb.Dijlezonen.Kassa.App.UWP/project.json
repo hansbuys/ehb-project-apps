@@ -1,12 +1,12 @@
 ﻿{
   "dependencies": {
-    "Autofac": "4.5.0",
+    "Autofac": "4.6.0",
     "Common.Logging": "3.4.0-Beta2",
     "Common.Logging.Core": "3.4.0-Beta2",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
     "NETStandard.Library": "1.6.1",
     "System.Net.Http": "4.3.2",
-    "Xamarin.Forms": "2.3.4.247"
+    "Xamarin.Forms": "2.3.5.239-pre3"
   },
   "frameworks": {
     "uap10.0": {}
