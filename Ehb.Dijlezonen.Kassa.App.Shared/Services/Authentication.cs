@@ -57,12 +57,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
                 new KeyValuePair<string, string>("username", username),
                 new KeyValuePair<string, string>("password", password)
             });
-
-            result.EnsureSuccessStatusCode();
             
             log.Debug($"{username} has succesfully logging in.");
 
-            var tokenAsJson = await result.Content.ReadAsStringAsync();
+            var tokenAsJson = await result.GetContent;
             dynamic dynamicAccessToken = JsonConvert.DeserializeObject(tokenAsJson);
 
             var accessToken = (string) dynamicAccessToken.access_token;

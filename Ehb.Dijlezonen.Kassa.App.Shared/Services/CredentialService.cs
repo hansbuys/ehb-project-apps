@@ -11,20 +11,18 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.client = client;
         }
 
-        async Task ICredentialService.ChangePassword(string oldPassword, string newPassword)
+        Task ICredentialService.ChangePassword(string oldPassword, string newPassword)
         {
-            var response = await client.PostJson("/password/change", new
+            return client.PostJson("/password/change", new
             {
                 oldPassword,
                 newPassword
             });
-
-            response.EnsureSuccessStatusCode();
         }
 
-        async Task ICredentialService.RegisterNewUser(NewUserRegistration registration)
+        Task ICredentialService.RegisterNewUser(NewUserRegistration registration)
         {
-            var response = await client.PostJson("/user/create", new
+            return client.PostJson("/user/create", new
             {
                 registration.Username,
                 registration.Password,
@@ -37,8 +35,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
                     }
                 }
             });
-
-            response.EnsureSuccessStatusCode();
         }
     }
 }

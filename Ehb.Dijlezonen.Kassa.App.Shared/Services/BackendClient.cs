@@ -21,17 +21,21 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             this.getHttpClient = getHttpClient;
         }
 
-        public async Task<HttpResponseMessage> PostForm(string url, IEnumerable<KeyValuePair<string, string>> form)
+        public async Task<BackendClientCallResult> PostForm(string url, IEnumerable<KeyValuePair<string, string>> form)
         {
             using (var httpClient = GetHttpClient())
             {
-                return await httpClient.PostAsync(
+                var response = await httpClient.PostAsync(
                         config.BaseUrl + url,
                         new FormUrlEncodedContent(form));
+
+                response.EnsureSuccessStatusCode();
+
+                return new BackendClientCallResult(response);
             }
         }
 
-        public async Task<HttpResponseMessage> PostJson(string url, object body)
+        public async Task<BackendClientCallResult> PostJson(string url, object body)
         {
             using (var client = GetHttpClient())
             {
@@ -41,9 +45,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
                 var content = new StringContent(postBody, Encoding.UTF8, mediaType);
 
-                return await client.PostAsync(
+                var response = await client.PostAsync(
                     config.BaseUrl + url, 
                     content);
+
+                response.EnsureSuccessStatusCode();
+
+                return new BackendClientCallResult(response);
             }
         }
 
@@ -59,5 +67,17 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
             return client;
         }
+    }
+
+    public class BackendClientCallResult
+    {
+        private readonly HttpResponseMessage response;
+
+        public BackendClientCallResult(HttpResponseMessage response)
+        {
+            this.response = response;
+        }
+
+        public Task<string> GetContent => response.Content.ReadAsStringAsync();
     }
 }
