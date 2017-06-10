@@ -9,36 +9,26 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     public class Navigation : IDisposable
     {
         private readonly INavigationAdapter navigationAdapter;
-        private readonly UserService userService;
         private readonly IAuthentication authentication;
-
-        private readonly EventHandler onLoggedIn;
+        
         private readonly EventHandler onLoggedOut;
         private readonly EventHandler needsPasswordChange;
 
-        public Navigation(INavigationAdapter navigationAdapter, UserService userService, IAuthentication authentication)
+        public Navigation(INavigationAdapter navigationAdapter, IAuthentication authentication)
         {
             this.navigationAdapter = navigationAdapter;
-            this.userService = userService;
             this.authentication = authentication;
-
-            onLoggedIn = async (sender, args) => await OnLoggedIn();
+            
             onLoggedOut = async (sender, args) => await OnLoggedOut();
             needsPasswordChange = async (sender, args) => await NeedsPasswordChange();
-
-            userService.LoggedIn += onLoggedIn;
-            userService.LoggedOut += onLoggedOut;
-            userService.NeedsPasswordChange += needsPasswordChange;
+            
+            authentication.NeedsPasswordChange += needsPasswordChange;
+            authentication.LoggedOut += onLoggedOut;
         }
 
         private Task NeedsPasswordChange()
         {
             return navigationAdapter.NavigateToModal<PasswordChangeViewModel>();
-        }
-
-        private Task OnLoggedIn()
-        {
-            return navigationAdapter.CloseModal();
         }
 
         private Task OnLoggedOut()
@@ -48,18 +38,21 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
 
         public async Task<TViewModel> NavigateTo<TViewModel>()
         {
-            if (RequiresLogin<TViewModel>())
-                await userService.Logout();
 
             CheckAdminPrivileges<TViewModel>();
 
-            return await navigationAdapter.NavigateTo<TViewModel>();
+            var vm = await navigationAdapter.NavigateTo<TViewModel>();
+
+            if (RequiresAuthentication<TViewModel>())
+                await NavigateToLogin();
+
+            return vm;
         }
 
-        private bool RequiresLogin<TViewModel>()
+        private bool RequiresAuthentication<TViewModel>()
         {
             return authentication.LoggedInUser == null && 
-                typeof(TViewModel).IsAssignableTo<IRequireLogin>();
+                typeof(TViewModel).IsAssignableTo<IRequireAuthentication>();
         }
 
         private void CheckAdminPrivileges<TViewModel>()
@@ -92,9 +85,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         {
             if (!disposedValue && disposing)
             {
-                userService.LoggedIn -= onLoggedIn;
-                userService.LoggedOut -= onLoggedOut;
-                userService.NeedsPasswordChange -= needsPasswordChange;
+                authentication.LoggedOut -= onLoggedOut;
+                authentication.NeedsPasswordChange -= needsPasswordChange;
 
                 disposedValue = true;
             }

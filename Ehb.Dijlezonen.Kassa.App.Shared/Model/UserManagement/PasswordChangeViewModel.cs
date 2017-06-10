@@ -22,15 +22,31 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
                 async () => await ChangePassword(),
                 CanChangePassword);
         }
+        
+        private bool disableChangePasswordCommand;
+        public bool DisableChangePasswordCommand
+        {
+            get { return disableChangePasswordCommand; }
+            set { Set(ref disableChangePasswordCommand, value, UpdateChangePasswordAccess); }
+        }
 
         private bool CanChangePassword()
         {
-            return !string.IsNullOrEmpty(OldPassword) && !string.IsNullOrEmpty(NewPassword) && NewPassword == ConfirmNewPassword;
+            return !DisableChangePasswordCommand && AllFieldsValidate();
+        }
+
+        private bool AllFieldsValidate()
+        {
+            return 
+                !string.IsNullOrEmpty(OldPassword) && 
+                !string.IsNullOrEmpty(NewPassword) && 
+                NewPassword == ConfirmNewPassword;
         }
 
         private async Task ChangePassword()
         {
             log.Debug("Attempting to change password.");
+            DisableChangePasswordCommand = true;
 
             try
             {
@@ -39,6 +55,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
             catch (Exception ex)
             {
                 log.Error("Unable to change password.", ex);
+                DisableChangePasswordCommand = false;
                 throw;
             }
 
@@ -59,7 +76,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
         public string NewPassword
         {
             get { return newPassword; }
-            set { Set(ref newPassword, value, PasswordsChanged); }
+            set { Set(ref newPassword, value, UpdateChangePasswordAccess); }
         }
 
         private string confirmNewPassword;
@@ -67,7 +84,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
         public string ConfirmNewPassword
         {
             get { return confirmNewPassword; }
-            set { Set(ref confirmNewPassword, value, PasswordsChanged); }
+            set { Set(ref confirmNewPassword, value, UpdateChangePasswordAccess); }
         }
 
         private string oldPassword;
@@ -76,10 +93,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
         public string OldPassword
         {
             get { return oldPassword; }
-            set { Set(ref oldPassword, value, PasswordsChanged); }
+            set { Set(ref oldPassword, value, UpdateChangePasswordAccess); }
         }
 
-        private void PasswordsChanged()
+        private void UpdateChangePasswordAccess()
         {
             ChangePasswordCommand.ChangeCanExecute();
         }

@@ -11,33 +11,31 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.Assertions
         {
         }
 
-        public AndWhichConstraint<NavigatorAssertions, TViewModel> HaveNavigatedTo<TViewModel>()
+        internal AndWhichConstraint<NavigatorAssertions, TViewModel> BeDisplaying<TViewModel>(bool forceModal = false)
             where TViewModel : class
         {
-            var vm = Subject.NavigationStack.Should().HaveCount(c => c > 0).And.Subject.First();
-            vm.Should().BeOfType<TViewModel>($"We expected the current viewmodel to be of type {typeof(TViewModel).Name}");
+            var vm = Subject.ModalStack.FirstOrDefault();
 
-            CheckedThat($"we have navigated to view model '{typeof(TViewModel).Name}'");
+            if (vm == null && !forceModal)
+                vm = Subject.NavigationStack.FirstOrDefault();
+
+            vm.Should().NotBeNull("we expected to be displaying something");
+
+            vm.Should().BeOfType<TViewModel>($"we expected to be displaying the viewmodel of type {typeof(TViewModel).Name}");
+
+            CheckedThat($"we are displaying a viewmodel of type '{typeof(TViewModel).Name}'");
 
             return AndWhich((TViewModel)vm);
         }
 
-        internal AndWhichConstraint<NavigatorAssertions, TViewModel> HaveNavigatedModallyTo<TViewModel>()
+        internal AndConstraint<NavigatorAssertions> NotBeDisplaying<TViewModel>()
             where TViewModel : class
         {
-            var vm = Subject.ModalStack.Should().HaveCount(c => c > 0).And.Subject.First();
-            vm.Should().BeOfType<TViewModel>();
+            var vm = Subject.ModalStack.FirstOrDefault() ?? Subject.NavigationStack.FirstOrDefault();
             
-            CheckedThat($"we have modally navigated to view model '{typeof(TViewModel).Name}'");
+            vm?.Should().NotBeOfType<TViewModel>($"we didn't expected to be displaying the viewmodel of type {typeof(TViewModel).Name}");
 
-            return AndWhich((TViewModel)vm);
-        }
-
-        internal AndConstraint<NavigatorAssertions> NotHaveModal<TViewModel>()
-        {
-            Subject.ModalStack.Should().NotContain(x => x.GetType() == typeof(TViewModel), $"we expected to not have a modal view open for {typeof(TViewModel).Name}");
-
-            CheckedThat($"we don't have a modal view open for {typeof(TViewModel).Name}");
+            CheckedThat($"we are not displaying a viewmodel of type '{typeof(TViewModel).Name}'");
 
             return And();
         }

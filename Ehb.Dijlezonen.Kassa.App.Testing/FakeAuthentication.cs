@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
@@ -18,17 +19,50 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             public bool IsAdmin { get; set; }
         }
 
+        private event EventHandler NeedsPasswordChange;
+
+        event EventHandler IAuthentication.NeedsPasswordChange
+        {
+            add => NeedsPasswordChange += value;
+            remove => NeedsPasswordChange -= value;
+        }
+
         Task IAuthentication.Logout()
         {
             loggedInUser = null;
+            OnLoggedOut();
             return Task.FromResult(0);
+        }
+
+        private event EventHandler LoggedOut;
+
+        event EventHandler IAuthentication.LoggedOut
+        {
+            add => LoggedOut += value;
+            remove => LoggedOut -= value;
         }
 
         Task IAuthentication.Login(string user, string password)
         {
             loggedInUser = TestUsers.SingleOrDefault(x => x.Username == user && x.Password == password);
 
+            if (loggedInUser != null)
+            {
+                OnLoggedIn();
+
+                if (loggedInUser.NeedsPasswordChange)
+                    OnNeedsPasswordChange();
+            }
+
             return Task.FromResult(0);
+        }
+
+        private event EventHandler LoggedIn;
+
+        event EventHandler IAuthentication.LoggedIn
+        {
+            add => LoggedIn += value;
+            remove => LoggedIn -= value;
         }
 
         public User LoggedInUser => loggedInUser != null ? new User(loggedInUser.IsAdmin, loggedInUser.NeedsPasswordChange) : null;
@@ -59,6 +93,21 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             {
                 IsAdmin = true
             };
+        }
+
+        protected virtual void OnLoggedIn()
+        {
+            LoggedIn?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnLoggedOut()
+        {
+            LoggedOut?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnNeedsPasswordChange()
+        {
+            NeedsPasswordChange?.Invoke(this, EventArgs.Empty);
         }
     }
 }

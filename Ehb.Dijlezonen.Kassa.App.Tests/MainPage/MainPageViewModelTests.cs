@@ -4,6 +4,7 @@ using Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
+using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,7 +21,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             await GetSut();
 
-            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
+            NavigationAdapter.Should().BeDisplaying<LoginViewModel>(true);
         }
 
         [Fact]
@@ -32,12 +33,13 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
 
             await GetSut();
 
-            var loginVm = NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>().Which;
+            var loginVm = NavigationAdapter.Should().BeDisplaying<LoginViewModel>(true).Which;
             loginVm.User = user;
             loginVm.Password = pass;
             loginVm.LoginCommand.Click();
 
-            NavigationAdapter.Should().NotHaveModal<LoginViewModel>();
+            NavigationAdapter.Should().NotBeDisplaying<LoginViewModel>();
+            NavigationAdapter.Should().BeDisplaying<MainPageViewModel>();
         }
 
         [Fact]
@@ -48,7 +50,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
             (await GetSut()).LogoutCommand.Click();
 
             Authentication.Should().NotBeLoggedIn();
-            NavigationAdapter.Should().HaveNavigatedModallyTo<LoginViewModel>();
+            NavigationAdapter.Should().BeDisplaying<LoginViewModel>(true);
         }
 
         [Fact]
@@ -56,9 +58,12 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.MainPage
         {
             Authentication.WhenAdminIsLoggedIn();
 
-            (await GetSut()).NavigateToAdminCommand.Click();
+            var vm = await GetSut();
+            vm.IsAdmin.Should().BeTrue();
+            vm.NavigateToAdminCommand.Should().BeEnabled();
+            vm.NavigateToAdminCommand.Click();
             
-            NavigationAdapter.Should().HaveNavigatedTo<OverviewViewModel>();
+            NavigationAdapter.Should().BeDisplaying<OverviewViewModel>();
         }
     }
 }

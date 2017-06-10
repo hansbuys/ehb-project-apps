@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Common.Logging;
@@ -30,9 +31,21 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             return (TViewModel)view.BindingContext;
         }
 
-        public Task CloseModal()
+        public async Task CloseModal()
         {
-            return navigation.PopModalAsync();
+            var modal = await navigation.PopModalAsync();
+
+            if (modal != null)
+            {
+                log.Debug($"Closing modal view {modal.GetType().Name}");
+
+                var vm = modal.BindingContext as IDisposable;
+                if (vm != null)
+                {
+                    log.Debug($"Disposing viewmodel {vm.GetType().Name}");
+                    vm.Dispose();
+                }
+            }
         }
 
         public async Task<TViewModel> NavigateToModal<TViewModel>()

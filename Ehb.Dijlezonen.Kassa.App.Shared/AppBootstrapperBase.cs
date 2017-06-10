@@ -9,7 +9,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared
         protected override void RegisterComponents(ContainerBuilder builder)
         {
             builder.RegisterType<ViewFactory>().SingleInstance();
-            builder.RegisterType<UserService>().SingleInstance();
 
             //this is due to the events
             builder.RegisterType<Navigation>().SingleInstance();
