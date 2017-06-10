@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement;
+using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.App.Testing;
 using Ehb.Dijlezonen.Kassa.App.Tests.Assertions;
 using FluentAssertions;
@@ -10,25 +12,32 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.PasswordChange
 {
     public class PasswordChangeViewModelTests : ViewModelTest<PasswordChangeViewModel>
     {
+        protected FakeCredentialService CredentialService { get; } = new FakeCredentialService();
+
         public PasswordChangeViewModelTests(ITestOutputHelper output) : base(output)
         {
+        }
+
+        protected override void Configure(ContainerBuilder builder)
+        {
+            base.Configure(builder);
+
+            builder.RegisterInstance(CredentialService).As<ICredentialService>();
         }
 
         [Fact]
         public async Task CanChangePassword()
         {
-            Authentication.WhenUserIsLoggedIn("pass");
-
             var vm = await GetSut();
 
-            Authentication.PasswordChanged.Should().BeFalse();
+            CredentialService.PasswordChanged.Should().BeFalse();
 
             vm.OldPassword = "pass";
             vm.NewPassword = "new-pass";
             vm.ConfirmNewPassword = "new-pass";
             vm.ChangePasswordCommand.Click();
 
-            Authentication.PasswordChanged.Should().BeTrue();
+            CredentialService.PasswordChanged.Should().BeTrue();
         }
 
         [Fact]

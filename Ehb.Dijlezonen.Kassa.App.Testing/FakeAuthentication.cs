@@ -5,7 +5,7 @@ using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 
 namespace Ehb.Dijlezonen.Kassa.App.Testing
 {
-    public class FakeAuthentication : IAuthentication, ICredentialService
+    public class FakeAuthentication : IAuthentication
     {
         private TestUser loggedInUser;
         public ConcurrentBag<TestUser> TestUsers { get; } = new ConcurrentBag<TestUser>();
@@ -32,15 +32,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         }
 
         public User LoggedInUser => loggedInUser != null ? new User(loggedInUser.IsAdmin, loggedInUser.NeedsPasswordChange) : null;
-
-        Task ICredentialService.ChangePassword(string oldPassword, string newPassword)
-        {
-            PasswordChanged = true;
-
-            return Task.FromResult(0);
-        }
-
-        public bool PasswordChanged { get; set; }
 
         public void WhenUserIsLoggedIn(string password = null)
         {

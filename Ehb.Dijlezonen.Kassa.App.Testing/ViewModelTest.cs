@@ -27,7 +27,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
             builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
 
             builder.RegisterInstance(Authentication).As<IAuthentication>();
-            builder.RegisterInstance(Authentication).As<ICredentialService>();
         }
 
         protected override BootstrapperBase GetBootstrapper()
