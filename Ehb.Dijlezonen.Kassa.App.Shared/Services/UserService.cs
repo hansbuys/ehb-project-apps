@@ -9,13 +9,11 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
     public class UserService
     {
         private readonly IAuthentication authentication;
-        private readonly ICredentialService credentials;
         private readonly ILog log;
 
-        public UserService(IAuthentication authentication, ICredentialService credentials, Logging logging)
+        public UserService(IAuthentication authentication, Logging logging)
         {
             this.authentication = authentication;
-            this.credentials = credentials;
             this.log = logging.GetLoggerFor<UserService>();
         }
 
@@ -23,26 +21,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         public event EventHandler LoggedIn;
         public event EventHandler LoggedOut;
         public event EventHandler NeedsPasswordChange;
-        public event EventHandler PasswordHasChanged;
-
-        public async Task ChangePassword(string oldPassword, string newPassword)
-        {
-            log.Debug("Attempting to change password.");
-
-            try
-            {
-                await credentials.ChangePassword(oldPassword, newPassword);
-            }
-            catch (Exception ex)
-            {
-                log.Error("Unable to change password.", ex);
-                throw;
-            }
-
-            log.Debug("Password has been successfully changed.");
-
-            PasswordHasChanged?.Invoke(this, EventArgs.Empty);
-        }
 
         public async Task Login(string user, string password)
         {

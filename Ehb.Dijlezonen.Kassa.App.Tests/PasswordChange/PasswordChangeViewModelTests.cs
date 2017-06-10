@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Autofac;
 using Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
 using Ehb.Dijlezonen.Kassa.App.Testing;
@@ -12,17 +11,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Tests.PasswordChange
 {
     public class PasswordChangeViewModelTests : ViewModelTest<PasswordChangeViewModel>
     {
-        protected FakeCredentialService CredentialService { get; } = new FakeCredentialService();
-
         public PasswordChangeViewModelTests(ITestOutputHelper output) : base(output)
         {
-        }
-
-        protected override void Configure(ContainerBuilder builder)
-        {
-            base.Configure(builder);
-
-            builder.RegisterInstance(CredentialService).As<ICredentialService>();
         }
 
         [Fact]

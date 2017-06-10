@@ -21,12 +21,14 @@ namespace Ehb.Dijlezonen.Kassa.App.Testing
         private Navigation navigation;
 
         protected virtual bool IsModalWindow => false;
+        protected FakeCredentialService CredentialService { get; } = new FakeCredentialService();
 
         protected override void Configure(ContainerBuilder builder)
         {
             builder.RegisterType<FakeNavigationAdapter>().As<INavigationAdapter>().SingleInstance();
 
             builder.RegisterInstance(Authentication).As<IAuthentication>();
+            builder.RegisterInstance(CredentialService).As<ICredentialService>();
         }
 
         protected override BootstrapperBase GetBootstrapper()

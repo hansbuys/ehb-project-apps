@@ -15,7 +15,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
         private readonly EventHandler onLoggedIn;
         private readonly EventHandler onLoggedOut;
         private readonly EventHandler needsPasswordChange;
-        private readonly EventHandler passwordHasChanged;
 
         public Navigation(INavigationAdapter navigationAdapter, UserService userService, IAuthentication authentication)
         {
@@ -26,17 +25,10 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
             onLoggedIn = async (sender, args) => await OnLoggedIn();
             onLoggedOut = async (sender, args) => await OnLoggedOut();
             needsPasswordChange = async (sender, args) => await NeedsPasswordChange();
-            passwordHasChanged = async (sender, args) => await PasswordHasChanged();
 
             userService.LoggedIn += onLoggedIn;
             userService.LoggedOut += onLoggedOut;
             userService.NeedsPasswordChange += needsPasswordChange;
-            userService.PasswordHasChanged += passwordHasChanged;
-        }
-
-        private Task PasswordHasChanged()
-        {
-            return navigationAdapter.CloseModal();
         }
 
         private Task NeedsPasswordChange()
@@ -103,7 +95,6 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
                 userService.LoggedIn -= onLoggedIn;
                 userService.LoggedOut -= onLoggedOut;
                 userService.NeedsPasswordChange -= needsPasswordChange;
-                userService.PasswordHasChanged -= passwordHasChanged;
 
                 disposedValue = true;
             }

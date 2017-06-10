@@ -1,16 +1,22 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Common.Logging;
 using Ehb.Dijlezonen.Kassa.App.Shared.Services;
+using Ehb.Dijlezonen.Kassa.Infrastructure;
 using Xamarin.Forms;
 
 namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
 {
     public class PasswordChangeViewModel : PropertyChangedViewModelBase
     {
-        private readonly UserService userService;
+        private readonly ICredentialService credentials;
+        private readonly INavigationAdapter navigation;
 
-        public PasswordChangeViewModel(UserService userService)
+        public PasswordChangeViewModel(ICredentialService credentials, INavigationAdapter navigation, Logging logging)
         {
-            this.userService = userService;
+            this.credentials = credentials;
+            this.navigation = navigation;
+            log = logging.GetLoggerFor<PasswordChangeViewModel>();
 
             ChangePasswordCommand = new Command(
                 async () => await ChangePassword(),
@@ -22,9 +28,22 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
             return !string.IsNullOrEmpty(OldPassword) && !string.IsNullOrEmpty(NewPassword) && NewPassword == ConfirmNewPassword;
         }
 
-        private Task ChangePassword()
+        private async Task ChangePassword()
         {
-            return userService.ChangePassword(OldPassword, NewPassword);
+            log.Debug("Attempting to change password.");
+
+            try
+            {
+                await credentials.ChangePassword(OldPassword, NewPassword);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Unable to change password.", ex);
+                throw;
+            }
+
+            log.Debug("Password has been successfully changed.");
+            await navigation.CloseModal();
         }
 
         public string Title => "Verander je paswoord aub.";
@@ -52,6 +71,8 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
         }
 
         private string oldPassword;
+        private ILog log;
+
         public string OldPassword
         {
             get { return oldPassword; }
