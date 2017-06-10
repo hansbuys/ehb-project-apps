@@ -125,7 +125,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.Admin
             {
                 log.Error("New user registration failed.", ex);
                 ForceDisableAddNewUser = false;
-                throw;
+                return;
             }
 
             await navigation.Close();

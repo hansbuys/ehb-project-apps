@@ -58,30 +58,29 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Services
                 new KeyValuePair<string, string>("password", password)
             });
 
-            if (result != null && result.IsSuccessStatusCode)
+            result.EnsureSuccessStatusCode();
+            
+            log.Debug($"{username} has succesfully logging in.");
+
+            var tokenAsJson = await result.Content.ReadAsStringAsync();
+            dynamic dynamicAccessToken = JsonConvert.DeserializeObject(tokenAsJson);
+
+            var accessToken = (string) dynamicAccessToken.access_token;
+
+            client.AccessToken = accessToken;
+
+            token = new Token(ParseExpirationDateTime(accessToken));
+
+            user = new User(
+                ParseIsAdminToken(accessToken),
+                ParseNeedsPasswordChange(accessToken));
+
+            OnLoggedIn();
+
+            if (user.NeedsPasswordChange)
             {
-                log.Debug($"{username} has succesfully logging in.");
-
-                var tokenAsJson = await result.Content.ReadAsStringAsync();
-                dynamic dynamicAccessToken = JsonConvert.DeserializeObject(tokenAsJson);
-
-                var accessToken = (string)dynamicAccessToken.access_token;
-
-                client.AccessToken = accessToken;
-
-                token = new Token(ParseExpirationDateTime(accessToken));
-
-                user = new User(
-                    ParseIsAdminToken(accessToken),
-                    ParseNeedsPasswordChange(accessToken));
-
-                OnLoggedIn();
-
-                if (user.NeedsPasswordChange)
-                {
-                    log.Debug($"{user} needs to change passwords.");
-                    OnNeedsPasswordChange();
-                }
+                log.Debug($"{user} needs to change passwords.");
+                OnNeedsPasswordChange();
             }
         }
 

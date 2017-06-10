@@ -56,7 +56,7 @@ namespace Ehb.Dijlezonen.Kassa.App.Shared.Model.UserManagement
             {
                 log.Error("Unable to change password.", ex);
                 ForceDisableChangePasswordCommand = false;
-                throw;
+                return;
             }
 
             log.Debug("Password has been successfully changed.");
