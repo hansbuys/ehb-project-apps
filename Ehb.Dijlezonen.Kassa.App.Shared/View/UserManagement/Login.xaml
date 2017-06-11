@@ -4,9 +4,14 @@
              x:Class="Ehb.Dijlezonen.Kassa.App.Shared.View.UserManagement.Login">
     <StackLayout HorizontalOptions="Center"
                  VerticalOptions="Center">
-        <Label Text="{Binding Title}"/>
-        <Entry Placeholder="{Binding UserPlaceholder}" Text="{Binding User}"/>
-        <Entry Placeholder="{Binding PasswordPlaceholder}" Text="{Binding Password}" IsPassword="True"/>
-        <Button Text="{Binding LoginCommandText}" Command="{Binding LoginCommand}"/>
+        <Image Source="Dijlezonen_Logo.gif" Aspect="AspectFit" Scale="0.75"/>
+
+        <StackLayout HorizontalOptions="Fill"
+                     VerticalOptions="Center" Margin="20">
+            <Label Text="{Binding Title}"/>
+            <Entry Placeholder="{Binding UserPlaceholder}" Text="{Binding User}"/>
+            <Entry Placeholder="{Binding PasswordPlaceholder}" Text="{Binding Password}" IsPassword="True"/>
+            <Button Text="{Binding LoginCommandText}" Command="{Binding LoginCommand}"/>
+        </StackLayout>
     </StackLayout>
 </ContentPage>
