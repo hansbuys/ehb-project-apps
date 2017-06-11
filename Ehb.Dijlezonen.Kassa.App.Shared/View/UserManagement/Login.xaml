@@ -4,7 +4,7 @@
              x:Class="Ehb.Dijlezonen.Kassa.App.Shared.View.UserManagement.Login">
     <StackLayout HorizontalOptions="Center"
                  VerticalOptions="Center">
-        <Image Source="Dijlezonen_Logo.gif" Aspect="AspectFit" Scale="0.75"/>
+        <Image Source="Dijlezonen_Logo.gif" Aspect="AspectFit" Scale="0.8" HeightRequest="300"/>
 
         <StackLayout HorizontalOptions="Fill"
                      VerticalOptions="Center" Margin="20">
